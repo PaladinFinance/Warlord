@@ -4,7 +4,6 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract Mint is WarTokenTest {
-  
   function testMint() public {
     vm.prank(admin);
     war.grantRole(MINTER_ROLE, alice);
