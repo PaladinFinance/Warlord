@@ -12,6 +12,7 @@ contract WarToken is ERC20, AccessControl {
   }
 
   function grantAdminRole(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    // TODO more than 1 admin? Capped?
     _grantRole(DEFAULT_ADMIN_ROLE, _minter);
   }
 
