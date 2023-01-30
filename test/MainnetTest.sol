@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import {ERC20} from "solmate/tokens/ERC20.sol";
+import "./BaseTest.sol";
 import "interfaces/CrvDepositor.sol";
 import "interfaces/vlCVX.sol";
 import "interfaces/vlAura.sol";
+import "interfaces/AuraDepositor.sol";
 
-contract MainnetTest is Test {
+contract MainnetTest is BaseTest {
   // Curve
   ERC20 immutable crv = ERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
 
@@ -22,8 +22,7 @@ contract MainnetTest is Test {
 
   // Aura
   // TODO check bal depositor because wrapper might hide a different implementation
-  // 0xeAd792B55340Aa20181A80d6a16db6A0ECd1b827 depositor
-  // 0x68655AD9852a99C87C0934c7290BB62CFa5D4123 wrapper
+  CrvDepositorWrapper auraDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
   ERC20 immutable aura = ERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   AuraLocker immutable vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   ERC20 immutable auraBal = ERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);

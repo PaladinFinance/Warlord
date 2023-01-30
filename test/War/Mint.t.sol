@@ -1,38 +1,16 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import {ERC20} from "solmate/tokens/ERC20.sol";
-import "../src/War.sol";
-import "forge-std/Test.sol";
+import "./WarTokenTest.sol";
 
-contract WarTokenTest is Test {
-  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-
-  address admin = makeAddr("admin");
-  address minter = makeAddr("minter");
-  address alice = makeAddr("alice");
-  address bob = makeAddr("bob");
-  WarToken war;
-
-  function setUp() public {
-    war = new WarToken(admin);
-  }
-
+contract Mint is WarTokenTest {
+  
   function testMint() public {
     vm.prank(admin);
     war.grantRole(MINTER_ROLE, alice);
     vm.prank(alice);
     war.mint(bob, 100);
     assertEq(war.balanceOf(bob), 100);
-  }
-
-  function testAdminGating() public {
-    // TODO should I test for more than 1 admin
-    vm.prank(alice);
-    vm.expectRevert(
-      "AccessControl: account 0x328809bc894f92807417d2dad6b7c998c1afdac6 is missing role 0x0000000000000000000000000000000000000000000000000000000000000000"
-    );
-    war.grantRole(0x00, alice);
   }
 
   function testMinterGating() public {
