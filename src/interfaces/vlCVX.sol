@@ -1,4 +1,4 @@
-pragma solidity ^0.8.10;
+pragma solidity 0.8.16;
 
 interface CvxLockerV2 {
   event KickReward(address indexed _user, address indexed _kicked, uint256 _reward);

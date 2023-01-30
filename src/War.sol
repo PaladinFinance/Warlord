@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Unlicensed
-pragma solidity ^0.8.0;
+pragma solidity 0.8.16;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {AccessControl} from "openzeppelin/contracts/access/AccessControl.sol";
@@ -9,23 +9,13 @@ contract WarToken is ERC20, AccessControl {
 
   constructor(address _admin) ERC20("Warlord token", "WAR", 18) {
     _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
   }
 
-  function grantAdminRole(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    // TODO more than 1 admin? Capped?
-    _grantRole(DEFAULT_ADMIN_ROLE, _minter);
-  }
-
-  function revokeAdmin(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    _revokeRole(DEFAULT_ADMIN_ROLE, _minter);
-  }
-
-  function grantMinterRole(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    _grantRole(MINTER_ROLE, _minter);
-  }
-
-  function revokeMinterRole(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    _revokeRole(MINTER_ROLE, _minter);
+  function updateAdmin(address _newAdmin) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    // address oldMinter =
+    // _revokeRole(DEFAULT_ADMIN_ROLE, _minter);
+    _grantRole(DEFAULT_ADMIN_ROLE, _newAdmin);
   }
 
   function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
