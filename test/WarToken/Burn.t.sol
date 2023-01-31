@@ -4,14 +4,17 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract Burn is WarTokenTest {
-  function testBurn() public {
+  function testBurn(uint256 amount) public {
     assertEq(war.balanceOf(bob), 0);
+    assertEq(war.totalSupply(), 0);
     vm.prank(minter);
-    war.mint(bob, 5000);
-    assertEq(war.balanceOf(bob), 5000);
+    war.mint(bob, amount);
+    assertEq(war.totalSupply(), amount);
+    assertEq(war.balanceOf(bob), amount);
     vm.prank(burner);
-    war.burn(bob, 2501);
-    assertEq(war.balanceOf(bob), 2499);
+    war.burn(bob, amount);
+    assertEq(war.balanceOf(bob), 0);
+    assertEq(war.totalSupply(), 0);
   }
 
   function testBurnerGating() public {

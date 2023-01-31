@@ -19,7 +19,6 @@ contract WarToken is ERC20, AccessControl {
   constructor(address _owner) ERC20("Warlord token", "WAR", 18) {
     owner = _owner;
     _grantRole(DEFAULT_ADMIN_ROLE, owner);
-    // TODO _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE); shouldn't be needed because default
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, keccak256("NO_ROLE"));
   }
 
