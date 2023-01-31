@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
-import {AccessControl} from "openzeppelin/contracts/access/AccessControl.sol";
+import {AccessControl} from "openzeppelin/access/AccessControl.sol";
 
 contract WarToken is ERC20, AccessControl {
   event NewPendingOwner(address indexed previousPendingOwner, address indexed newPendingOwner);

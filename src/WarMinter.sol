@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
-import {WarLocker} from "interfaces/WarLocker.sol";
+import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {Owner} from "lib/Warden-Quest/contracts/utils/Owner.sol";
 
 error GenericError(); // TODO do custom errors
@@ -31,7 +31,7 @@ contract WarMinter is Owner {
     if (receiver == address(0)) revert GenericError();
     if (_locker[vlToken] == address(0)) revert GenericError();
 
-    WarLocker locker = WarLocker(_locker[vlToken]);
+    IWarLocker locker = IWarLocker(_locker[vlToken]);
 
     ERC20(vlToken).transferFrom(msg.sender, address(this), amount);
     // aura.transferFrom(msg.sender, address(this), auraAmount);
