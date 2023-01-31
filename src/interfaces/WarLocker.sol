@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-interface vlTokenLocker {
+interface WarLocker {
   function lock(uint256 amount) external;
 }

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import {vlTokenLocker} from "interfaces/vlTokenLocker.sol";
+import {WarLocker} from "interfaces/WarLocker.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 
-contract vlMockLocker is vlTokenLocker {
+contract vlMockLocker is WarLocker {
   ERC20 token;
 
   constructor(address _token) {

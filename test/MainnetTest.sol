@@ -27,6 +27,11 @@ contract MainnetTest is BaseTest {
   AuraLocker immutable vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   ERC20 immutable auraBal = ERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
 
+  function setUp() public virtual {
+    vm.label(address(cvx), "cvx");
+    vm.label(address(aura), "aura");
+  }
+
   function fork() public {
     vm.createSelectFork(vm.rpcUrl("mainnet"), 16_519_119);
   }
