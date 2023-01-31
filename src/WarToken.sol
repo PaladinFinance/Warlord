@@ -14,6 +14,7 @@ contract WarToken is ERC20, AccessControl {
   address public pendingOwner;
   address public owner;
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
   constructor(address _owner) ERC20("Warlord token", "WAR", 18) {
     owner = _owner;
@@ -50,7 +51,7 @@ contract WarToken is ERC20, AccessControl {
     _mint(to, amount);
   }
 
-  function burn(address from, uint256 amount) public onlyRole(MINTER_ROLE) {
+  function burn(address from, uint256 amount) public onlyRole(BURNER_ROLE) {
     _burn(from, amount);
   }
 }
