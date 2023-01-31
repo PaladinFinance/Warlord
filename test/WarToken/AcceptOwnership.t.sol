@@ -23,7 +23,7 @@ contract AcceptOwnership is WarTokenTest {
 
   function testOnlyPendingOwnerCanAccept() public {
     vm.prank(bob);
-    vm.expectRevert(WarToken.CallerNotPendingOwner.selector);
+    vm.expectRevert(CallerNotPendingOwner.selector);
     war.acceptOwnership();
   }
 

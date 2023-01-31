@@ -2,6 +2,7 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
+import "../src/Errors.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 
 contract BaseTest is Test {
