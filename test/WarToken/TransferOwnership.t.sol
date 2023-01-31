@@ -14,10 +14,22 @@ contract TransferOwnership is WarTokenTest {
 
   function testFirstStepChangesPendingOwner() public {
     vm.prank(admin);
+    vm.expectEmit(true, true, false, true);
+    emit NewPendingOwner(address(0), alice);
     war.transferOwnership(alice);
     assertEq(war.owner(), admin);
     assertEq(war.pendingOwner(), alice);
-    // TODO check for emit
+  }
+
+  function testOverridePendingOwner() public {
+    vm.prank(admin);
+    vm.expectEmit(true, true, false, true);
+    emit NewPendingOwner(address(0), alice);
+    war.transferOwnership(alice);
+    vm.prank(admin);
+    vm.expectEmit(true, true, false, true);
+    emit NewPendingOwner(alice, bob);
+		war.transferOwnership(bob);
   }
 
   function testZeroAddressFails() public {

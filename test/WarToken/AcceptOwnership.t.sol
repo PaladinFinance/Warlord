@@ -14,8 +14,8 @@ contract AcceptOwnership is WarTokenTest {
     assertEq(war.owner(), admin);
     assertEq(war.pendingOwner(), alice);
     vm.prank(alice);
-    // vm.expectEmit(true, false, false, true);
-    // TODO emit WarToken.NewPendingOwner(alice, address(0));
+    vm.expectEmit(true, true, false, true);
+    emit NewPendingOwner(alice, address(0));
     war.acceptOwnership();
     assertEq(war.owner(), alice);
     assertEq(war.pendingOwner(), address(0));
