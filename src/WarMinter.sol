@@ -4,42 +4,54 @@ pragma solidity 0.8.16;
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {WarLocker} from "interfaces/WarLocker.sol";
+import {Owner} from "lib/Warden-Quest/contracts/utils/Owner.sol";
 
-contract WarMinter {
+error GenericError(); // TODO do custom errors
+
+contract WarMinter is Owner {
   WarToken public war;
-  ERC20 public immutable cvx = ERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
-  ERC20 public immutable aura = ERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
-  mapping(address => address) _locker; // TODO address=>WarLocker ?
-  address vlCvxLocker;
-  address vlAuraLocker;
+  mapping(address => address) _locker;
 
-  constructor(address _war, address _owner) {
+  constructor(address _war) {
     war = WarToken(_war);
   }
 
-  function setLocker(address vlToken, address warLocker) public {
-    require(vlToken != address(0), "zero address"); //TODO proper errors
-    require(warLocker != address(0), "zero address");
+  function setLocker(address vlToken, address warLocker) public onlyOwner {
+    if (vlToken == address(0)) revert GenericError();
+    if (warLocker == address(0)) revert GenericError();
     _locker[vlToken] = warLocker;
   }
 
-  function mint(uint256 cvxAmount, uint256 auraAmount) public {
-    mint(cvxAmount, auraAmount, msg.sender);
+  function mint(address vlToken, uint256 amount) public {
+    mint(vlToken, amount, msg.sender);
   }
 
-  function mint(uint256 cvxAmount, uint256 auraAmount, address receiver) public {
-    //TODO check if a sum is more gas efficient;
-    require(cvxAmount > 0 || auraAmount > 0, "not sending any token");
-    require(receiver != address(0), "zero address");
+  function mint(address vlToken, uint256 amount, address receiver) public {
+    if (amount == 0) revert GenericError();
+    if (receiver == address(0)) revert GenericError();
+    if (_locker[vlToken] == address(0)) revert GenericError();
 
-    cvx.transferFrom(msg.sender, address(this), cvxAmount);
-    aura.transferFrom(msg.sender, address(this), auraAmount);
+    WarLocker locker = WarLocker(_locker[vlToken]);
 
-    cvx.approve(vlCvxLocker, cvxAmount);
-    WarLocker(vlCvxLocker).lock(cvxAmount);
-    aura.approve(vlAuraLocker, auraAmount);
-    WarLocker(vlAuraLocker).lock(auraAmount);
+    ERC20(vlToken).transferFrom(msg.sender, address(this), amount);
+    // aura.transferFrom(msg.sender, address(this), auraAmount);
 
-    war.mint(receiver, cvxAmount + auraAmount);
+    ERC20(vlToken).approve(address(locker), amount);
+    locker.lock(amount);
+
+    // TODO how to compute amounts to mint
+    war.mint(receiver, amount);
+  }
+
+  //TODO check calldata
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public onlyOwner {
+    if (vlTokens.length != amounts.length) revert GenericError();
+    for (uint256 i = 0; i < vlTokens.length; ++i) {
+      mint(vlTokens[i], amounts[i], receiver);
+    }
+  }
+
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) public onlyOwner {
+    mintMultiple(vlTokens, amounts, msg.sender);
   }
 }

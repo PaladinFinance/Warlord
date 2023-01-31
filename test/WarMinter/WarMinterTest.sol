@@ -21,7 +21,10 @@ contract WarMinterTest is MainnetTest {
     war = new WarToken(admin);
     auraLocker = new vlMockLocker(address(aura));
     cvxLocker = new vlMockLocker(address(cvx));
-    minter = new WarMinter(address(war), admin);
+    minter = new WarMinter(address(war));
+    minter.transferOwnership(admin);
+    vm.prank(admin);
+    minter.acceptOwnership();
 
     vm.prank(admin);
     war.grantRole(keccak256("MINTER_ROLE"), address(minter));
