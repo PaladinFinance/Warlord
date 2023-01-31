@@ -2,10 +2,10 @@
 pragma solidity 0.8.16;
 
 import "./BaseTest.sol";
-import "interfaces/CrvDepositor.sol";
-import "interfaces/vlCVX.sol";
-import "interfaces/vlAura.sol";
-import "interfaces/AuraDepositor.sol";
+import "interfaces/external/CrvDepositor.sol";
+import "interfaces/external/vlCVX.sol";
+import "interfaces/external/vlAura.sol";
+import "interfaces/external/AuraDepositor.sol";
 
 contract MainnetTest is BaseTest {
   // Curve
