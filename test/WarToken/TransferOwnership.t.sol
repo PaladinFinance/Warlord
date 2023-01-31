@@ -29,7 +29,7 @@ contract TransferOwnership is WarTokenTest {
     vm.prank(admin);
     vm.expectEmit(true, true, false, true);
     emit NewPendingOwner(alice, bob);
-		war.transferOwnership(bob);
+    war.transferOwnership(bob);
   }
 
   function testZeroAddressFails() public {
