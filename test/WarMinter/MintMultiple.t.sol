@@ -48,5 +48,5 @@ contract MintMultiple is WarMinterTest {
     assertEq(war.balanceOf(bob), 0);
     assertEq(war.balanceOf(alice), amount1 + amount2);
   }
-  // TODO do some token agnostic tests
+  // TODO do some token agnostic fuzzing tests
 }
