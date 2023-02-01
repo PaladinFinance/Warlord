@@ -9,6 +9,3 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
 	branch = v4.8.1
-[submodule "lib/Warden-Quest"]
-	path = lib/Warden-Quest
-	url = https://github.com/PaladinFinance/Warden-Quest
