@@ -12,6 +12,7 @@ contract WarMinter is Owner {
   mapping(address => address) _locker;
 
   constructor(address _war) {
+    if (_war == address(0)) revert ZeroAddress();
     war = WarToken(_war);
   }
 
