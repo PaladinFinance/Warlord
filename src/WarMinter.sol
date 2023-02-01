@@ -45,7 +45,6 @@ contract WarMinter is Owner {
     war.mint(receiver, amount);
   }
 
-  //TODO check calldata
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
     // TODO should I check if array size is 1?
     if (vlTokens.length != amounts.length) revert DifferentSizeArrays(vlTokens.length, amounts.length);
