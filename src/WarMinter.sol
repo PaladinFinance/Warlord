@@ -49,6 +49,7 @@ contract WarMinter is Owner {
     locker.lock(amount);
 
     uint256 mintAmount = IMintRatio(mintRatio).computeMintAmount(vlToken, amount);
+    if (mintAmount == 0) revert Errors.ZeroMintAmount(); //TODO how to test this
     war.mint(receiver, mintAmount);
   }
 

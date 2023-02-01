@@ -47,7 +47,7 @@ contract SetLocker is WarMinterTest {
     vm.startPrank(alice);
     newToken.approve(address(minter), 1 ether);
     minter.mint(address(newToken), 1 ether);
-		assertEq(war.balanceOf(alice), 50 ether);
+    assertEq(war.balanceOf(alice), 50 ether);
     vm.stopPrank();
   }
 }
