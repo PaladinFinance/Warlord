@@ -19,8 +19,8 @@ contract WarMinter is Owner {
   function setLocker(address vlToken, address warLocker) public onlyOwner {
     if (vlToken == address(0)) revert ZeroAddress();
     if (warLocker == address(0)) revert ZeroAddress();
-    // TODO check gas consumption of this
-    if (WarLocker(warLocker).token() != vlToken) revert MismatchingLocker(WarLocker(warLocker).token(), vlToken);
+    address expectedToken = WarLocker(warLocker).token();
+    if (expectedToken != vlToken) revert MismatchingLocker(expectedToken, vlToken);
     _locker[vlToken] = warLocker;
   }
 
