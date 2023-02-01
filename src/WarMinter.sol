@@ -4,11 +4,13 @@ pragma solidity 0.8.16;
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
+import {IMintRatio} from "interfaces/IMintRatio.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
   WarToken public war;
+  IMintRatio mintRatio;
   mapping(address => address) _locker;
 
   constructor(address _war) {
@@ -16,7 +18,14 @@ contract WarMinter is Owner {
     war = WarToken(_war);
   }
 
+  function setMintRatio(address _mintRatio) public onlyOwner {
+    // TODO should this even exist
+    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
+    mintRatio = IMintRatio(_mintRatio);
+  }
+
   function setLocker(address vlToken, address warLocker) public onlyOwner {
+    // TODO should I check if warLocker is a contract ?
     if (vlToken == address(0)) revert Errors.ZeroAddress();
     if (warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
@@ -36,13 +45,11 @@ contract WarMinter is Owner {
     IWarLocker locker = IWarLocker(_locker[vlToken]);
 
     ERC20(vlToken).transferFrom(msg.sender, address(this), amount);
-    // aura.transferFrom(msg.sender, address(this), auraAmount);
-
     ERC20(vlToken).approve(address(locker), amount);
     locker.lock(amount);
 
-    // TODO how to compute amounts to mint
-    war.mint(receiver, amount);
+    uint256 mintAmount = IMintRatio(mintRatio).computeMintAmount(vlToken, amount);
+    war.mint(receiver, mintAmount);
   }
 
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {

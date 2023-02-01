@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 library Errors {
   // Argument validation
   error ZeroAddress();
-  error ZeroValue(); // TODO more specific errors ?
+  error ZeroValue();
   error DifferentSizeArrays(uint256 size1, uint256 size2);
 
   // Ownership
@@ -20,6 +20,9 @@ library Errors {
   error AlreadyListedDepositor();
   error NotListedDepositor();
   error AlreadySetFarmer();
+
+  // MintRatio
+  error ZeroMintAmount();
 
   // Maths
   error NumberExceed128Bits();

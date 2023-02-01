@@ -13,12 +13,12 @@ contract Mint is WarMinterTest {
     assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
     minter.mint(address(cvx), amount, bob);
-    assertEq(war.totalSupply(), amount);
+    assertEq(war.totalSupply(), amount * 15);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), amount);
+    assertEq(war.balanceOf(bob), amount * 15);
   }
 
-  function testMintWithImplicitReceiver(uint256 amount) public {
+  function testMintCvxWithImplicitReceiver(uint256 amount) public {
     vm.assume(amount <= cvx.balanceOf(alice));
     vm.assume(amount > 0);
     assertEq(war.totalSupply(), 0);
@@ -26,8 +26,8 @@ contract Mint is WarMinterTest {
     assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
     minter.mint(address(cvx), amount);
-    assertEq(war.totalSupply(), amount);
-    assertEq(war.balanceOf(alice), amount);
+    assertEq(war.totalSupply(), amount * 15);
+    assertEq(war.balanceOf(alice), amount * 15);
     assertEq(war.balanceOf(bob), 0);
   }
 

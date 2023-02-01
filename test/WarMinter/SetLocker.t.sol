@@ -41,11 +41,13 @@ contract SetLocker is WarMinterTest {
     ERC20 newToken = new MockERC20();
     deal(address(newToken), alice, 100 ether);
     IWarLocker newLocker = new vlMockLocker(address(newToken));
+    MockMintRatio(address(mintRatio)).setRatio(address(newToken), 50);
     vm.prank(admin);
     minter.setLocker(address(newToken), address(newLocker));
     vm.startPrank(alice);
     newToken.approve(address(minter), 1 ether);
     minter.mint(address(newToken), 1 ether);
+		assertEq(war.balanceOf(alice), 50 ether);
     vm.stopPrank();
   }
 }
