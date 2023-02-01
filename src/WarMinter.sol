@@ -5,7 +5,7 @@ import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {WarLocker} from "interfaces/WarLocker.sol";
 import {Owner} from "lib/Warden-Quest/contracts/utils/Owner.sol";
-import {ZeroAddress, DifferentSizeArrays, ZeroValue, NoWarLocker} from "./Errors.sol";
+import {ZeroAddress, DifferentSizeArrays, ZeroValue, NoWarLocker, MismatchingLocker} from "./Errors.sol";
 
 contract WarMinter is Owner {
   WarToken public war;
@@ -19,6 +19,8 @@ contract WarMinter is Owner {
   function setLocker(address vlToken, address warLocker) public onlyOwner {
     if (vlToken == address(0)) revert ZeroAddress();
     if (warLocker == address(0)) revert ZeroAddress();
+    // TODO check gas consumption of this
+    if (WarLocker(warLocker).token() != vlToken) revert MismatchingLocker(WarLocker(warLocker).token(), vlToken);
     _locker[vlToken] = warLocker;
   }
 
@@ -45,6 +47,7 @@ contract WarMinter is Owner {
 
   //TODO check calldata
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
+    // TODO should I check if array size is 1?
     if (vlTokens.length != amounts.length) revert DifferentSizeArrays(vlTokens.length, amounts.length);
     for (uint256 i = 0; i < vlTokens.length; ++i) {
       mint(vlTokens[i], amounts[i], receiver);

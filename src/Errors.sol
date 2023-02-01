@@ -12,3 +12,4 @@ error CallerNotPendingOwner();
 
 // WarLocker
 error NoWarLocker(); // _locker[token] == 0x0
+error MismatchingLocker(address expected, address actual);
