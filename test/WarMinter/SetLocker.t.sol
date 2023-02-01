@@ -48,8 +48,4 @@ contract SetLocker is WarMinterTest {
     minter.mint(address(newToken), 1 ether);
     vm.stopPrank();
   }
-
-  function testRemoveLocker() public {
-    //TODO
-  }
 }
