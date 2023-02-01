@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {Owner} from "lib/Warden-Quest/contracts/utils/Owner.sol";
+import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
@@ -12,13 +12,13 @@ contract WarMinter is Owner {
   mapping(address => address) _locker;
 
   constructor(address _war) {
-    if (_war == address(0)) revert ZeroAddress();
+    if (_war == address(0)) revert Errors.ZeroAddress();
     war = WarToken(_war);
   }
 
   function setLocker(address vlToken, address warLocker) public onlyOwner {
-    if (vlToken == address(0)) revert ZeroAddress();
-    if (warLocker == address(0)) revert ZeroAddress();
+    if (vlToken == address(0)) revert Errors.ZeroAddress();
+    if (warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != vlToken) revert Errors.MismatchingLocker(expectedToken, vlToken);
     _locker[vlToken] = warLocker;
