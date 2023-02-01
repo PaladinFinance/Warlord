@@ -38,8 +38,16 @@ contract Mint is WarMinterTest {
     minter.mint(address(cvx), amount, address(0));
   }
 
+  function testCantMintWithZeroLocker(uint256 amount) public {
+    vm.assume(amount > 0);
+    vm.prank(alice);
+    vm.expectRevert(ZeroAddress.selector);
+    minter.mint(address(0), amount);
+  }
+
   function testCantMintWithoutLocker(address vlToken) public {
-    vm.assume(vlToken != address(crv));
+    vm.assume(vlToken != address(0));
+    vm.assume(vlToken != address(cvx));
     vm.assume(vlToken != address(aura));
     vm.prank(alice);
     vm.expectRevert(NoWarLocker.selector);

@@ -30,6 +30,7 @@ contract WarMinter is Owner {
 
   function mint(address vlToken, uint256 amount, address receiver) public {
     if (amount == 0) revert ZeroValue();
+    if (vlToken == address(0)) revert ZeroAddress();
     if (receiver == address(0)) revert ZeroAddress();
     if (_locker[vlToken] == address(0)) revert NoWarLocker();
 
