@@ -7,6 +7,7 @@ import "openzeppelin/token/ERC20/IERC20.sol";
 import "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin/security/Pausable.sol";
 import "openzeppelin/security/ReentrancyGuard.sol";
+import {Errors} from "utils/Errors.sol";
 
 /** @title Warlord Staking contract
  *  @author xx
@@ -119,25 +120,13 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
 
-    // Errors
-
-    error AddressZero();
-    error NullAmount();
-    error CallerNotAllowed();
-    error NumberExceed128Bits();
-    error AlreadyListedDepositor();
-    error NotListedDepositor();
-    error AlreadySetFarmer();
-
-
     // Modifers
 
     /** @notice Check that the caller is allowed to deposit rewards */
     modifier onlyRewardDepositors() {
-        if(!rewardDepositors[msg.sender]) revert CallerNotAllowed();
+        if(!rewardDepositors[msg.sender]) revert Errors.CallerNotAllowed();
         _;
     }
-
 
 
     // Constructor
@@ -145,7 +134,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     constructor(
         address _warToken
     ) {
-        if(_warToken == address(0)) revert AddressZero();
+        if(_warToken == address(0)) revert Errors.ZeroAddress();
 
         warToken = _warToken;
     }
@@ -226,8 +215,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @return uint256 : scaled amount for the deposit 
     */
     function stake(uint256 amount, address receiver) external nonReentrant whenNotPaused returns(uint256) {
-        if(amount == 0) revert NullAmount();
-        if(receiver == address(0)) revert AddressZero();
+        if(amount == 0) revert Errors.ZeroValue();
+        if(receiver == address(0)) revert Errors.ZeroAddress();
 
         // We just want to update the reward states for the user who's balance gonna change
         _updateAllUserRewardStates(receiver);
@@ -255,8 +244,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @return uint256 : amount unstaked
     */
     function unstake(uint256 amount, address receiver) external nonReentrant returns(uint256) {
-        if(amount == 0) revert NullAmount();
-        if(receiver == address(0)) revert AddressZero();
+        if(amount == 0) revert Errors.ZeroValue();
+        if(receiver == address(0)) revert Errors.ZeroAddress();
 
         // We just want to update the reward states for the user who's balance gonna change
         _updateAllUserRewardStates(msg.sender);
@@ -283,7 +272,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @return uint256 : Amount of rewards claimed
     */
     function claimRewards(address reward, address receiver) external nonReentrant whenNotPaused returns(uint256) {
-        if(receiver == address(0)) revert AddressZero();
+        if(receiver == address(0)) revert Errors.ZeroAddress();
 
         return _claimRewards(reward, msg.sender, receiver);
     }
@@ -294,7 +283,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @return UserClaimedRewards[] : Amounts of reward claimed
     */
     function claimAllRewards(address receiver) external nonReentrant whenNotPaused returns(UserClaimedRewards[] memory) {
-        if(receiver == address(0)) revert AddressZero();
+        if(receiver == address(0)) revert Errors.ZeroAddress();
 
         return _claimAllRewards(msg.sender, receiver);
     }
@@ -304,7 +293,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @param reward Address of the reward token
     */
     function updateRewardState(address reward) external whenNotPaused {
-        if(reward == address(0)) revert AddressZero();
+        if(reward == address(0)) revert Errors.ZeroAddress();
         _updateRewardState(reward);
     }
 
@@ -332,8 +321,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
         onlyRewardDepositors
         returns(bool) 
     {
-        if(amount == 0) revert NullAmount();
-        if(rewardToken == address(0)) revert AddressZero();
+        if(amount == 0) revert Errors.ZeroValue();
+        if(rewardToken == address(0)) revert Errors.ZeroAddress();
 
         RewardState storage state = rewardStates[rewardToken];
 
@@ -614,8 +603,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @param depositor Address to deposit rewards
     */
     function addRewardDepositor(address depositor) external onlyOwner {
-        if(depositor == address(0)) revert AddressZero();
-        if(rewardDepositors[depositor]) revert AlreadyListedDepositor();
+        if(depositor == address(0)) revert Errors.ZeroAddress();
+        if(rewardDepositors[depositor]) revert Errors.AlreadyListedDepositor();
 
         rewardDepositors[depositor] = true;
 
@@ -627,8 +616,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @param depositor Address to deposit rewards
     */
     function removeRewardDepositor(address depositor) external onlyOwner {
-        if(depositor == address(0)) revert AddressZero();
-        if(!rewardDepositors[depositor]) revert NotListedDepositor();
+        if(depositor == address(0)) revert Errors.ZeroAddress();
+        if(!rewardDepositors[depositor]) revert Errors.NotListedDepositor();
 
         rewardDepositors[depositor] = false;
 
@@ -641,8 +630,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     * @param farmer Address of the Farmer contract
     */
     function setRewardFarmer(address rewardToken, address farmer) external onlyOwner {
-        if(rewardToken == address(0) || farmer == address(0)) revert AddressZero();
-        if(rewardFarmers[rewardToken] != address(0)) revert AlreadySetFarmer();
+        if(rewardToken == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
+        if(rewardFarmers[rewardToken] != address(0)) revert Errors.AlreadySetFarmer();
 
         rewardFarmers[rewardToken] = farmer;
 
@@ -653,7 +642,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     // Maths
 
     function safe128(uint256 n) internal pure returns (uint128) {
-        if(n > type(uint128).max) revert NumberExceed128Bits();
+        if(n > type(uint128).max) revert Errors.NumberExceed128Bits();
         return uint128(n);
     }
 

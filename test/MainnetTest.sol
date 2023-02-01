@@ -21,7 +21,6 @@ contract MainnetTest is BaseTest {
   ERC20 cvxCrv = ERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
 
   // Aura
-  // TODO check bal depositor because wrapper might hide a different implementation
   CrvDepositorWrapper auraDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
   ERC20 immutable aura = ERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   AuraLocker immutable vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);

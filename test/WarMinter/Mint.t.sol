@@ -4,47 +4,59 @@ pragma solidity 0.8.16;
 import "./WarMinterTest.sol";
 
 contract Mint is WarMinterTest {
-  function testMint(uint256 cvxAmount, uint256 auraAmount) public {
+  function testMintCvx(uint256 amount) public {
     // TODO is test also required with higher balances ?
-    /* vm.assume(cvxAmount <= cvx.balanceOf(alice));
-    vm.assume(auraAmount <= aura.balanceOf(alice));
-    vm.assume(cvxAmount + auraAmount > 0);
+    vm.assume(amount <= cvx.balanceOf(alice));
+    vm.assume(amount > 0);
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
-    minter.mint(cvxAmount, auraAmount, bob);
-    assertEq(war.totalSupply(), cvxAmount + auraAmount);
+    minter.mint(address(cvx), amount, bob);
+    assertEq(war.totalSupply(), amount);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), cvxAmount + auraAmount); */
+    assertEq(war.balanceOf(bob), amount);
   }
 
-  function testMintWithImplicitReceiver(uint256 cvxAmount, uint256 auraAmount) public {
-    /* vm.assume(cvxAmount <= cvx.balanceOf(alice));
-    vm.assume(auraAmount <= aura.balanceOf(alice));
-    vm.assume(cvxAmount + auraAmount > 0);
-
+  function testMintWithImplicitReceiver(uint256 amount) public {
+    vm.assume(amount <= cvx.balanceOf(alice));
+    vm.assume(amount > 0);
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
-
+    assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
-    minter.mint(cvxAmount, auraAmount);
-
-    assertEq(war.totalSupply(), cvxAmount + auraAmount);
-    assertEq(war.balanceOf(alice), cvxAmount + auraAmount);
-    assertEq(cvx.balanceOf(alice), 100 ether - cvxAmount);
-    assertEq(aura.balanceOf(alice), 100 ether - auraAmount); */
+    minter.mint(address(cvx), amount);
+    assertEq(war.totalSupply(), amount);
+    assertEq(war.balanceOf(alice), amount);
+    assertEq(war.balanceOf(bob), 0);
   }
 
-  function testCantMintToZeroAddress() public {
-    /* vm.prank(alice);
-    vm.expectRevert("zero address"); // TODO use proper errors
-    minter.mint(1 ether, 1 ether, address(0)); */
+  function testCantMintToZeroAddress(uint256 amount) public {
+    vm.assume(amount > 0);
+    vm.prank(alice);
+    vm.expectRevert(ZeroAddress.selector);
+    minter.mint(address(cvx), amount, address(0));
   }
 
-  function testTotalAmountMustBeGreaterThanZero() public {
-    /* vm.prank(alice);
-    vm.expectRevert("not sending any token"); // TODO use proper errors
-    minter.mint(0, 0, bob); */
+  function testCantMintWithZeroLocker(uint256 amount) public {
+    vm.assume(amount > 0);
+    vm.prank(alice);
+    vm.expectRevert(ZeroAddress.selector);
+    minter.mint(address(0), amount);
+  }
+
+  function testCantMintWithoutLocker(address vlToken) public {
+    vm.assume(vlToken != address(0));
+    vm.assume(vlToken != address(cvx));
+    vm.assume(vlToken != address(aura));
+    vm.prank(alice);
+    vm.expectRevert(NoWarLocker.selector);
+    minter.mint(vlToken, 1 ether);
+  }
+
+  function testMintAmountMustBeGreaterThanZero() public {
+    vm.prank(alice);
+    vm.expectRevert(ZeroValue.selector);
+    minter.mint(address(aura), 0);
   }
 }

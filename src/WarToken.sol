@@ -3,13 +3,10 @@ pragma solidity 0.8.16;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {AccessControl} from "openzeppelin/access/AccessControl.sol";
+import {Errors} from "utils/Errors.sol";
 
 contract WarToken is ERC20, AccessControl {
   event NewPendingOwner(address indexed previousPendingOwner, address indexed newPendingOwner);
-
-  error CannotBeOwner();
-  error CallerNotPendingOwner();
-  error ZeroAddress();
 
   address public pendingOwner;
   address public owner;
@@ -23,8 +20,8 @@ contract WarToken is ERC20, AccessControl {
   }
 
   function transferOwnership(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    if (newOwner == address(0)) revert ZeroAddress();
-    if (newOwner == owner) revert CannotBeOwner();
+    if (newOwner == address(0)) revert Errors.ZeroAddress();
+    if (newOwner == owner) revert Errors.CannotBeOwner();
 
     address oldPendingOwner = pendingOwner;
 
@@ -34,7 +31,7 @@ contract WarToken is ERC20, AccessControl {
   }
 
   function acceptOwnership() public {
-    if (msg.sender != pendingOwner) revert CallerNotPendingOwner();
+    if (msg.sender != pendingOwner) revert Errors.CallerNotPendingOwner();
     address newOwner = pendingOwner;
 
     _revokeRole(DEFAULT_ADMIN_ROLE, owner);

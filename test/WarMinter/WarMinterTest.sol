@@ -26,8 +26,11 @@ contract WarMinterTest is MainnetTest {
     vm.prank(admin);
     minter.acceptOwnership();
 
-    vm.prank(admin);
+    vm.startPrank(admin);
     war.grantRole(keccak256("MINTER_ROLE"), address(minter));
+    minter.setLocker(address(cvx), address(cvxLocker));
+    minter.setLocker(address(aura), address(auraLocker));
+    vm.stopPrank();
 
     deal(address(cvx), alice, 100 ether);
     deal(address(aura), alice, 100 ether);
