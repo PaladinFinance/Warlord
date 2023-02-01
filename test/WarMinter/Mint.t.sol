@@ -5,7 +5,6 @@ import "./WarMinterTest.sol";
 
 contract Mint is WarMinterTest {
   function testMintCvx(uint256 amount) public {
-    // TODO is test also required with higher balances ?
     vm.assume(amount <= cvx.balanceOf(alice));
     vm.assume(amount > 0);
     assertEq(war.totalSupply(), 0);
@@ -58,5 +57,12 @@ contract Mint is WarMinterTest {
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroValue.selector);
     minter.mint(address(aura), 0);
+  }
+
+  function testMintRevertsWithZeroMintAmount() public {
+    MockMintRatio(address(mintRatio)).setRatio(address(cvx), 0);
+    vm.prank(alice);
+    vm.expectRevert(Errors.ZeroMintAmount.selector);
+    minter.mint(address(cvx), 1 ether);
   }
 }

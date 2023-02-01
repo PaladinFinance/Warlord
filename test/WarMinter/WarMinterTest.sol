@@ -21,17 +21,14 @@ contract WarMinterTest is MainnetTest {
     fork();
 
     war = new WarToken(admin);
-    auraLocker = new vlMockLocker(address(aura)); // TODO repalce with non mock implementation in due time
-    cvxLocker = new vlMockLocker(address(cvx)); // TODO repalce with non mock implementation in due time
-    minter = new WarMinter(address(war));
+    auraLocker = new vlMockLocker(address(aura));
+    cvxLocker = new vlMockLocker(address(cvx));
+    mintRatio = new MockMintRatio();
+    MockMintRatio(address(mintRatio)).init();
+    minter = new WarMinter(address(war), address(mintRatio));
     minter.transferOwnership(admin);
     vm.prank(admin);
     minter.acceptOwnership();
-
-    mintRatio = new MockMintRatio(); // TODO repalce with non mock implementation in due time
-    MockMintRatio(address(mintRatio)).init();
-    vm.prank(admin);
-    minter.setMintRatio(address(mintRatio));
 
     vm.startPrank(admin);
     war.grantRole(keccak256("MINTER_ROLE"), address(minter));

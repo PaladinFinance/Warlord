@@ -13,19 +13,19 @@ contract WarMinter is Owner {
   IMintRatio mintRatio;
   mapping(address => address) _locker;
 
-  constructor(address _war) {
+  constructor(address _war, address _mintRatio) {
     if (_war == address(0)) revert Errors.ZeroAddress();
+    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
     war = WarToken(_war);
+    mintRatio = IMintRatio(_mintRatio);
   }
 
   function setMintRatio(address _mintRatio) public onlyOwner {
-    // TODO should this even exist
     if (_mintRatio == address(0)) revert Errors.ZeroAddress();
     mintRatio = IMintRatio(_mintRatio);
   }
 
   function setLocker(address vlToken, address warLocker) public onlyOwner {
-    // TODO should I check if warLocker is a contract ?
     if (vlToken == address(0)) revert Errors.ZeroAddress();
     if (warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
@@ -49,13 +49,13 @@ contract WarMinter is Owner {
     locker.lock(amount);
 
     uint256 mintAmount = IMintRatio(mintRatio).computeMintAmount(vlToken, amount);
-    if (mintAmount == 0) revert Errors.ZeroMintAmount(); //TODO how to test this
+    if (mintAmount == 0) revert Errors.ZeroMintAmount();
     war.mint(receiver, mintAmount);
   }
 
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
-    // TODO should I check if array size is 1? => yes
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
+    if (vlTokens.length == 0) revert Errors.EmptyArray();
     for (uint256 i = 0; i < vlTokens.length; ++i) {
       mint(vlTokens[i], amounts[i], receiver);
     }
