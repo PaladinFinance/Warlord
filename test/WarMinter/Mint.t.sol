@@ -31,15 +31,24 @@ contract Mint is WarMinterTest {
     assertEq(war.balanceOf(bob), 0);
   }
 
-  function testCantMintToZeroAddress() public {
-    /* vm.prank(alice);
-    vm.expectRevert("zero address"); // TODO use proper errors
-    minter.mint(1 ether, 1 ether, address(0)); */
+  function testCantMintToZeroAddress(uint256 amount) public {
+		vm.assume(amount > 0);
+    vm.prank(alice);
+    vm.expectRevert(ZeroAddress.selector);
+    minter.mint(address(cvx), amount, address(0));
   }
 
-  function testTotalAmountMustBeGreaterThanZero() public {
-    /* vm.prank(alice);
-    vm.expectRevert("not sending any token"); // TODO use proper errors
-    minter.mint(0, 0, bob); */
+	function testCantMintWithoutLocker(address vlToken) public {
+		vm.assume(vlToken != address(crv));
+		vm.assume(vlToken != address(aura));
+		vm.prank(alice);
+    vm.expectRevert(NoWarLocker.selector);
+    minter.mint(vlToken, 1 ether);
+	}
+
+  function testMintAmountMustBeGreaterThanZero() public {
+    vm.prank(alice);
+    vm.expectRevert(ZeroValue.selector);
+    minter.mint(address(aura), 0);
   }
 }
