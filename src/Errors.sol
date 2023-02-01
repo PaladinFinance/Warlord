@@ -8,8 +8,7 @@ error DifferentSizeArrays(uint256 size1, uint256 size2);
 
 // Ownership
 error CannotBeOwner();
-error CallerNotPendingOwner(); 
+error CallerNotPendingOwner();
 
 // WarLocker
 error NoWarLocker(); // _locker[token] == 0x0
-
