@@ -9,3 +9,7 @@ contract BaseTest is Test {
   address alice = makeAddr("alice");
   address bob = makeAddr("bob");
 }
+
+contract MockERC20 is ERC20 {
+  constructor() ERC20("MockToken", "MCK", 18) {}
+}
