@@ -34,13 +34,13 @@ contract TransferOwnership is WarTokenTest {
 
   function testZeroAddressFails() public {
     vm.prank(admin);
-    vm.expectRevert(ZeroAddress.selector);
+    vm.expectRevert(Errors.ZeroAddress.selector);
     war.transferOwnership(address(0));
   }
 
   function testOwnerAddressFails() public {
     vm.prank(admin);
-    vm.expectRevert(CannotBeOwner.selector);
+    vm.expectRevert(Errors.CannotBeOwner.selector);
     war.transferOwnership(admin);
   }
 }

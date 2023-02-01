@@ -11,8 +11,8 @@ import {Errors} from "utils/Errors.sol";
 
 /**
  * @title Warlord Staking contract
- *  @author xx
- *  @notice Staking system for Warlord to distribute yield & rewards
+ * @author xx
+ * @notice Staking system for Warlord to distribute yield & rewards
  */
 contract WarStaker is ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;

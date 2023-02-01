@@ -4,14 +4,14 @@ pragma solidity 0.8.16;
 import "../../src/WarToken.sol";
 import "../../src/WarMinter.sol";
 import "../MainnetTest.sol";
-import {WarLocker} from "interfaces/WarLocker.sol";
+import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {vlMockLocker} from "../../src/vlMockLocker.sol";
 
 contract WarMinterTest is MainnetTest {
   WarToken war;
   WarMinter minter;
-  WarLocker auraLocker;
-  WarLocker cvxLocker;
+  IWarLocker auraLocker;
+  IWarLocker cvxLocker;
   address admin = makeAddr("admin");
 
   function setUp() public override {

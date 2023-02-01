@@ -26,7 +26,7 @@ contract MintMultiple is WarMinterTest {
   function testCantMintWithDifferentLengths(address[] calldata lockers, uint256[] calldata amounts) public {
     vm.assume(lockers.length != amounts.length);
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(DifferentSizeArrays.selector, lockers.length, amounts.length));
+    vm.expectRevert(abi.encodeWithSelector(Errors.DifferentSizeArrays.selector, lockers.length, amounts.length));
     minter.mintMultiple(lockers, amounts, bob);
   }
 

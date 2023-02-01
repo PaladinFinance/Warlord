@@ -5,7 +5,7 @@ import "./WarMinterTest.sol";
 
 contract Constructor is WarMinterTest {
   function testCantConstructWithZeroAddress() public {
-    vm.expectRevert(ZeroAddress.selector);
+    vm.expectRevert(Errors.ZeroAddress.selector);
     new WarMinter(address(0));
   }
 }
