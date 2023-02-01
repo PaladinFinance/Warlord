@@ -43,14 +43,14 @@ contract WarMinter is Owner {
   }
 
   //TODO check calldata
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public onlyOwner {
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
     if (vlTokens.length != amounts.length) revert DifferentSizeArrays(vlTokens.length, amounts.length);
     for (uint256 i = 0; i < vlTokens.length; ++i) {
       mint(vlTokens[i], amounts[i], receiver);
     }
   }
 
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) public onlyOwner {
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) public {
     mintMultiple(vlTokens, amounts, msg.sender);
   }
 }
