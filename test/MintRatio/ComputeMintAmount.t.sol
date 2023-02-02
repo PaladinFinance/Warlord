@@ -5,8 +5,7 @@ import "./MintRatioTest.sol";
 
 contract ComputeMintAmount is MintRatioTest {
   function testMintAmount() public {
-    // TODO figure out maths
-    // console.log(cvx.totalSupply());
-    // console.log(mintRatio.computeMintAmount(address(cvx), 500000000 ether));
+    mintRatio.computeMintAmount(address(cvx), 100_000_000);
+    mintRatio.computeMintAmount(address(cvx), 100_000_000);
   }
 }

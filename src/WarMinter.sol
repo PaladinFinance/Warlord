@@ -33,6 +33,7 @@ contract WarMinter is Owner {
     _locker[vlToken] = warLocker;
   }
 
+  // TODO handle reentrancy
   function mint(address vlToken, uint256 amount) public {
     mint(vlToken, amount, msg.sender);
   }
@@ -57,7 +58,7 @@ contract WarMinter is Owner {
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
     if (vlTokens.length == 0) revert Errors.EmptyArray();
     for (uint256 i = 0; i < vlTokens.length; ++i) {
-      // TODO should ++i be unchecked ?
+      //TODO gas optimizations
       mint(vlTokens[i], amounts[i], receiver);
     }
   }

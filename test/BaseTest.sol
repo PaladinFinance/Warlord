@@ -6,8 +6,10 @@ import {Errors} from "../src/utils/Errors.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 
 contract BaseTest is Test {
+  // Useful addresses
   address alice = makeAddr("alice");
   address bob = makeAddr("bob");
+  address admin = makeAddr("admin");
   address zero = address(0);
 }
 

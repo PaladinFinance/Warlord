@@ -24,6 +24,7 @@ library Errors {
 
   // MintRatio
   error ZeroMintAmount();
+  error SupplyAlreadySet();
 
   // Maths
   error NumberExceed128Bits();

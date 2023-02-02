@@ -11,6 +11,9 @@ contract MintRatioTest is MainnetTest {
     MainnetTest.setUp();
     fork();
 
+    vm.startPrank(admin);
     mintRatio = new MintRatio();
+    mintRatio.addTokenWithSupply(address(cvx), 100_000_000 ether);
+    // TODO add aura
   }
 }

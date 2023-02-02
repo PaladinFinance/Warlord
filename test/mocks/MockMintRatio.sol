@@ -9,6 +9,10 @@ import "../MainnetTest.sol";
 contract MockMintRatio is IMintRatio, MainnetTest {
   mapping(address => uint256) _ratios;
 
+  function addTokenWithSupply(address token, uint256 maxSupply) public {
+    // Not needed for mocking purposes
+  }
+
   function init() public {
     setRatio(address(cvx), 15);
     setRatio(address(aura), 22);

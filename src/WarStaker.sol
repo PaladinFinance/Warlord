@@ -1,8 +1,9 @@
 pragma solidity 0.8.16;
 //SPDX-License-Identifier: MIT
 
+// TODO convert global imports to single import
 import "interfaces/IFarmer.sol";
-import "utils/Owner.sol";
+import {Owner} from "utils/Owner.sol";
 import "openzeppelin/token/ERC20/IERC20.sol";
 import "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin/security/Pausable.sol";
@@ -201,7 +202,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
    * @return uint256 : amount of rewards accured
    */
   function getUserAccruedRewards(address reward, address user) external view returns (uint256) {
-    return rewardStates[reward].userStates[user].accruedRewards + _getUserEarnedRewards(reward, user, _getNewRewardPerToken(reward));
+    return rewardStates[reward].userStates[user].accruedRewards
+      + _getUserEarnedRewards(reward, user, _getNewRewardPerToken(reward));
   }
 
   /**
@@ -219,8 +221,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
       // Add the reward token to the list
       rewardAmounts[i].reward = rewards[i];
       // And add the calculated claimable amount of the given reward
-      rewardAmounts[i].claimableAmount =
-        rewardStates[rewards[i]].userStates[user].accruedRewards + _getUserEarnedRewards(rewards[i], user, _getNewRewardPerToken(rewards[i]));
+      rewardAmounts[i].claimableAmount = rewardStates[rewards[i]].userStates[user].accruedRewards
+        + _getUserEarnedRewards(rewards[i], user, _getNewRewardPerToken(rewards[i]));
 
       unchecked {
         ++i;
@@ -446,7 +448,11 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
    * @param user Address of the user
    * @return uint256 : Accrued rewards amount for the user
    */
-  function _getUserEarnedRewards(address reward, address user, uint256 currentRewardPerToken) internal view returns (uint256) {
+  function _getUserEarnedRewards(address reward, address user, uint256 currentRewardPerToken)
+    internal
+    view
+    returns (uint256)
+  {
     UserRewardState storage userState = rewardStates[reward].userStates[user];
 
     // Get the user scaled balance

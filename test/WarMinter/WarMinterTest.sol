@@ -14,7 +14,6 @@ contract WarMinterTest is MainnetTest {
   IWarLocker auraLocker;
   IWarLocker cvxLocker;
   IMintRatio mintRatio;
-  address admin = makeAddr("admin");
 
   function setUp() public override {
     MainnetTest.setUp();

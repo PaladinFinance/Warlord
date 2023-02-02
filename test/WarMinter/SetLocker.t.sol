@@ -31,6 +31,7 @@ contract SetLocker is WarMinterTest {
 
   function testCantSetMismatchingLocker(address notToken) public {
     vm.assume(notToken != zero);
+    // TODO check with 0xa0Cb889707d426A7A386870A03bc70d1b0697598
     IWarLocker newLocker = new vlMockLocker(address(new MockERC20()));
     vm.expectRevert(abi.encodeWithSelector(Errors.MismatchingLocker.selector, newLocker.token(), notToken));
     vm.prank(admin);

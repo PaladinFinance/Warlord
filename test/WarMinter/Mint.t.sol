@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarMinterTest.sol";
 
 contract Mint is WarMinterTest {
-	// TODO test for emits
+  // TODO test for emits
   function testMintCvx(uint256 amount) public {
     vm.assume(amount <= cvx.balanceOf(alice));
     vm.assume(amount > 0);

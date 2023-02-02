@@ -5,9 +5,11 @@ import "./WarStakerTest.sol";
 
 contract Stake is WarStakerTest {
   function testNormalBehavior(uint256 amount) public {
-    // TODO init in the ts tests guess it was removed
     // TODO more assertions
-		// TODO missing getters that would make tests more accurate? like userCurrentStakedAmount
+    // TODO missing getters that would make tests more accurate? like userCurrentStakedAmount
+    // TODO test stake with a different reciever than the caller
+    // TODO replace ether with e18
+    // TODO safeERC20 everywhere
     vm.assume(amount > 0 && amount < war.balanceOf(alice));
     vm.startPrank(alice);
 

@@ -16,12 +16,10 @@ contract WarStakerTest is MainnetTest {
   event RemovedRewardDepositor(address indexed depositor);
   event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
-  address admin = makeAddr("admin");
-
   WarStaker staker;
   WarToken war;
 
-  function setUp() public override {
+  function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
 
