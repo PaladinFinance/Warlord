@@ -5,13 +5,15 @@ import "../../src/WarToken.sol";
 import "../../src/WarMinter.sol";
 import "../MainnetTest.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {vlMockLocker} from "../../src/vlMockLocker.sol";
+import {vlMockLocker} from "mocks/vlMockLocker.sol";
+import {MockMintRatio} from "mocks/MockMintRatio.sol";
 
 contract WarMinterTest is MainnetTest {
   WarToken war;
   WarMinter minter;
   IWarLocker auraLocker;
   IWarLocker cvxLocker;
+  IMintRatio mintRatio;
   address admin = makeAddr("admin");
 
   function setUp() public override {
@@ -21,7 +23,9 @@ contract WarMinterTest is MainnetTest {
     war = new WarToken(admin);
     auraLocker = new vlMockLocker(address(aura));
     cvxLocker = new vlMockLocker(address(cvx));
-    minter = new WarMinter(address(war));
+    mintRatio = new MockMintRatio();
+    MockMintRatio(address(mintRatio)).init();
+    minter = new WarMinter(address(war), address(mintRatio));
     minter.transferOwnership(admin);
     vm.prank(admin);
     minter.acceptOwnership();

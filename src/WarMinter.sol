@@ -4,16 +4,25 @@ pragma solidity 0.8.16;
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
+import {IMintRatio} from "interfaces/IMintRatio.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
   WarToken public war;
+  IMintRatio mintRatio;
   mapping(address => address) _locker;
 
-  constructor(address _war) {
+  constructor(address _war, address _mintRatio) {
     if (_war == address(0)) revert Errors.ZeroAddress();
+    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
     war = WarToken(_war);
+    mintRatio = IMintRatio(_mintRatio);
+  }
+
+  function setMintRatio(address _mintRatio) public onlyOwner {
+    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
+    mintRatio = IMintRatio(_mintRatio);
   }
 
   function setLocker(address vlToken, address warLocker) public onlyOwner {
@@ -36,19 +45,19 @@ contract WarMinter is Owner {
     IWarLocker locker = IWarLocker(_locker[vlToken]);
 
     ERC20(vlToken).transferFrom(msg.sender, address(this), amount);
-    // aura.transferFrom(msg.sender, address(this), auraAmount);
-
     ERC20(vlToken).approve(address(locker), amount);
     locker.lock(amount);
 
-    // TODO how to compute amounts to mint
-    war.mint(receiver, amount);
+    uint256 mintAmount = IMintRatio(mintRatio).computeMintAmount(vlToken, amount);
+    if (mintAmount == 0) revert Errors.ZeroMintAmount();
+    war.mint(receiver, mintAmount);
   }
 
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
-    // TODO should I check if array size is 1? => yes
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
+    if (vlTokens.length == 0) revert Errors.EmptyArray();
     for (uint256 i = 0; i < vlTokens.length; ++i) {
+      // TODO should ++i be unchecked ?
       mint(vlTokens[i], amounts[i], receiver);
     }
   }

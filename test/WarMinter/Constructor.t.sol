@@ -4,8 +4,17 @@ pragma solidity 0.8.16;
 import "./WarMinterTest.sol";
 
 contract Constructor is WarMinterTest {
-  function testCantConstructWithZeroAddress() public {
+  function testConstructorWorks() public {
+    new WarMinter(address(1), address(2));
+  }
+
+  function testCantConstructWithZeroAddressWar() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(address(0));
+    new WarMinter(zero, address(2));
+  }
+
+  function testCantConstructWithZeroAddressRatio() public {
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    new WarMinter(address(1), zero);
   }
 }

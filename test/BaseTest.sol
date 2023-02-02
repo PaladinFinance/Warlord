@@ -8,6 +8,7 @@ import {ERC20} from "solmate/tokens/ERC20.sol";
 contract BaseTest is Test {
   address alice = makeAddr("alice");
   address bob = makeAddr("bob");
+  address zero = address(0);
 }
 
 contract MockERC20 is ERC20 {

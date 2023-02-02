@@ -4,3 +4,4 @@ solmate/=lib/solmate/src/
 openzeppelin/=lib/openzeppelin-contracts/contracts
 interfaces/=src/interfaces/
 utils/=src/utils/
+mocks/=test/mocks

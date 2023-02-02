@@ -159,7 +159,6 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
 
   constructor(address _warToken) {
     if (_warToken == address(0)) revert Errors.ZeroAddress();
-
     warToken = _warToken;
   }
 
@@ -451,7 +450,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     UserRewardState storage userState = rewardStates[reward].userStates[user];
 
     // Get the new rewardPerToken for the reward token, and the user scaled balance
-    uint256 currentRewardPerToken = _getNewRewardPerToken(reward);
+    uint256 currentRewardPerToken = rewardStates[reward].rewardPerToken;
     uint256 userStakedAmount = stakedAmounts[user];
 
     if (userStakedAmount == 0) return 0;
@@ -469,7 +468,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     RewardState storage state = rewardStates[reward];
 
     // Update the storage with the new reward state
-    state.rewardPerToken = rewardStates[reward].rewardPerToken;
+    state.rewardPerToken = _getNewRewardPerToken(reward);
     state.lastUpdate = safe128(lastRewardUpdateTimestamp(reward));
 
     if (rewardFarmers[reward] != address(0)) {
