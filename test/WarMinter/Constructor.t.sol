@@ -10,11 +10,11 @@ contract Constructor is WarMinterTest {
 
   function testCantConstructWithZeroAddressWar() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(address(0), address(2));
+    new WarMinter(zero, address(2));
   }
 
   function testCantConstructWithZeroAddressRatio() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(address(1), address(0));
+    new WarMinter(address(1), zero);
   }
 }

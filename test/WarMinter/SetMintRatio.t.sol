@@ -18,6 +18,6 @@ contract SetMintRatio is WarMinterTest {
   function testCantUseZeroAddress() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setMintRatio(address(0));
+    minter.setMintRatio(zero);
   }
 }

@@ -7,19 +7,19 @@ contract SetLocker is WarMinterTest {
   function testCantAddZeroAddressAsToken() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(address(0), address(cvxLocker));
+    minter.setLocker(zero, address(cvxLocker));
   }
 
   function testCantAddZeroAddressAsLocker() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(address(cvx), address(0));
+    minter.setLocker(address(cvx), zero);
   }
 
   function testCantAddZeroAddresses() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(address(0), address(0));
+    minter.setLocker(zero, zero);
   }
 
   function testOnlyAdminCanCall() public {
@@ -30,7 +30,7 @@ contract SetLocker is WarMinterTest {
   }
 
   function testCantSetMismatchingLocker(address notToken) public {
-    vm.assume(notToken != address(0));
+    vm.assume(notToken != zero);
     IWarLocker newLocker = new vlMockLocker(address(new MockERC20()));
     vm.expectRevert(abi.encodeWithSelector(Errors.MismatchingLocker.selector, newLocker.token(), notToken));
     vm.prank(admin);

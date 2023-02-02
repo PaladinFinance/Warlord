@@ -6,6 +6,8 @@ import "./WarTokenTest.sol";
 contract Constructor is WarTokenTest {
   function testDeployedWithCorrectOwners() public {
     assertEq(war.owner(), admin);
-    assertEq(war.pendingOwner(), address(0));
+    assertEq(war.pendingOwner(), zero);
   }
+
+  // TODO check non zero address
 }

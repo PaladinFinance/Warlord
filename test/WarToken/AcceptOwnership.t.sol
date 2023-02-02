@@ -15,10 +15,10 @@ contract AcceptOwnership is WarTokenTest {
     assertEq(war.pendingOwner(), alice);
     vm.prank(alice);
     vm.expectEmit(true, true, false, true);
-    emit NewPendingOwner(alice, address(0));
+    emit NewPendingOwner(alice, zero);
     war.acceptOwnership();
     assertEq(war.owner(), alice);
-    assertEq(war.pendingOwner(), address(0));
+    assertEq(war.pendingOwner(), zero);
   }
 
   function testOnlyPendingOwnerCanAccept() public {
