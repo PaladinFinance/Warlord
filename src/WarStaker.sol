@@ -469,7 +469,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     RewardState storage state = rewardStates[reward];
 
     // Update the storage with the new reward state
-    state.rewardPerToken = _getNewRewardPerToken(reward);
+    state.rewardPerToken = rewardStates[reward].rewardPerToken;
     state.lastUpdate = safe128(lastRewardUpdateTimestamp(reward));
 
     if (rewardFarmers[reward] != address(0)) {
