@@ -159,7 +159,6 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
 
   constructor(address _warToken) {
     if (_warToken == address(0)) revert Errors.ZeroAddress();
-
     warToken = _warToken;
   }
 

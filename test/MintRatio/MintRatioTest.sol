@@ -5,7 +5,7 @@ import "../MainnetTest.sol";
 import "../../src/MintRatio.sol";
 
 contract MintRatioTest is MainnetTest {
-  IMintRatio mintRatio = new MintRatio();
+  IMintRatio mintRatio;
 
   function setUp() public override {
     MainnetTest.setUp();
