@@ -22,7 +22,7 @@ contract MockMintRatio is IMintRatio, MainnetTest {
     _ratios[token] = ratio;
   }
 
-  function computeMintAmount(address token, uint256 amount) public view returns (uint256) {
+  function getMintAmount(address token, uint256 amount) public view returns (uint256) {
     uint256 mintRatio = _ratios[token];
     return amount * mintRatio;
   }

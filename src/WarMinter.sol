@@ -49,7 +49,7 @@ contract WarMinter is Owner {
     ERC20(vlToken).approve(address(locker), amount);
     locker.lock(amount);
 
-    uint256 mintAmount = IMintRatio(mintRatio).computeMintAmount(vlToken, amount);
+    uint256 mintAmount = IMintRatio(mintRatio).getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
     war.mint(receiver, mintAmount);
   }
