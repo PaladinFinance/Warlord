@@ -12,15 +12,18 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   CvxCrvStaker constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+
   address controller;
+  address warStaker;
 
   uint256 _index;
 
   using SafeERC20 for IERC20;
 
-  constructor(address _controller) {
-    if (controller == address(0)) revert Errors.ZeroAddress();
+  constructor(address _controller, address _warStaker) {
+    if (_controller == address(0) || _warStaker == address(0)) revert Errors.ZeroAddress();
     controller = _controller;
+    warStaker = _warStaker;
   }
 
   modifier onlyController() {
@@ -28,9 +31,19 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     _;
   }
 
+  modifier onlyWarStaker() {
+    if (warStaker != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
+    _;
+  }
+
   function setController(address _controller) external onlyOwner {
-    if (controller == address(0)) revert Errors.ZeroAddress();
+    if (_controller == address(0)) revert Errors.ZeroAddress();
     controller = _controller;
+  }
+
+  function setWarStaker(address _warStaker) external onlyOwner {
+    if (_warStaker == address(0)) revert Errors.ZeroAddress();
+    controller = _warStaker;
   }
 
   function _stakeCrv(uint256 amount) internal {
@@ -58,15 +71,15 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     return _index;
   }
 
-  function harvest() public {
+  function harvest() external {
     staker.getReward(address(this), controller);
   }
 
-  function setRewardWeight(uint256 weight) public onlyOwner {
+  function setRewardWeight(uint256 weight) external onlyOwner {
     staker.setRewardWeight(weight);
   }
 
-  function sendTokens(address receiver, uint256 amount) public {
+  function sendTokens(address receiver, uint256 amount) external onlyWarStaker {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
     _unstake(amount);
@@ -76,5 +89,11 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   function _unstake(uint256 amount) internal {
     if (staker.balanceOf(address(this)) > 0) revert Errors.ZeroValue(); //TODO more specific error
     staker.withdraw(amount);
+  }
+
+  function migrate(address receiver) external onlyOwner {
+    uint256 balance = staker.balanceOf(address(this));
+    staker.withdraw(balance);
+    cvxCrv.safeTransfer(receiver, balance);
   }
 }
