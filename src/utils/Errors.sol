@@ -26,8 +26,8 @@ library Errors {
   error ZeroMintAmount();
   error SupplyAlreadySet();
 
-	// IFarmer
-	error IncorrectToken();
+  // IFarmer
+  error IncorrectToken();
 
   // Maths
   error NumberExceed128Bits();
