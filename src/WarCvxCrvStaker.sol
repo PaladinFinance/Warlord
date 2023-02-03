@@ -74,8 +74,7 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   }
 
   function _unstake(uint256 amount) internal {
-    // TODO should I check that the balance is enough to be able to unstake?
-		// It should never happen in thoery but still...
+    if (staker.balanceOf(address(this)) > 0) revert Errors.ZeroValue(); //TODO more specific error
     staker.withdraw(amount);
   }
 }
