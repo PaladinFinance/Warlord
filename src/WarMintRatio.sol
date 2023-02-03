@@ -6,7 +6,7 @@ import {ERC20} from "solmate/tokens/ERC20.sol";
 import {Errors} from "utils/Errors.sol";
 import {Owner} from "utils/Owner.sol";
 
-contract MintRatio is IMintRatio, Owner {
+contract WarMintRatio is IMintRatio, Owner {
   uint256 private constant UNIT = 1e18;
   mapping(address => uint256) _maxSupply;
 

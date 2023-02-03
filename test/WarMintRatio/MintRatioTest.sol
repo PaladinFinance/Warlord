@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/MintRatio.sol";
+import "../../src/WarMintRatio.sol";
 
 contract MintRatioTest is MainnetTest {
   IMintRatio mintRatio;
@@ -13,7 +13,7 @@ contract MintRatioTest is MainnetTest {
     fork();
 
     vm.startPrank(admin);
-    mintRatio = new MintRatio();
+    mintRatio = new WarMintRatio();
     mintRatio.addTokenWithSupply(address(cvx), cvxMaxSupply);
     // TODO add aura
   }
