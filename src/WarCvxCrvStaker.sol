@@ -67,7 +67,7 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     if (source == address(cvxCrv)) _stakeCvxCrv(amount);
   }
 
-  function getCurrentIndex() public view returns (uint256) {
+  function getCurrentIndex() external view returns (uint256) {
     return _index;
   }
 
