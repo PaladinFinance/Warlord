@@ -2,8 +2,7 @@
 pragma solidity 0.8.16;
 
 import "./BaseTest.sol";
-import "interfaces/external/CrvDepositor.sol";
-import "interfaces/external/vlCVX.sol";
+import "interfaces/external/vlCvx.sol";
 import "interfaces/external/vlAura.sol";
 import "interfaces/external/AuraDepositor.sol";
 
@@ -15,7 +14,6 @@ contract MainnetTest is BaseTest {
   ERC20 immutable bal = ERC20(0xba100000625a3754423978a60c9317c58a424e3D);
 
   // Convex
-  CrvDepositor immutable crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
   ERC20 immutable cvx = ERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
   CvxLockerV2 immutable vlCvx = CvxLockerV2(0x72a19342e8F1838460eBFCCEf09F6585e32db86E);
   ERC20 cvxCrv = ERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
