@@ -19,7 +19,8 @@ contract WarMinterTest is MainnetTest {
     MainnetTest.setUp();
     fork();
 
-    war = new WarToken(admin);
+    vm.prank(admin);
+    war = new WarToken();
     auraLocker = new vlMockLocker(address(aura));
     cvxLocker = new vlMockLocker(address(cvx));
     mintRatio = new MockMintRatio();

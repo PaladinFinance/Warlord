@@ -23,9 +23,10 @@ contract WarStakerTest is MainnetTest {
     MainnetTest.setUp();
     fork();
 
-    war = new WarToken(admin);
-    vm.prank(admin);
+    vm.startPrank(admin);
+    war = new WarToken();
     staker = new WarStaker(address(war));
+    vm.stopPrank();
 
     deal(address(war), alice, 100 ether);
     vm.prank(alice);
