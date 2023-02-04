@@ -16,8 +16,8 @@ contract WarTokenTest is BaseTest {
   WarToken war;
 
   function setUp() public virtual {
-    war = new WarToken(admin);
     vm.startPrank(admin);
+    war = new WarToken();
     war.grantRole(MINTER_ROLE, minter);
     war.grantRole(BURNER_ROLE, burner);
     vm.stopPrank();
