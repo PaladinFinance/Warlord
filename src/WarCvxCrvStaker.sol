@@ -13,37 +13,45 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   CvxCrvStaker constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
 
-  address controller;
-  address warStaker;
+  address _controller;
+  address _warStaker;
 
   uint256 _index;
 
   using SafeERC20 for IERC20;
 
-  constructor(address _controller, address _warStaker) {
-    if (_controller == address(0) || _warStaker == address(0)) revert Errors.ZeroAddress();
-    controller = _controller;
-    warStaker = _warStaker;
+  constructor(address controller_, address warStaker_) {
+    if (controller_ == address(0) || warStaker_ == address(0)) revert Errors.ZeroAddress();
+    _controller = controller_;
+    _warStaker = warStaker_;
   }
 
   modifier onlyController() {
-    if (controller != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
+    if (_controller != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
     _;
   }
 
   modifier onlyWarStaker() {
-    if (warStaker != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
+    if (_warStaker != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
     _;
   }
 
-  function setController(address _controller) external onlyOwner {
-    if (_controller == address(0)) revert Errors.ZeroAddress();
-    controller = _controller;
+  function controller() public view returns (address) {
+    return _controller;
   }
 
-  function setWarStaker(address _warStaker) external onlyOwner {
-    if (_warStaker == address(0)) revert Errors.ZeroAddress();
-    controller = _warStaker;
+  function warStaker() public view returns (address) {
+    return _warStaker;
+  }
+
+  function setController(address controller_) external onlyOwner {
+    if (controller_ == address(0)) revert Errors.ZeroAddress();
+    _controller = controller_;
+  }
+
+  function setWarStaker(address warStaker_) external onlyOwner {
+    if (warStaker_ == address(0)) revert Errors.ZeroAddress();
+    _warStaker = warStaker_;
   }
 
   function _stakeCrv(uint256 amount) internal {
@@ -62,7 +70,7 @@ contract WarCvxCrvStaker is IFarmer, Owner {
 
     _index += amount;
 
-    IERC20(source).safeTransferFrom(controller, address(this), amount);
+    IERC20(source).safeTransferFrom(_controller, address(this), amount);
     if (source == address(crv)) _stakeCrv(amount);
     if (source == address(cvxCrv)) _stakeCvxCrv(amount);
   }
@@ -72,7 +80,7 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   }
 
   function harvest() external {
-    staker.getReward(address(this), controller);
+    staker.getReward(address(this), _controller);
   }
 
   function setRewardWeight(uint256 weight) external onlyOwner {

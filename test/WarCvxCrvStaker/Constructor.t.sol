@@ -10,12 +10,12 @@ contract Constructor is WarCvxCrvStakerTest {
 
   function testZeroControllerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarCvxCrvStaker(zero, address(42));
+    new WarCvxCrvStaker(zero, alice);
   }
 
   function testZeroWarStakerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarCvxCrvStaker(address(42), zero);
+    new WarCvxCrvStaker(bob, zero);
   }
 
   function testZeroAddresses() public {

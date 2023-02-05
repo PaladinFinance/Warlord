@@ -17,5 +17,6 @@ contract WarCvxCrvStakerTest is MainnetTest {
     war = new WarToken();
     warStaker = new WarStaker(address(war));
     cvxCrvStaker = new WarCvxCrvStaker(controller, address(warStaker));
+    vm.stopPrank();
   }
 }
