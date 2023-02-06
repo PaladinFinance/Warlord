@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import {ERC20} from "solmate/tokens/ERC20.sol";
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {WarToken} from "./WarToken.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {IMintRatio} from "interfaces/IMintRatio.sol";
@@ -12,6 +13,8 @@ contract WarMinter is Owner {
   WarToken public war;
   IMintRatio mintRatio;
   mapping(address => address) _locker;
+
+  using SafeERC20 for IERC20;
 
   constructor(address _war, address _mintRatio) {
     if (_war == address(0)) revert Errors.ZeroAddress();
@@ -45,8 +48,8 @@ contract WarMinter is Owner {
 
     IWarLocker locker = IWarLocker(_locker[vlToken]);
 
-    ERC20(vlToken).transferFrom(msg.sender, address(this), amount);
-    ERC20(vlToken).approve(address(locker), amount);
+    IERC20(vlToken).safeTransferFrom(msg.sender, address(this), amount);
+    IERC20(vlToken).safeApprove(address(locker), amount);
     locker.lock(amount);
 
     uint256 mintAmount = IMintRatio(mintRatio).getMintAmount(vlToken, amount);

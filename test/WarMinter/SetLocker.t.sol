@@ -39,7 +39,7 @@ contract SetLocker is WarMinterTest {
   }
 
   function testAddNewLocker() public {
-    ERC20 newToken = new MockERC20();
+    IERC20 newToken = IERC20(address(new MockERC20()));
     deal(address(newToken), alice, 100 ether);
     IWarLocker newLocker = new vlMockLocker(address(newToken));
     MockMintRatio(address(mintRatio)).setRatio(address(newToken), 50);

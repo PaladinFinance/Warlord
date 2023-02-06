@@ -2,13 +2,16 @@
 pragma solidity 0.8.16;
 
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {ERC20} from "solmate/tokens/ERC20.sol";
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 contract vlMockLocker is IWarLocker {
-  ERC20 _token;
+  IERC20 _token;
+
+  using SafeERC20 for IERC20;
 
   constructor(address _tokenAddress) {
-    _token = ERC20(_tokenAddress);
+    _token = IERC20(_tokenAddress);
   }
 
   function lock(uint256 amount) public {
