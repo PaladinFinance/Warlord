@@ -12,7 +12,7 @@ contract WarCvxCrvStakerTest is MainnetTest {
   WarStaker warStaker;
   WarCvxCrvStaker warCvxCrvStaker;
 
-  function setUp() public override {
+  function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
 

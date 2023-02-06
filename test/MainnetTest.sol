@@ -10,6 +10,7 @@ import {CvxCrvStaker} from "interfaces/external/CvxCrvStaker.sol";
 contract MainnetTest is BaseTest {
   // Curve
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
+  IERC20 threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
 
   // Balancer
   IERC20 constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
