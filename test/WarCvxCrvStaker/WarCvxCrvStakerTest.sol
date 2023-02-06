@@ -14,6 +14,7 @@ contract WarCvxCrvStakerTest is MainnetTest {
 
   function setUp() public override {
     fork();
+
     vm.startPrank(admin);
     war = new WarToken();
     warStaker = new WarStaker(address(war));
@@ -22,5 +23,10 @@ contract WarCvxCrvStakerTest is MainnetTest {
 
     deal(address(crv), controller, 100e18);
     deal(address(cvxCrv), controller, 100e18);
+
+    vm.startPrank(controller);
+    crv.approve(address(cvxCrvStaker), crv.balanceOf(controller));
+    cvxCrv.approve(address(cvxCrvStaker), crv.balanceOf(controller));
+    vm.stopPrank();
   }
 }
