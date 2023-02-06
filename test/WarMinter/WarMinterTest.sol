@@ -36,12 +36,12 @@ contract WarMinterTest is MainnetTest {
     minter.setLocker(address(aura), address(auraLocker));
     vm.stopPrank();
 
-    deal(address(cvx), alice, 100 ether);
-    deal(address(aura), alice, 100 ether);
+    deal(address(cvx), alice, 100e18);
+    deal(address(aura), alice, 100e18);
 
     vm.startPrank(alice);
-    cvx.approve(address(minter), 100 ether);
-    aura.approve(address(minter), 100 ether);
+    cvx.approve(address(minter), 100e18);
+    aura.approve(address(minter), 100e18);
     vm.stopPrank();
   }
 }

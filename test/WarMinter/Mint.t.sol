@@ -64,7 +64,7 @@ contract Mint is WarMinterTest {
     vm.assume(vlToken != address(aura));
     vm.prank(alice);
     vm.expectRevert(Errors.NoWarLocker.selector);
-    minter.mint(vlToken, 1 ether);
+    minter.mint(vlToken, 1e18);
   }
 
   function testMintAmountMustBeGreaterThanZero() public {
@@ -77,6 +77,6 @@ contract Mint is WarMinterTest {
     MockMintRatio(address(mintRatio)).setRatio(address(cvx), 0);
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroMintAmount.selector);
-    minter.mint(address(cvx), 1 ether);
+    minter.mint(address(cvx), 1e18);
   }
 }

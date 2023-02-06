@@ -28,8 +28,8 @@ contract WarStakerTest is MainnetTest {
     staker = new WarStaker(address(war));
     vm.stopPrank();
 
-    deal(address(war), alice, 100 ether);
+    deal(address(war), alice, 100e18);
     vm.prank(alice);
-    war.approve(address(staker), 100 ether);
+    war.approve(address(staker), 100e18);
   }
 }

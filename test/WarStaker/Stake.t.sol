@@ -8,13 +8,11 @@ contract Stake is WarStakerTest {
     // TODO more assertions
     // TODO missing getters that would make tests more accurate? like userCurrentStakedAmount
     // TODO test stake with a different reciever than the caller
-    // TODO replace ether with e18
-    // TODO safeERC20 everywhere
     vm.assume(amount > 0 && amount < war.balanceOf(alice));
     vm.startPrank(alice);
 
     // Checking initial balance
-    assertEq(war.balanceOf(alice), 100 ether);
+    assertEq(war.balanceOf(alice), 100e18);
     assertEq(war.balanceOf(address(staker)), 0);
 
     // Check emits
@@ -27,7 +25,7 @@ contract Stake is WarStakerTest {
     staker.stake(amount, alice);
 
     // Checking balance after staking
-    assertEq(war.balanceOf(alice), 100 ether - amount);
+    assertEq(war.balanceOf(alice), 100e18 - amount);
     assertEq(war.balanceOf(address(staker)), amount);
 
     vm.stopPrank();
@@ -35,7 +33,7 @@ contract Stake is WarStakerTest {
 
   function testDepositWholeBalance() public {
     vm.startPrank(alice);
-    assertEq(war.balanceOf(alice), 100 ether);
+    assertEq(war.balanceOf(alice), 100e18);
     war.approve(address(staker), type(uint256).max);
     staker.stake(type(uint256).max, alice);
     assertEq(war.balanceOf(alice), 0);
@@ -49,6 +47,6 @@ contract Stake is WarStakerTest {
 
   function testCantStakeWithZeroAddressReceiver() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    staker.stake(1 ether, zero);
+    staker.stake(1e18, zero);
   }
 }
