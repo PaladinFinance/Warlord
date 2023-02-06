@@ -6,10 +6,20 @@ import "./WarCvxCrvStakerTest.sol";
 contract Stake is WarCvxCrvStakerTest {
   function _stake(address source, uint256 amount) internal {
     vm.assume(amount > 0 && amount <= IERC20(source).balanceOf(controller));
+    // Initial staked amount is 0 in all groups
+    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
+
     vm.startPrank(controller);
-    cvxCrvStaker.stake(source, amount);
+    warCvxCrvStaker.stake(source, amount);
     vm.stopPrank();
-    // TODO check balances
+
+    // Balance gets updated to staked amount
+    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), amount);
+    // Balance is all in group 0
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), amount);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
   }
 
   function testDefaultBehaviorCrv(uint256 amount) public {
@@ -24,17 +34,15 @@ contract Stake is WarCvxCrvStakerTest {
     vm.assume(source != address(cvxCrv) && source != address(crv));
     vm.prank(controller);
     vm.expectRevert(Errors.IncorrectToken.selector);
-    cvxCrvStaker.stake(source, 500);
+    warCvxCrvStaker.stake(source, 500);
   }
 
   function testZeroValue() public {
     vm.startPrank(controller);
     vm.expectRevert(Errors.ZeroValue.selector);
-    cvxCrvStaker.stake(address(crv), 0);
+    warCvxCrvStaker.stake(address(crv), 0);
     vm.expectRevert(Errors.ZeroValue.selector);
-    cvxCrvStaker.stake(address(cvxCrv), 0);
+    warCvxCrvStaker.stake(address(cvxCrv), 0);
     vm.stopPrank();
   }
-
-  // TODO check yield
 }

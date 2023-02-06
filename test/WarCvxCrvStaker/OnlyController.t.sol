@@ -8,6 +8,6 @@ contract OnlyController is WarCvxCrvStakerTest {
     // Checking all the functions that require the controller to be calling them
     vm.expectRevert(Errors.CallerNotAllowed.selector);
     vm.prank(alice);
-    cvxCrvStaker.stake(address(crv), 100e18);
+    warCvxCrvStaker.stake(address(crv), 100e18);
   }
 }

@@ -7,18 +7,18 @@ contract SetWarStaker is WarCvxCrvStakerTest {
   function testDefaultBehavior(address newWarStaker) public {
     vm.assume(newWarStaker != zero);
     vm.prank(admin);
-    cvxCrvStaker.setWarStaker(newWarStaker);
-    assertEq(cvxCrvStaker.warStaker(), newWarStaker);
+    warCvxCrvStaker.setWarStaker(newWarStaker);
+    assertEq(warCvxCrvStaker.warStaker(), newWarStaker);
   }
 
   function testRevertWithZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(admin);
-    cvxCrvStaker.setWarStaker(zero);
+    warCvxCrvStaker.setWarStaker(zero);
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
-    cvxCrvStaker.setWarStaker(alice);
+    warCvxCrvStaker.setWarStaker(alice);
   }
 }

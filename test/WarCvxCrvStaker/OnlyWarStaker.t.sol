@@ -8,6 +8,6 @@ contract OnlyWarStaker is WarCvxCrvStakerTest {
     // Checking all the functions that require the WarStaker to be calling them
     vm.expectRevert(Errors.CallerNotAllowed.selector);
     vm.prank(alice);
-    cvxCrvStaker.sendTokens(address(crv), 100e18);
+    warCvxCrvStaker.sendTokens(address(crv), 100e18);
   }
 }
