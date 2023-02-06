@@ -10,22 +10,29 @@ import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
-  WarToken public war;
-  IMintRatio mintRatio;
+  WarToken _war;
+  IMintRatio _mintRatio;
   mapping(address => address) _locker;
 
   using SafeERC20 for IERC20;
 
-  constructor(address _war, address _mintRatio) {
-    if (_war == address(0)) revert Errors.ZeroAddress();
-    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
-    war = WarToken(_war);
-    mintRatio = IMintRatio(_mintRatio);
+  constructor(address war_, address mintRatio_) {
+    if (war_ == address(0) || mintRatio_ == address(0)) revert Errors.ZeroAddress();
+    _war = WarToken(war_);
+    _mintRatio = IMintRatio(mintRatio_);
   }
 
-  function setMintRatio(address _mintRatio) public onlyOwner {
-    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
-    mintRatio = IMintRatio(_mintRatio);
+  function warToken() external view returns (address) {
+    return address(_war);
+  }
+
+  function mintRatio() external view returns (address) {
+    return address(_mintRatio);
+  }
+
+  function setMintRatio(address mintRatio_) public onlyOwner {
+    if (mintRatio_ == address(0)) revert Errors.ZeroAddress();
+    _mintRatio = IMintRatio(mintRatio_);
   }
 
   function setLocker(address vlToken, address warLocker) public onlyOwner {
@@ -52,17 +59,20 @@ contract WarMinter is Owner {
     IERC20(vlToken).safeApprove(address(locker), amount);
     locker.lock(amount);
 
-    uint256 mintAmount = IMintRatio(mintRatio).getMintAmount(vlToken, amount);
+    uint256 mintAmount = IMintRatio(_mintRatio).getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
-    war.mint(receiver, mintAmount);
+    _war.mint(receiver, mintAmount);
   }
 
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
     if (vlTokens.length == 0) revert Errors.EmptyArray();
-    for (uint256 i = 0; i < vlTokens.length; ++i) {
-      //TODO gas optimizations
+    uint256 length = vlTokens.length;
+    for (uint256 i = 0; i < length;) {
       mint(vlTokens[i], amounts[i], receiver);
+      unchecked {
+        ++i;
+      }
     }
   }
 

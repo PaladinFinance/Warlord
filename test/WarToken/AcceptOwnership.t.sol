@@ -10,7 +10,7 @@ contract AcceptOwnership is WarTokenTest {
     war.transferOwnership(alice);
   }
 
-  function testAcceptWorks() public {
+  function testDefaultBehavior() public {
     assertEq(war.owner(), admin);
     assertEq(war.pendingOwner(), alice);
     vm.prank(alice);

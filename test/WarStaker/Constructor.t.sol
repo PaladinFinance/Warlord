@@ -4,8 +4,8 @@ pragma solidity 0.8.16;
 import "./WarStakerTest.sol";
 
 contract Constructor is WarStakerTest {
-  function testCorrectlyConstructed() public {
-    assertEq(staker.owner(), admin); // TODO do the same for all contracts using owner
+  function testDefaultBehavior() public {
+    assertEq(staker.owner(), admin);
     assertEq(staker.warToken(), address(war));
   }
 

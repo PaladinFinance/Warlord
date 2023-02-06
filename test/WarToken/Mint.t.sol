@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract Mint is WarTokenTest {
-  function testMint(uint256 amount) public {
+  function testDefaultBehavior(uint256 amount) public {
     vm.prank(admin);
     war.grantRole(MINTER_ROLE, alice);
     assertEq(war.balanceOf(bob), 0);

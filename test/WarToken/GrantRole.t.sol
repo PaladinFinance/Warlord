@@ -4,6 +4,17 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract GrantRole is WarTokenTest {
+  function testDefaultBehavior() public {
+    assertFalse(war.hasRole(MINTER_ROLE, alice));
+    assertFalse(war.hasRole(BURNER_ROLE, bob));
+    vm.startPrank(admin);
+    war.grantRole(MINTER_ROLE, alice);
+    war.grantRole(BURNER_ROLE, bob);
+    vm.stopPrank();
+    assertTrue(war.hasRole(MINTER_ROLE, alice));
+    assertTrue(war.hasRole(BURNER_ROLE, bob));
+  }
+
   function testOnlyAdminCanCall() public {
     vm.prank(alice);
     vm.expectRevert(

@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./MintRatioTest.sol";
 
 contract ComputeMintAmount is MintRatioTest {
-  uint256 constant SUPPLY_UNIT = cvxMaxSupply / 1e18;
+  uint256 immutable SUPPLY_UNIT = cvxMaxSupply / 1e18;
 
   function testMinCvxMintAmount() public {
     uint256 mintAmount = mintRatio.getMintAmount(address(cvx), SUPPLY_UNIT);

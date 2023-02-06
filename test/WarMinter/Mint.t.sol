@@ -5,47 +5,60 @@ import "./WarMinterTest.sol";
 
 contract Mint is WarMinterTest {
   // TODO test for emits
-  function testMintCvx(uint256 amount) public {
-    vm.assume(amount <= cvx.balanceOf(alice));
-    vm.assume(amount > 0);
+  function _mint(address source, uint256 amount, address receiver) internal {
+    vm.assume(receiver != alice && receiver != zero);
+    vm.assume(amount > 0 && amount <= IERC20(source).balanceOf(alice));
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), 0);
+    assertEq(war.balanceOf(receiver), 0);
     vm.prank(alice);
-    minter.mint(address(cvx), amount, bob);
+    minter.mint(source, amount, receiver);
     assertEq(war.totalSupply(), amount * 15);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), amount * 15);
+    assertEq(war.balanceOf(receiver), amount * 15);
   }
 
-  function testMintCvxWithImplicitReceiver(uint256 amount) public {
-    vm.assume(amount <= cvx.balanceOf(alice));
-    vm.assume(amount > 0);
+  function _mintWithImplicitReceiver(address source, uint256 amount) internal {
+    vm.assume(amount > 0 && amount <= IERC20(source).balanceOf(alice));
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
-    minter.mint(address(cvx), amount);
-    assertEq(war.totalSupply(), amount * 15);
+    minter.mint(source, amount);
+    assertEq(war.totalSupply(), amount * 15); // TODO make a getter for mint ratio
     assertEq(war.balanceOf(alice), amount * 15);
-    assertEq(war.balanceOf(bob), 0);
   }
 
-  function testCantMintToZeroAddress(uint256 amount) public {
+  function testDefaultBehaviorCvx(uint256 amount, address receiver) public {
+    _mint(address(cvx), amount, receiver);
+  }
+
+  function testDefaultBehaviorCvxWithImplicitReceiver(uint256 amount) public {
+    _mintWithImplicitReceiver(address(cvx), amount);
+  }
+
+  function testDefaultBehaviorAura(uint256 amount, address receiver) public {
+    // TODO _mint(address(aura), amount, receiver);
+  }
+
+  function testDefaultBehaviorAuraWithImplicitReceiver(uint256 amount) public {
+    // TODO _mintWithImplicitReceiver(address(aura), amount);
+  }
+
+  function testZeroAddress(uint256 amount) public {
     vm.assume(amount > 0);
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.mint(address(cvx), amount, zero);
   }
 
-  function testCantMintWithZeroLocker(uint256 amount) public {
+  function testZeroLocker(uint256 amount) public {
     vm.assume(amount > 0);
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.mint(zero, amount);
   }
 
-  function testCantMintWithoutLocker(address vlToken) public {
+  function testWithoutLocker(address vlToken) public {
     vm.assume(vlToken != zero);
     vm.assume(vlToken != address(cvx));
     vm.assume(vlToken != address(aura));
@@ -60,7 +73,7 @@ contract Mint is WarMinterTest {
     minter.mint(address(aura), 0);
   }
 
-  function testMintRevertsWithZeroMintAmount() public {
+  function testRevertsWithZeroMintAmount() public {
     MockMintRatio(address(mintRatio)).setRatio(address(cvx), 0);
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroMintAmount.selector);

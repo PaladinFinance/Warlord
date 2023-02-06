@@ -13,7 +13,6 @@ contract WarToken is ERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
   bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-  // TODO should the owner be msg.sender
   constructor() ERC20("Warlord token", "WAR", 18) {
     owner = msg.sender;
     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

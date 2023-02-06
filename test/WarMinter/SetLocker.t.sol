@@ -4,16 +4,34 @@ pragma solidity 0.8.16;
 import "./WarMinterTest.sol";
 
 contract SetLocker is WarMinterTest {
-  function testCantAddZeroAddressAsToken() public {
+  function testDefaultBehavior(uint256 amount, uint256 ratio) public {
+    vm.assume(amount > 0 && amount < 1e27);
+    vm.assume(ratio > 0 && ratio < 1e27);
+    IERC20 newToken = IERC20(address(new MockERC20()));
+    deal(address(newToken), alice, amount);
+    IWarLocker newLocker = new vlMockLocker(address(newToken));
+    MockMintRatio(address(mintRatio)).setRatio(address(newToken), ratio);
     vm.prank(admin);
-    vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(zero, address(cvxLocker));
+    minter.setLocker(address(newToken), address(newLocker));
+    vm.startPrank(alice);
+    newToken.approve(address(minter), amount);
+    minter.mint(address(newToken), amount);
+    assertEq(war.balanceOf(alice), amount * ratio);
+    vm.stopPrank();
   }
 
-  function testCantAddZeroAddressAsLocker() public {
+  function testCantAddZeroAddressAsToken(address randomAddress) public {
+    vm.assume(randomAddress > zero);
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(address(cvx), zero);
+    minter.setLocker(zero, randomAddress);
+  }
+
+  function testCantAddZeroAddressAsLocker(address randomAddress) public {
+    vm.assume(randomAddress > zero);
+    vm.prank(admin);
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    minter.setLocker(randomAddress, zero);
   }
 
   function testCantAddZeroAddresses() public {
@@ -22,9 +40,9 @@ contract SetLocker is WarMinterTest {
     minter.setLocker(zero, zero);
   }
 
-  function testOnlyAdminCanCall() public {
-    vm.prank(bob);
-    // Not using errors because oz implementation
+  function testOnlyAdminCanCall(address randomAddress) public {
+    vm.assume(randomAddress > zero);
+    vm.prank(randomAddress);
     vm.expectRevert("Ownable: caller is not the owner");
     minter.setLocker(address(cvx), address(cvxLocker));
   }
@@ -36,19 +54,5 @@ contract SetLocker is WarMinterTest {
     vm.expectRevert(abi.encodeWithSelector(Errors.MismatchingLocker.selector, newLocker.token(), notToken));
     vm.prank(admin);
     minter.setLocker(notToken, address(newLocker));
-  }
-
-  function testAddNewLocker() public {
-    IERC20 newToken = IERC20(address(new MockERC20()));
-    deal(address(newToken), alice, 100 ether);
-    IWarLocker newLocker = new vlMockLocker(address(newToken));
-    MockMintRatio(address(mintRatio)).setRatio(address(newToken), 50);
-    vm.prank(admin);
-    minter.setLocker(address(newToken), address(newLocker));
-    vm.startPrank(alice);
-    newToken.approve(address(minter), 1 ether);
-    minter.mint(address(newToken), 1 ether);
-    assertEq(war.balanceOf(alice), 50 ether);
-    vm.stopPrank();
   }
 }

@@ -19,6 +19,7 @@ contract WarMintRatio is IMintRatio, Owner {
   }
 
   function getMintAmount(address token, uint256 amount) public view returns (uint256) {
+    // TODO tackle overflows
     if (token == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
     // TODO should I check if amount is bigger than the maxSupply

@@ -4,6 +4,17 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract RevokeRole is WarTokenTest {
+  function testDefaultBehavior() public {
+    assertTrue(war.hasRole(MINTER_ROLE, minter));
+    assertTrue(war.hasRole(BURNER_ROLE, burner));
+    vm.startPrank(admin);
+    war.revokeRole(MINTER_ROLE, minter);
+    war.revokeRole(BURNER_ROLE, burner);
+    vm.stopPrank();
+    assertFalse(war.hasRole(MINTER_ROLE, minter));
+    assertFalse(war.hasRole(BURNER_ROLE, burner));
+  }
+
   function testOnlyAdminCanCall() public {
     vm.prank(alice);
     vm.expectRevert(

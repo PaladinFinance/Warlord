@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarMinterTest.sol";
 
 contract MintMultiple is WarMinterTest {
-  function testMintMultiple(uint256 amount1, uint256 amount2) public {
+  function testDefaultBehavior(uint256 amount1, uint256 amount2) public {
     vm.assume(amount1 > 0 && amount2 > 0);
     vm.assume(amount1 < cvx.balanceOf(alice) && amount2 < aura.balanceOf(alice));
     address[] memory lockers = new address[](2);
@@ -23,7 +23,7 @@ contract MintMultiple is WarMinterTest {
     assertEq(war.balanceOf(bob), amount1 * 15 + amount2 * 22);
   }
 
-  function testMintMultipleWithImplicitReceiver(uint256 amount1, uint256 amount2) public {
+  function testDefaultBehaviorWithImplicitReceiver(uint256 amount1, uint256 amount2) public {
     vm.assume(amount1 > 0 && amount2 > 0);
     vm.assume(amount1 < cvx.balanceOf(alice) && amount2 < aura.balanceOf(alice));
     address[] memory lockers = new address[](2);

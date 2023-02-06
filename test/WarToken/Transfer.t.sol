@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarTokenTest.sol";
 
 contract Transfer is WarTokenTest {
-  function testTransfer(uint256 amountMint, uint256 amountTransfer) public {
+  function testDefaultBehavior(uint256 amountMint, uint256 amountTransfer) public {
     vm.assume(amountMint > 0 && amountMint >= amountTransfer);
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
