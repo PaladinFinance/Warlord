@@ -65,7 +65,7 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   }
 
   function stake(address source, uint256 amount) external onlyController {
-    if (source != address(cvxCrv) || source != address(crv)) revert Errors.IncorrectToken();
+    if (source != address(cvxCrv) && source != address(crv)) revert Errors.IncorrectToken();
     if (amount == 0) revert Errors.ZeroValue();
 
     _index += amount;
