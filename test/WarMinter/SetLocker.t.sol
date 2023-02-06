@@ -40,17 +40,16 @@ contract SetLocker is WarMinterTest {
     minter.setLocker(zero, zero);
   }
 
-  function testOnlyAdminCanCall(address randomAddress) public {
-    vm.assume(randomAddress > zero);
-    vm.prank(randomAddress);
+  function testOnlyAdminCanCall() public {
+    vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
     minter.setLocker(address(cvx), address(cvxLocker));
   }
 
   function testCantSetMismatchingLocker(address notToken) public {
-    vm.assume(notToken != zero);
-    IWarLocker newLocker = new vlMockLocker(address(new MockERC20()));
-    vm.assume(notToken != address(newLocker));
+    IERC20 mockToken = IERC20(address(new MockERC20()));
+    IWarLocker newLocker = new vlMockLocker(address(mockToken));
+    vm.assume(notToken != zero && notToken != address(mockToken) && notToken != address(newLocker));
     vm.expectRevert(abi.encodeWithSelector(Errors.MismatchingLocker.selector, newLocker.token(), notToken));
     vm.prank(admin);
     minter.setLocker(notToken, address(newLocker));
