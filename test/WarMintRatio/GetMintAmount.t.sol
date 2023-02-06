@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./MintRatioTest.sol";
 
-contract ComputeMintAmount is MintRatioTest {
+contract GetMintAmount is MintRatioTest {
   uint256 immutable SUPPLY_UNIT = cvxMaxSupply / 1e18;
 
   function testMinCvxMintAmount() public {
