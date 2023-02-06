@@ -27,6 +27,7 @@ contract MainnetTest is BaseTest {
   function setUp() public virtual {
     vm.label(address(cvx), "cvx");
     vm.label(address(aura), "aura");
+    vm.label(address(crv), "crv");
   }
 
   function fork() public {
