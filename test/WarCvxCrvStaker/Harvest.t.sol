@@ -68,5 +68,6 @@ contract Stake is WarCvxCrvStakerTest {
     assertGt(cvx.balanceOf(controller), 0);
     assertGt(threeCrv.balanceOf(controller), 0);
   }
-  //TODO maybe stronger tests?
+  // TODO make sure there are no more pending rewards
+  // TODO make sure that I claimed all the rewards that where previously pending
 }

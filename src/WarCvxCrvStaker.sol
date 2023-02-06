@@ -91,11 +91,11 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
     _unstake(amount);
-    cvxCrv.safeTransferFrom(address(this), receiver, amount);
+    cvxCrv.safeTransfer(receiver, amount);
   }
 
   function _unstake(uint256 amount) internal {
-    if (staker.balanceOf(address(this)) > 0) revert Errors.ZeroValue(); //TODO more specific error
+    if (staker.balanceOf(address(this)) < amount) revert Errors.ZeroValue(); //TODO more specific error
     staker.withdraw(amount);
   }
 
