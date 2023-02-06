@@ -44,6 +44,10 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     return _warStaker;
   }
 
+  function getCurrentIndex() external view returns (uint256) {
+    return _index;
+  }
+
   function setController(address controller_) external onlyOwner {
     if (controller_ == address(0)) revert Errors.ZeroAddress();
     _controller = controller_;
@@ -73,10 +77,6 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     IERC20(source).safeTransferFrom(_controller, address(this), amount);
     if (source == address(crv)) _stakeCrv(amount);
     if (source == address(cvxCrv)) _stakeCvxCrv(amount);
-  }
-
-  function getCurrentIndex() external view returns (uint256) {
-    return _index;
   }
 
   function harvest() external {

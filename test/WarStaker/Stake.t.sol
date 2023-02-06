@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarStakerTest.sol";
 
 contract Stake is WarStakerTest {
-  function testNormalBehavior(uint256 amount) public {
+  function testDefaultBehavior(uint256 amount) public {
     // TODO more assertions
     // TODO missing getters that would make tests more accurate? like userCurrentStakedAmount
     // TODO test stake with a different reciever than the caller
