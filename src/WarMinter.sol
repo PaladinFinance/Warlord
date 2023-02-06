@@ -68,7 +68,7 @@ contract WarMinter is Owner {
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
     if (vlTokens.length == 0) revert Errors.EmptyArray();
     uint256 length = vlTokens.length;
-    for (uint256 i = 0; i < length;) {
+    for (uint256 i; i < length;) {
       mint(vlTokens[i], amounts[i], receiver);
       unchecked {
         ++i;
