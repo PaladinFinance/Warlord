@@ -12,6 +12,8 @@ import {Errors} from "utils/Errors.sol";
 contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
+  IERC20 constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
+  IERC20 threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
   CvxCrvStaker constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
 
   address _controller;
@@ -52,7 +54,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     return _index;
   }
 
-  function setController(address controller_) external onlyOwner whenNotPaused {
+  function setController(address controller_) external onlyOwner {
     if (controller_ == address(0)) revert Errors.ZeroAddress();
     if (controller_ == _controller) revert Errors.AlreadySet();
     _controller = controller_;
@@ -60,7 +62,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     emit SetController(controller_);
   }
 
-  function setWarStaker(address warStaker_) external onlyOwner whenNotPaused {
+  function setWarStaker(address warStaker_) external onlyOwner {
     if (warStaker_ == address(0)) revert Errors.ZeroAddress();
     if (warStaker_ == _warStaker) revert Errors.AlreadySet();
     _warStaker = warStaker_;
@@ -87,6 +89,10 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
   }
 
   function harvest() external whenNotPaused {
+    _harvest();
+  }
+
+  function _harvest() internal {
     staker.getReward(address(this), _controller);
   }
 
@@ -100,9 +106,15 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
   }
 
   function migrate(address receiver) external onlyOwner whenPaused {
-    uint256 balance = staker.balanceOf(address(this));
-    staker.withdraw(balance);
-    cvxCrv.safeTransfer(receiver, balance);
+    if (receiver == address(0)) revert Errors.ZeroAddress();
+
+    // Unstake and send cvxCrv
+    uint256 cvxCrvStakedBalance = staker.balanceOf(address(this));
+    staker.withdraw(cvxCrvStakedBalance);
+    cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
+
+    // Harvest and send rewards to the controller
+    _harvest();
   }
 
   function pause() external onlyOwner {
