@@ -7,6 +7,7 @@ library Errors {
   error ZeroValue();
   error DifferentSizeArrays(uint256 size1, uint256 size2);
   error EmptyArray();
+  error AlreadySet();
 
   // Ownership
   error CannotBeOwner();
@@ -28,6 +29,7 @@ library Errors {
 
   // IFarmer
   error IncorrectToken();
+  error UnstakingMoreThanBalance();
 
   // Maths
   error NumberExceed128Bits();

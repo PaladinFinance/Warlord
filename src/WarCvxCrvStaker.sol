@@ -4,21 +4,25 @@ pragma solidity 0.8.16;
 import {IFarmer} from "interfaces/IFarmer.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
+import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {Owner} from "utils/Owner.sol";
 import {CvxCrvStaker} from "interfaces/external/CvxCrvStaker.sol";
 import {Errors} from "utils/Errors.sol";
 
-contract WarCvxCrvStaker is IFarmer, Owner {
+contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   CvxCrvStaker constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
 
   address _controller;
   address _warStaker;
-
   uint256 _index;
 
   using SafeERC20 for IERC20;
+
+  event SetController(address controller);
+  event SetWarStaker(address warStaker);
+  event Staked(uint256 amount, uint256 index);
 
   constructor(address controller_, address warStaker_) {
     if (controller_ == address(0) || warStaker_ == address(0)) revert Errors.ZeroAddress();
@@ -27,12 +31,12 @@ contract WarCvxCrvStaker is IFarmer, Owner {
   }
 
   modifier onlyController() {
-    if (_controller != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
+    if (_controller != msg.sender) revert Errors.CallerNotAllowed();
     _;
   }
 
   modifier onlyWarStaker() {
-    if (_warStaker != msg.sender) revert Errors.CallerNotAllowed(); // TODO More specific error ?
+    if (_warStaker != msg.sender) revert Errors.CallerNotAllowed();
     _;
   }
 
@@ -48,60 +52,64 @@ contract WarCvxCrvStaker is IFarmer, Owner {
     return _index;
   }
 
-  function setController(address controller_) external onlyOwner {
+  function setController(address controller_) external onlyOwner whenNotPaused {
     if (controller_ == address(0)) revert Errors.ZeroAddress();
+    if (controller_ == _controller) revert Errors.AlreadySet();
     _controller = controller_;
+
+    emit SetController(controller_);
   }
 
-  function setWarStaker(address warStaker_) external onlyOwner {
+  function setWarStaker(address warStaker_) external onlyOwner whenNotPaused {
     if (warStaker_ == address(0)) revert Errors.ZeroAddress();
+    if (warStaker_ == _warStaker) revert Errors.AlreadySet();
     _warStaker = warStaker_;
+
+    emit SetWarStaker(warStaker_);
   }
 
-  function _stakeCrv(uint256 amount) internal {
-    crv.safeApprove(address(staker), amount);
-    staker.deposit(amount, address(this));
+  function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
+    staker.setRewardWeight(weight);
   }
 
-  function _stakeCvxCrv(uint256 amount) internal {
-    cvxCrv.safeApprove(address(staker), amount);
-    staker.stake(amount, address(this));
-  }
-
-  function stake(address source, uint256 amount) external onlyController {
+  function stake(address source, uint256 amount) external onlyController whenNotPaused {
     if (source != address(cvxCrv) && source != address(crv)) revert Errors.IncorrectToken();
     if (amount == 0) revert Errors.ZeroValue();
 
     _index += amount;
 
     IERC20(source).safeTransferFrom(_controller, address(this), amount);
-    if (source == address(crv)) _stakeCrv(amount);
-    if (source == address(cvxCrv)) _stakeCvxCrv(amount);
+    IERC20(source).safeApprove(address(staker), amount);
+    if (source == address(crv)) staker.deposit(amount, address(this));
+    else if (source == address(cvxCrv)) staker.stake(amount, address(this));
+
+    emit Staked(amount, _index);
   }
 
-  function harvest() external {
+  function harvest() external whenNotPaused {
     staker.getReward(address(this), _controller);
   }
 
-  function setRewardWeight(uint256 weight) external onlyOwner {
-    staker.setRewardWeight(weight);
-  }
-
-  function sendTokens(address receiver, uint256 amount) external onlyWarStaker {
+  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
-    _unstake(amount);
+    if (staker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+
+    staker.withdraw(amount);
     cvxCrv.safeTransfer(receiver, amount);
   }
 
-  function _unstake(uint256 amount) internal {
-    if (staker.balanceOf(address(this)) < amount) revert Errors.ZeroValue(); //TODO more specific error
-    staker.withdraw(amount);
-  }
-
-  function migrate(address receiver) external onlyOwner {
+  function migrate(address receiver) external onlyOwner whenPaused {
     uint256 balance = staker.balanceOf(address(this));
     staker.withdraw(balance);
     cvxCrv.safeTransfer(receiver, balance);
+  }
+
+  function pause() external onlyOwner {
+    _pause();
+  }
+
+  function unpause() external onlyOwner {
+    _unpause();
   }
 }
