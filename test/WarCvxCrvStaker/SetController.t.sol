@@ -5,7 +5,7 @@ import "./WarCvxCrvStakerTest.sol";
 
 contract SetController is WarCvxCrvStakerTest {
   function testDefaultBehavior(address newController) public {
-    vm.assume(newController != zero);
+    vm.assume(newController != zero && newController != controller);
     vm.prank(admin);
     warCvxCrvStaker.setController(newController);
     assertEq(warCvxCrvStaker.controller(), newController);
