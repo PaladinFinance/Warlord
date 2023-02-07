@@ -10,6 +10,7 @@ contract SendTokens is WarCvxCrvStakerTest {
     warCvxCrvStaker.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
     warCvxCrvStaker.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
+    vm.warp(block.timestamp + 100 days);
   }
 
   function testDefaultBehavior(uint256 amount) public {
@@ -20,7 +21,6 @@ contract SendTokens is WarCvxCrvStakerTest {
     warCvxCrvStaker.sendTokens(alice, amount);
     assertEq(cvxCrv.balanceOf(alice), amount);
   }
-  // TODO check after rewards are accrued
 
   function testZeroAmount(address randomAddress) public {
     vm.assume(randomAddress != zero);

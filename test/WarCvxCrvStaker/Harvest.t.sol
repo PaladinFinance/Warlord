@@ -12,20 +12,6 @@ contract Stake is WarCvxCrvStakerTest {
     vm.stopPrank();
   }
 
-  function _getRewards() internal returns (uint256 _crv, uint256 _cvx, uint256 _threeCrv) {
-    CvxCrvStaker.EarnedData[] memory list = convexCvxCrvStaker.earned(address(warCvxCrvStaker));
-    _crv = list[0].amount;
-    _cvx = list[1].amount;
-    _threeCrv = list[2].amount;
-  }
-
-  function _assertNoPendingRewards() internal {
-    (uint256 crvRewards, uint256 cvxRewards, uint256 threeCrvRewards) = _getRewards();
-    assertEq(crvRewards, 0);
-    assertEq(cvxRewards, 0);
-    assertEq(threeCrvRewards, 0);
-  }
-
   function _defaultBehavior(uint256 time) internal {
     _assertNoPendingRewards();
 
