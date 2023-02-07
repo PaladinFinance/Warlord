@@ -21,4 +21,10 @@ contract SetWarStaker is WarCvxCrvStakerTest {
     vm.expectRevert("Ownable: caller is not the owner");
     warCvxCrvStaker.setWarStaker(alice);
   }
+
+  function testSameValue() public {
+    vm.expectRevert(Errors.AlreadySet.selector);
+    vm.prank(admin);
+    warCvxCrvStaker.setWarStaker(address(warStaker));
+  }
 }

@@ -10,6 +10,8 @@ contract Stake is WarCvxCrvStakerTest {
     assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), 0);
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), 0);
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
+    // Initial index is 0
+    assertEq(warCvxCrvStaker.getCurrentIndex(), 0);
 
     vm.startPrank(controller);
     warCvxCrvStaker.stake(source, amount);
@@ -20,6 +22,8 @@ contract Stake is WarCvxCrvStakerTest {
     // Balance is all in group 0
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), amount);
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
+    // Index increases accordingly
+    assertEq(warCvxCrvStaker.getCurrentIndex(), amount);
   }
 
   function testDefaultBehaviorCrv(uint256 amount) public {
