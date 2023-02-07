@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-interface IFarmer {
+import {IHarvestable} from "./IHarvestable.sol";
+
+interface IFarmer is IHarvestable {
   // the index stored by the farmer represents all the recevied tokens
   function getCurrentIndex() external view returns (uint256);
 
