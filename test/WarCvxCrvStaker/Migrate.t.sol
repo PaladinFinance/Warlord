@@ -31,7 +31,7 @@ contract Migrate is WarCvxCrvStakerTest {
     assertEq(crv.balanceOf(controller), crvRewards);
     assertEq(cvx.balanceOf(controller), cvxRewards);
     assertEq(threeCrv.balanceOf(controller), threeCrvRewards);
-    
+
     _assertNoPendingRewards();
   }
 
