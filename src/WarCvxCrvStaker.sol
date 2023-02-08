@@ -11,15 +11,15 @@ import {Errors} from "utils/Errors.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
 contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
-  IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
-  IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
-  IERC20 constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
-  IERC20 threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
-  CvxCrvStaker constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+  IERC20 private constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
+  IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
+  IERC20 private constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
+  IERC20 private constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
+  CvxCrvStaker private constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
 
-  address _controller;
-  address _warStaker;
-  uint256 _index;
+  address public controller;
+  address public warStaker;
+  uint256 private _index;
 
   using SafeERC20 for IERC20;
 
@@ -27,48 +27,40 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   event SetWarStaker(address warStaker);
   event Staked(uint256 amount, uint256 index);
 
-  constructor(address controller_, address warStaker_) {
-    if (controller_ == address(0) || warStaker_ == address(0)) revert Errors.ZeroAddress();
-    _controller = controller_;
-    _warStaker = warStaker_;
+  constructor(address _controller, address _warStaker) {
+    if (_controller == address(0) || _warStaker == address(0)) revert Errors.ZeroAddress();
+    controller = _controller;
+    warStaker = _warStaker;
   }
 
   modifier onlyController() {
-    if (_controller != msg.sender) revert Errors.CallerNotAllowed();
+    if (controller != msg.sender) revert Errors.CallerNotAllowed();
     _;
   }
 
   modifier onlyWarStaker() {
-    if (_warStaker != msg.sender) revert Errors.CallerNotAllowed();
+    if (warStaker != msg.sender) revert Errors.CallerNotAllowed();
     _;
-  }
-
-  function controller() external view returns (address) {
-    return _controller;
-  }
-
-  function warStaker() external view returns (address) {
-    return _warStaker;
   }
 
   function getCurrentIndex() external view returns (uint256) {
     return _index;
   }
 
-  function setController(address controller_) external onlyOwner {
-    if (controller_ == address(0)) revert Errors.ZeroAddress();
-    if (controller_ == _controller) revert Errors.AlreadySet();
-    _controller = controller_;
+  function setController(address _controller) external onlyOwner {
+    if (_controller == address(0)) revert Errors.ZeroAddress();
+    if (_controller == controller) revert Errors.AlreadySet();
+    controller = _controller;
 
-    emit SetController(controller_);
+    emit SetController(_controller);
   }
 
-  function setWarStaker(address warStaker_) external onlyOwner {
-    if (warStaker_ == address(0)) revert Errors.ZeroAddress();
-    if (warStaker_ == _warStaker) revert Errors.AlreadySet();
-    _warStaker = warStaker_;
+  function setWarStaker(address _warStaker) external onlyOwner {
+    if (_warStaker == address(0)) revert Errors.ZeroAddress();
+    if (_warStaker == warStaker) revert Errors.AlreadySet();
+    warStaker = _warStaker;
 
-    emit SetWarStaker(warStaker_);
+    emit SetWarStaker(_warStaker);
   }
 
   function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
@@ -81,7 +73,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
 
     _index += amount;
 
-    IERC20(source).safeTransferFrom(_controller, address(this), amount);
+    IERC20(source).safeTransferFrom(controller, address(this), amount);
     IERC20(source).safeApprove(address(staker), amount);
     if (source == address(crv)) staker.deposit(amount, address(this));
     else if (source == address(cvxCrv)) staker.stake(amount, address(this));
@@ -94,7 +86,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   }
 
   function _harvest() internal {
-    staker.getReward(address(this), _controller);
+    staker.getReward(address(this), controller);
   }
 
   function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {

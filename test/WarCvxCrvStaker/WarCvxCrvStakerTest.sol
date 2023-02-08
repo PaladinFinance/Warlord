@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
 import "../../src/WarCvxCrvStaker.sol";
-import "../../src/WarStaker.sol";
+import {WarStaker} from "../../src/WarStaker.sol";
 import "../../src/WarToken.sol";
 
 contract WarCvxCrvStakerTest is MainnetTest {
