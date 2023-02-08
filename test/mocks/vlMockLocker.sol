@@ -21,4 +21,6 @@ contract vlMockLocker is IWarLocker {
   function token() public view returns (address) {
     return address(_token);
   }
+
+  function harvest() external {}
 }
