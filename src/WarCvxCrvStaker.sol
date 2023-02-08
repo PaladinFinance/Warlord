@@ -67,16 +67,16 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     staker.setRewardWeight(weight);
   }
 
-  function stake(address source, uint256 amount) external onlyController whenNotPaused nonReentrant {
-    if (source != address(cvxCrv) && source != address(crv)) revert Errors.IncorrectToken();
+  function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
+    if (token != address(cvxCrv) && token != address(crv)) revert Errors.IncorrectToken();
     if (amount == 0) revert Errors.ZeroValue();
 
     _index += amount;
 
-    IERC20(source).safeTransferFrom(controller, address(this), amount);
-    IERC20(source).safeApprove(address(staker), amount);
-    if (source == address(crv)) staker.deposit(amount, address(this));
-    else if (source == address(cvxCrv)) staker.stake(amount, address(this));
+    IERC20(token).safeTransferFrom(controller, address(this), amount);
+    IERC20(token).safeApprove(address(staker), amount);
+    if (token == address(crv)) staker.deposit(amount, address(this)); // TODO fix this to prevent fees from increase
+    else if (token == address(cvxCrv)) staker.stake(amount, address(this));
 
     emit Staked(amount, _index);
   }
