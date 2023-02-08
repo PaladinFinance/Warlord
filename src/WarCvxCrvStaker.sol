@@ -42,11 +42,11 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     _;
   }
 
-  function controller() public view returns (address) {
+  function controller() external view returns (address) {
     return _controller;
   }
 
-  function warStaker() public view returns (address) {
+  function warStaker() external view returns (address) {
     return _warStaker;
   }
 
