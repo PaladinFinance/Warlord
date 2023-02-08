@@ -5,4 +5,3 @@ interface IWarRedeem {
   function queuedForWithdrawal() external returns (uint256);
   function notifyUnlock(address token, uint256 amount) external;
 }
-

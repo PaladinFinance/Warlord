@@ -76,6 +76,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     IERC20(token).safeTransferFrom(controller, address(this), amount);
     IERC20(token).safeApprove(address(staker), amount);
     if (token == address(crv)) staker.deposit(amount, address(this)); // TODO fix this to prevent fees from increase
+
     else if (token == address(cvxCrv)) staker.stake(amount, address(this));
 
     emit Staked(amount, _index);
