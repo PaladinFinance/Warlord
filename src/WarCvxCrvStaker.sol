@@ -8,8 +8,9 @@ import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {Owner} from "utils/Owner.sol";
 import {CvxCrvStaker} from "interfaces/external/CvxCrvStaker.sol";
 import {Errors} from "utils/Errors.sol";
+import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
-contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
+contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   IERC20 constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
@@ -74,7 +75,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     staker.setRewardWeight(weight);
   }
 
-  function stake(address source, uint256 amount) external onlyController whenNotPaused {
+  function stake(address source, uint256 amount) external onlyController whenNotPaused nonReentrant {
     if (source != address(cvxCrv) && source != address(crv)) revert Errors.IncorrectToken();
     if (amount == 0) revert Errors.ZeroValue();
 
@@ -88,7 +89,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     emit Staked(amount, _index);
   }
 
-  function harvest() external whenNotPaused {
+  function harvest() external whenNotPaused nonReentrant {
     _harvest();
   }
 
@@ -96,7 +97,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable {
     staker.getReward(address(this), _controller);
   }
 
-  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused {
+  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
     if (staker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
