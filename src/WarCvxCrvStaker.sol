@@ -6,7 +6,8 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {Owner} from "utils/Owner.sol";
-import {CvxCrvStaker} from "interfaces/external/CvxCrvStaker.sol";
+import {CvxCrvStakingWrapper} from "interfaces/external/CvxCrvStakingWrapper.sol";
+import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
 import {Errors} from "utils/Errors.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
@@ -15,7 +16,9 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   IERC20 private constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
   IERC20 private constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
-  CvxCrvStaker private constant staker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+  CvxCrvStakingWrapper private constant cvxCrvStakingWrapper =
+    CvxCrvStakingWrapper(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+  CrvDepositor private constant crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
 
   address public controller;
   address public warStaker;
@@ -64,7 +67,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   }
 
   function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
-    staker.setRewardWeight(weight);
+    cvxCrvStakingWrapper.setRewardWeight(weight);
   }
 
   function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
@@ -74,10 +77,13 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     _index += amount;
 
     IERC20(token).safeTransferFrom(controller, address(this), amount);
-    IERC20(token).safeApprove(address(staker), amount);
-    if (token == address(crv)) staker.deposit(amount, address(this)); // TODO fix this to prevent fees from increase
 
-    else if (token == address(cvxCrv)) staker.stake(amount, address(this));
+    if (token == address(crv)) {
+      crv.safeApprove(address(crvDepositor), amount);
+      crvDepositor.deposit(amount, true, address(0));
+    }
+    cvxCrv.safeApprove(address(cvxCrvStakingWrapper), amount);
+    cvxCrvStakingWrapper.stake(amount, address(this));
 
     emit Staked(amount, _index);
   }
@@ -87,15 +93,15 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   }
 
   function _harvest() internal {
-    staker.getReward(address(this), controller);
+    cvxCrvStakingWrapper.getReward(address(this), controller);
   }
 
   function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
-    if (staker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+    if (cvxCrvStakingWrapper.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
 
-    staker.withdraw(amount);
+    cvxCrvStakingWrapper.withdraw(amount);
     cvxCrv.safeTransfer(receiver, amount);
   }
 
@@ -103,8 +109,8 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
     // Unstake and send cvxCrv
-    uint256 cvxCrvStakedBalance = staker.balanceOf(address(this));
-    staker.withdraw(cvxCrvStakedBalance);
+    uint256 cvxCrvStakedBalance = cvxCrvStakingWrapper.balanceOf(address(this));
+    cvxCrvStakingWrapper.withdraw(cvxCrvStakedBalance);
     cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
 
     // Harvest and send rewards to the controller

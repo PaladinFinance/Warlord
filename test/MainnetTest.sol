@@ -5,7 +5,8 @@ import "./BaseTest.sol";
 import "interfaces/external/vlCvx.sol";
 import "interfaces/external/vlAura.sol";
 import "interfaces/external/AuraDepositor.sol";
-import {CvxCrvStaker} from "interfaces/external/CvxCrvStaker.sol";
+import {CvxCrvStakingWrapper} from "interfaces/external/CvxCrvStakingWrapper.sol";
+import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
 
 contract MainnetTest is BaseTest {
   // Curve
@@ -16,10 +17,13 @@ contract MainnetTest is BaseTest {
   IERC20 constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
 
   // Convex
+  // - Cvx contracts
   IERC20 constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
   CvxLockerV2 constant vlCvx = CvxLockerV2(0x72a19342e8F1838460eBFCCEf09F6585e32db86E);
+  // - CvxCrv contracts
+  CrvDepositor private constant crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
-  CvxCrvStaker constant convexCvxCrvStaker = CvxCrvStaker(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+  CvxCrvStakingWrapper constant convexCvxCrvStaker = CvxCrvStakingWrapper(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
 
   // Aura
   CrvDepositorWrapper constant auraDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
