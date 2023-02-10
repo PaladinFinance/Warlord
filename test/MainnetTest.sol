@@ -31,12 +31,15 @@ contract MainnetTest is BaseTest {
   AuraLocker constant vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   IERC20 constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
 
+  // 0xFEEf77d3f69374f66429C91d732A244f074bdf74 cvxFXS
+
   function setUp() public virtual {
     vm.label(address(cvx), "cvx");
     vm.label(address(aura), "aura");
     vm.label(address(crv), "crv");
     vm.label(address(convexCvxCrvStaker), "convexCvxCrvStaker");
     vm.label(address(cvxCrv), "cvxCrv");
+    vm.label(address(vlCvx), "vlCvx");
   }
 
   function fork() public {

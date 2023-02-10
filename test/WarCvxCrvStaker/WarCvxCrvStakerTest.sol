@@ -27,7 +27,7 @@ contract WarCvxCrvStakerTest is MainnetTest {
 
     vm.startPrank(controller);
     crv.approve(address(warCvxCrvStaker), crv.balanceOf(controller));
-    cvxCrv.approve(address(warCvxCrvStaker), crv.balanceOf(controller));
+    cvxCrv.approve(address(warCvxCrvStaker), cvxCrv.balanceOf(controller));
     vm.stopPrank();
   }
 

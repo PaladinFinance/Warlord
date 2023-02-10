@@ -5,7 +5,8 @@ import "./WarCvxCrvStakerTest.sol";
 
 contract Constructor is WarCvxCrvStakerTest {
   function testDefaultBehavior() public {
-    // Tested in the setUp function
+    assertEq(warCvxCrvStaker.controller(), controller);
+    assertEq(warCvxCrvStaker.warStaker(), address(warStaker));
   }
 
   function testZeroControllerReverts() public {
