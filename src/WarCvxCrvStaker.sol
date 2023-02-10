@@ -11,11 +11,11 @@ import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
 import {Errors} from "utils/Errors.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
+// TODO make common base class for auraBal
+// TODO test for event emission
 contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
   IERC20 private constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
-  IERC20 private constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
-  IERC20 private constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
   CvxCrvStakingWrapper private constant cvxCrvStakingWrapper =
     CvxCrvStakingWrapper(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
   CrvDepositor private constant crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
@@ -74,13 +74,18 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     if (token != address(cvxCrv) && token != address(crv)) revert Errors.IncorrectToken();
     if (amount == 0) revert Errors.ZeroValue();
 
-    _index += amount;
+    // TODO test if it works when a bonus is available
 
     IERC20(token).safeTransferFrom(controller, address(this), amount);
 
     if (token == address(crv)) {
+      uint256 initialBalance = cvxCrv.balanceOf(address(this));
       crv.safeApprove(address(crvDepositor), amount);
       crvDepositor.deposit(amount, true, address(0));
+      // Take into account possible bonus for locking crv
+      _index += cvxCrv.balanceOf(address(this)) - initialBalance;
+    } else {
+      _index += amount;
     }
     cvxCrv.safeApprove(address(cvxCrvStakingWrapper), amount);
     cvxCrvStakingWrapper.stake(amount, address(this));
@@ -88,6 +93,7 @@ contract WarCvxCrvStaker is IFarmer, Owner, Pausable, ReentrancyGuard {
     emit Staked(amount, _index);
   }
 
+  // TODO not sure nonReentrant is really useful for this function
   function harvest() external whenNotPaused nonReentrant {
     _harvest();
   }
