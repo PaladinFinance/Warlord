@@ -1,6 +1,6 @@
 pragma solidity 0.8.16;
 
-interface CvxCrvStakingWrapper {
+interface CvxCrvStaking {
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Deposited(address indexed _user, address indexed _account, uint256 _amount, bool _isCrv);
   event HookSet(address _rewardToken);
@@ -30,7 +30,7 @@ interface CvxCrvStakingWrapper {
   function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool);
   function deposit(uint256 _amount, address _to) external;
   function depositAndSetWeight(uint256 _amount, uint256 _weight) external;
-  function earned(address _account) external returns (CvxCrvStakingWrapper.EarnedData[] memory claimable);
+  function earned(address _account) external returns (CvxCrvStaking.EarnedData[] memory claimable);
   function getReward(address _account, address _forwardTo) external;
   function getReward(address _account) external;
   function increaseAllowance(address spender, uint256 addedValue) external returns (bool);
