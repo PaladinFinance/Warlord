@@ -56,7 +56,7 @@ contract WarCvxLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
   }
 
   function harvest() public whenNotPaused {
-    locker.getReward(controller);
+    locker.getReward(controller, false);
   }
 
   function setDelegate(address _delegatee) external onlyOwner {

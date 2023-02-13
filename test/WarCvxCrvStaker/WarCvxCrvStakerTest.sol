@@ -32,7 +32,7 @@ contract WarCvxCrvStakerTest is MainnetTest {
   }
 
   function _getRewards() internal returns (uint256 _crv, uint256 _cvx, uint256 _threeCrv) {
-    CvxCrvStakingWrapper.EarnedData[] memory list = convexCvxCrvStaker.earned(address(warCvxCrvStaker));
+    CvxCrvStaking.EarnedData[] memory list = convexCvxCrvStaker.earned(address(warCvxCrvStaker));
     _crv = list[0].amount;
     _cvx = list[1].amount;
     _threeCrv = list[2].amount;
