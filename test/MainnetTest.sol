@@ -7,6 +7,7 @@ import "interfaces/external/vlAura.sol";
 import "interfaces/external/AuraDepositor.sol";
 import {CvxCrvStaking} from "interfaces/external/CvxCrvStaking.sol";
 import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
+import {BaseRewardPool} from "interfaces/external/AuraBalStaker.sol";
 
 contract MainnetTest is BaseTest {
   // Curve
@@ -32,6 +33,7 @@ contract MainnetTest is BaseTest {
   IERC20 constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   AuraLocker constant vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   IERC20 constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
+  BaseRewardPool constant auraBalStaker = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
 
   function setUp() public virtual {
     vm.label(address(cvx), "cvx");
