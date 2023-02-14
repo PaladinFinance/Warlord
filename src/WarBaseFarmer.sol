@@ -7,7 +7,7 @@ import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {IFarmer} from "interfaces/IFarmer.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
-abstract contract BaseStaker is Owner, Pausable, ReentrancyGuard {
+abstract contract WarBaseFarmer is Owner, Pausable, ReentrancyGuard {
   address public controller;
   address public warStaker;
 

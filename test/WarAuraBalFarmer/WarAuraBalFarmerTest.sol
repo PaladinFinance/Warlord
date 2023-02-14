@@ -2,15 +2,15 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/WarCvxCrvStaker.sol";
+import "../../src/WarAuraBalFarmer.sol";
 import {WarStaker} from "../../src/WarStaker.sol";
 import "../../src/WarToken.sol";
 
-contract WarCvxCrvStakerTest is MainnetTest {
+contract WarAuraBalFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;
-  WarCvxCrvStaker warCvxCrvStaker;
+  WarAuraBalFarmer warAuraBalFarmer;
 
   function setUp() public virtual override {
     MainnetTest.setUp();
@@ -19,20 +19,21 @@ contract WarCvxCrvStakerTest is MainnetTest {
     vm.startPrank(admin);
     war = new WarToken();
     warStaker = new WarStaker(address(war));
-    warCvxCrvStaker = new WarCvxCrvStaker(controller, address(warStaker));
+    warAuraBalFarmer = new WarAuraBalFarmer(controller, address(warStaker));
     vm.stopPrank();
 
-    deal(address(crv), controller, 100e18);
-    deal(address(cvxCrv), controller, 100e18);
+    deal(address(bal), controller, 100e18);
+    deal(address(auraBal), controller, 100e18);
 
     vm.startPrank(controller);
-    crv.approve(address(warCvxCrvStaker), crv.balanceOf(controller));
-    cvxCrv.approve(address(warCvxCrvStaker), cvxCrv.balanceOf(controller));
+    bal.approve(address(warAuraBalFarmer), bal.balanceOf(controller));
+    auraBal.approve(address(warAuraBalFarmer), auraBal.balanceOf(controller));
     vm.stopPrank();
   }
 
+  /*
   function _getRewards() internal returns (uint256 _crv, uint256 _cvx, uint256 _threeCrv) {
-    CvxCrvStaking.EarnedData[] memory list = convexCvxCrvStaker.earned(address(warCvxCrvStaker));
+    CvxCrvStaking.EarnedData[] memory list = convexCvxCrvStaker.earned(address(warCvxCrvFarmer));
     _crv = list[0].amount;
     _cvx = list[1].amount;
     _threeCrv = list[2].amount;
@@ -44,4 +45,5 @@ contract WarCvxCrvStakerTest is MainnetTest {
     assertEq(cvxRewards, 0);
     assertEq(threeCrvRewards, 0);
   }
+  */
 }

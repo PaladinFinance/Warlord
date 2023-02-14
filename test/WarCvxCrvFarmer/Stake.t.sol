@@ -8,25 +8,25 @@ contract Stake is WarCvxCrvStakerTest {
     uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
     vm.assume(amount > 0 && amount <= initialTokenBalance);
     // Initial staked amount is 0 in all groups
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), 0);
+    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), 0);
     // Initial index is 0
-    assertEq(warCvxCrvStaker.getCurrentIndex(), 0);
+    assertEq(warCvxCrvFarmer.getCurrentIndex(), 0);
     // TODO check this in setRewardsWeight.t.sol
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), 0);
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
 
     vm.startPrank(controller);
-    warCvxCrvStaker.stake(source, amount);
+    warCvxCrvFarmer.stake(source, amount);
     vm.stopPrank();
 
     // Balance gets updated to staked amount
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), amount);
+    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), amount);
     // Index increases accordingly
-    assertEq(warCvxCrvStaker.getCurrentIndex(), amount);
+    assertEq(warCvxCrvFarmer.getCurrentIndex(), amount);
     assertEq(IERC20(source).balanceOf(address(controller)), initialTokenBalance - amount);
     // Check that everything is staked in the correct rewards group
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 0), amount);
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvStaker), 1), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), amount);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
   }
 
   function testDefaultBehaviorCrv(uint256 amount) public {
@@ -41,15 +41,15 @@ contract Stake is WarCvxCrvStakerTest {
     vm.assume(source != address(cvxCrv) && source != address(crv));
     vm.prank(controller);
     vm.expectRevert(Errors.IncorrectToken.selector);
-    warCvxCrvStaker.stake(source, 500);
+    warCvxCrvFarmer.stake(source, 500);
   }
 
   function testZeroValue() public {
     vm.startPrank(controller);
     vm.expectRevert(Errors.ZeroValue.selector);
-    warCvxCrvStaker.stake(address(crv), 0);
+    warCvxCrvFarmer.stake(address(crv), 0);
     vm.expectRevert(Errors.ZeroValue.selector);
-    warCvxCrvStaker.stake(address(cvxCrv), 0);
+    warCvxCrvFarmer.stake(address(cvxCrv), 0);
     vm.stopPrank();
   }
 }

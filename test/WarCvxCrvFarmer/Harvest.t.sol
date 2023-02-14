@@ -7,8 +7,8 @@ contract Stake is WarCvxCrvStakerTest {
   function setUp() public override {
     WarCvxCrvStakerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvStaker.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvStaker.stake(address(crv), crv.balanceOf(controller));
+    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
+    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
   }
 
@@ -17,7 +17,7 @@ contract Stake is WarCvxCrvStakerTest {
 
     vm.warp(block.timestamp + time);
     (uint256 crvRewards, uint256 cvxRewards, uint256 threeCrvRewards) = _getRewards();
-    warCvxCrvStaker.harvest();
+    warCvxCrvFarmer.harvest();
 
     assertEq(crv.balanceOf(controller), crvRewards);
     assertEq(cvx.balanceOf(controller), cvxRewards);
@@ -30,7 +30,7 @@ contract Stake is WarCvxCrvStakerTest {
     vm.assume(weight >= 0 && weight < 10_000);
     vm.assume(time > 0 && time < 10_000 days);
     vm.prank(admin);
-    warCvxCrvStaker.setRewardWeight(weight);
+    warCvxCrvFarmer.setRewardWeight(weight);
     _defaultBehavior(time);
   }
 }

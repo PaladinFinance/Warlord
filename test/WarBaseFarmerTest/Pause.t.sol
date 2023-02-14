@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvStakerTest.sol";
+import "./WarBaseFarmerTest.sol";
 
-contract Pause is WarCvxCrvStakerTest {
+contract Pause is WarBaseFarmerTest {
   function testDefaultBehavior() public {
-    assertEq(warCvxCrvStaker.paused(), false);
+    assertEq(warMockFarmer.paused(), false);
     vm.prank(admin);
-    warCvxCrvStaker.pause();
-    assertEq(warCvxCrvStaker.paused(), true);
+    warMockFarmer.pause();
+    assertEq(warMockFarmer.paused(), true);
   }
 
   function testOnlyOwner() public {
     vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
-    warCvxCrvStaker.pause();
+    warMockFarmer.pause();
   }
 }

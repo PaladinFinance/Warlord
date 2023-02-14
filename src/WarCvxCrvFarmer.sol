@@ -5,10 +5,10 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {CvxCrvStaking} from "interfaces/external/CvxCrvStaking.sol";
 import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
-import "./BaseStaker.sol";
+import "./WarBaseFarmer.sol";
 
 // TODO test for event emission
-contract WarCvxCrvStaker is BaseStaker {
+contract WarCvxCrvFarmer is WarBaseFarmer {
   IERC20 private constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   CvxCrvStaking private constant cvxCrvStaking = CvxCrvStaking(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
@@ -16,7 +16,7 @@ contract WarCvxCrvStaker is BaseStaker {
 
   using SafeERC20 for IERC20;
 
-  constructor(address _controller, address _warStaker) BaseStaker(_controller, _warStaker) {}
+  constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
 
   function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
     cvxCrvStaking.setRewardWeight(weight);

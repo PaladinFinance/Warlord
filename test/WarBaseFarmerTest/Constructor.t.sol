@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvStakerTest.sol";
+import "./WarBaseFarmerTest.sol";
 
-contract Constructor is WarCvxCrvStakerTest {
+contract Constructor is WarBaseFarmerTest {
   function testDefaultBehavior() public {
-    assertEq(warCvxCrvStaker.controller(), controller);
-    assertEq(warCvxCrvStaker.warStaker(), address(warStaker));
+    assertEq(warMockFarmer.controller(), controller);
+    assertEq(warMockFarmer.warStaker(), address(warStaker));
   }
 
   function testZeroControllerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarCvxCrvStaker(zero, alice);
+    new WarMockFarmer(zero, alice);
   }
 
   function testZeroWarStakerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarCvxCrvStaker(bob, zero);
+    new WarMockFarmer(bob, zero);
   }
 
   function testZeroAddresses() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarCvxCrvStaker(zero, zero);
+    new WarMockFarmer(zero, zero);
   }
 }

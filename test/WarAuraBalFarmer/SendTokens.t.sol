@@ -1,24 +1,25 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvStakerTest.sol";
+import "./WarAuraBalFarmerTest.sol";
 
-contract SendTokens is WarCvxCrvStakerTest {
+contract SendTokens is WarAuraBalFarmerTest {
+/*
   function setUp() public override {
-    WarCvxCrvStakerTest.setUp();
+    WarAuraBalStakerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvStaker.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvStaker.stake(address(crv), crv.balanceOf(controller));
+    warAuraBalStaker.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
+    warAuraBalStaker.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
     vm.warp(block.timestamp + 100 days);
   }
 
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 0 && amount <= convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)));
+    vm.assume(amount > 0 && amount <= convexCvxCrvStaker.balanceOf(address(warAuraBalStaker)));
     assertEq(cvxCrv.balanceOf(alice), 0);
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)), 200e18);
+    assertEq(convexCvxCrvStaker.balanceOf(address(warAuraBalStaker)), 200e18);
     vm.prank(address(warStaker));
-    warCvxCrvStaker.sendTokens(alice, amount);
+    warAuraBalStaker.sendTokens(alice, amount);
     assertEq(cvxCrv.balanceOf(alice), amount);
   }
 
@@ -26,13 +27,13 @@ contract SendTokens is WarCvxCrvStakerTest {
     vm.assume(randomAddress != zero);
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(address(warStaker));
-    warCvxCrvStaker.sendTokens(randomAddress, 0);
+    warAuraBalStaker.sendTokens(randomAddress, 0);
   }
 
   function testZeroAddress(uint256 randomValue) public {
-    vm.assume(randomValue > 0 && randomValue <= convexCvxCrvStaker.balanceOf(address(warCvxCrvStaker)));
+    vm.assume(randomValue > 0 && randomValue <= convexCvxCrvStaker.balanceOf(address(warAuraBalStaker)));
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(address(warStaker));
-    warCvxCrvStaker.sendTokens(zero, randomValue);
-  }
+    warCvxCrvFarmer.sendTokens(zero, randomValue);
+  }*/
 }
