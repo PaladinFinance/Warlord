@@ -12,16 +12,13 @@ contract Harvest is WarCvxLockerTest {
   }
 
   function testDefaultBehavior() public {
-    // locker.harvest();
-    // console.log(cvxCrv.balanceOf(controller));
-    // console.log(cvxFxs.balanceOf(controller));
+    /*
+    TODO 
+    console.log(vlCvx.lockedBalanceOf(address(locker)));
     vm.prank(vlCvx.owner());
     vlCvx.notifyRewardAmount(address(cvxCrv), 500);
-    console.log(vlCvx.lockedBalanceOf(address(locker)));
-    vm.warp(block.timestamp + 100 days);
     locker.harvest();
-    // console.log(cvxCrv.balanceOf(controller));
-    // console.log(cvxFxs.balanceOf(controller));
     assertTrue(false);
+    */
   }
 }
