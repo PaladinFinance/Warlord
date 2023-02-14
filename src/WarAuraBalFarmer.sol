@@ -12,11 +12,18 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   IERC20 private constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
   IERC20 private constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
   BaseRewardPool constant auraBalStaking = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
-  CrvDepositorWrapper private constant auraDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
+  CrvDepositorWrapper private constant balDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
+
+  uint256 public slippageBps;
 
   using SafeERC20 for IERC20;
 
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
+
+  function setSlippage(uint256 _slippageBps) public onlyOwner {
+    if (_slippageBps > 500) revert Errors.SlippageTooHigh();
+    slippageBps = 10_000 - _slippageBps;
+  }
 
   function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
     if (token != address(auraBal) && token != address(bal)) revert Errors.IncorrectToken();
@@ -26,19 +33,24 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     IERC20(token).safeTransferFrom(controller, address(this), amount);
 
+    // Variable used to store the amount of BPT created if token is bal
+    uint256 stakableAmount = amount;
+
     if (token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
-      bal.safeApprove(address(auraDepositor), amount);
-      // TODO there's a function getMinOut
-      uint256 minOut = 1;
-      auraDepositor.deposit(amount, minOut, true, address(0));
+      bal.safeApprove(address(balDepositor), amount);
+      uint256 minOut = balDepositor.getMinOut(amount, slippageBps);
+      balDepositor.deposit(amount, minOut, true, address(0));
+
+      // TODO check if locking bonus is available as in convex
       // Take into account possible bonus for locking crv
-      _index += auraBal.balanceOf(address(this)) - initialBalance;
-    } else {
-      _index += amount;
+      stakableAmount = auraBal.balanceOf(address(this)) - initialBalance;
     }
-    auraBal.safeApprove(address(auraBalStaking), amount);
-    auraBalStaking.stake(amount);
+
+    _index += stakableAmount;
+
+    auraBal.safeApprove(address(auraBalStaking), stakableAmount);
+    auraBalStaking.stake(stakableAmount);
 
     emit Staked(amount, _index);
   }

@@ -33,4 +33,7 @@ library Errors {
 
   // Maths
   error NumberExceed128Bits();
+
+  // WarAuraBalFarmer
+  error SlippageTooHigh();
 }
