@@ -29,19 +29,26 @@ contract MainnetTest is BaseTest {
   IERC20 constant cvxFxs = IERC20(0xFEEf77d3f69374f66429C91d732A244f074bdf74);
 
   // Aura
-  CrvDepositorWrapper constant auraDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
+  CrvDepositorWrapper constant balDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
   IERC20 constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   AuraLocker constant vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   IERC20 constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
   BaseRewardPool constant auraBalStaker = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
 
   function setUp() public virtual {
-    vm.label(address(cvx), "cvx");
-    vm.label(address(aura), "aura");
     vm.label(address(crv), "crv");
-    vm.label(address(convexCvxCrvStaker), "convexCvxCrvStaker");
+    vm.label(address(cvx), "cvx");
     vm.label(address(cvxCrv), "cvxCrv");
+
+    vm.label(address(bal), "bal");
+    vm.label(address(aura), "aura");
+    vm.label(address(auraBal), "auraBal");
+
     vm.label(address(vlCvx), "vlCvx");
+    vm.label(address(convexCvxCrvStaker), "convexCvxCrvStaker");
+
+    vm.label(address(balDepositor), "balDepositor");
+    vm.label(address(auraBalStaker), "auraBalStaker");
   }
 
   function fork() public {
