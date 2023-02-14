@@ -53,5 +53,10 @@ contract Stake is WarAuraBalFarmerTest {
     warAuraBalStaker.stake(address(cvxCrv), 0);
     vm.stopPrank();
   }
-  */
+
+  function testOnlyController() public {
+    vm.prank(alice);
+    vm.expectRevert(Errors.CallerNotAllowed.selector);
+    warAuraBalFarmer.stake(address(bal), 0);
+  }
 }

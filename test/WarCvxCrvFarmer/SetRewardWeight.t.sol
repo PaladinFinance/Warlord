@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./WarCvxCrvFarmerTest.sol";
 
-contract SetWarStaker is WarCvxCrvFarmerTest {
+contract SetRewardWeight is WarCvxCrvFarmerTest {
   function setUp() public override {
     WarCvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
