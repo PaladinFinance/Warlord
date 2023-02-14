@@ -3,54 +3,8 @@ pragma solidity 0.8.16;
 
 import "./WarBaseFarmerTest.sol";
 
-contract Stake is WarBaseFarmerTest {
-/* TODO this cannot be abstracted, needs to be put in their respective base classes
-  function setUp() public override {
-    WarAuraBalStakerTest.setUp();
-    vm.startPrank(controller);
-    vm.stopPrank();
+contract GetCurrentIndex is WarBaseFarmerTest {
+  function testDefaultBehvior() public {
+    assertEq(warMockFarmer.getCurrentIndex(), 0);
   }
-
-  function testDefaultBehvior(uint256 amount1, uint256 amount2, uint256 amount3) public {
-    vm.assume(amount1 < 1e18 && amount2 < 1e18 && amount3 < 1e18 && amount1 + amount2 + amount3 < 1e18);
-    uint256[] memory amount = new uint256[](3);
-    amount[0] = amount1;
-    amount[1] = amount2;
-    amount[2] = amount3;
-    uint256 totalStakedAmount;
-
-    vm.startPrank(controller);
-    for (uint256 i; i < 3; ++i) {
-      uint256 currentAmount = amount[i];
-      if (currentAmount > 0) {
-        warCvxCrvFarmer.stake(address(crv), currentAmount);
-        totalStakedAmount += currentAmount;
-      }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
-    }
-    vm.stopPrank();
-
-    // Index doesn't change when sending tokens
-    vm.startPrank(address(warStaker));
-    for (uint256 i; i < 3; ++i) {
-      uint256 currentAmount = amount[i];
-      if (currentAmount > 0) {
-        warCvxCrvFarmer.sendTokens(alice, currentAmount);
-      }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
-    }
-    vm.stopPrank();
-
-    vm.startPrank(address(controller));
-    for (uint256 i; i < 3; ++i) {
-      uint256 currentAmount = amount[i];
-      if (currentAmount > 0) {
-        warCvxCrvFarmer.stake(address(crv), currentAmount);
-        totalStakedAmount += currentAmount;
-      }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
-    }
-    vm.stopPrank();
-  }
-  */
 }

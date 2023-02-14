@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvStakerTest.sol";
+import "./WarCvxCrvFarmerTest.sol";
 
-contract Stake is WarCvxCrvStakerTest {
+contract Stake is WarCvxCrvFarmerTest {
   function setUp() public override {
-    WarCvxCrvStakerTest.setUp();
+    WarCvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
     warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
     warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));

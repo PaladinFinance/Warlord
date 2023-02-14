@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvStakerTest.sol";
+import "./WarCvxCrvFarmerTest.sol";
 
-contract Stake is WarCvxCrvStakerTest {
+contract Stake is WarCvxCrvFarmerTest {
   function _stake(address source, uint256 amount) internal {
     uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
     vm.assume(amount > 0 && amount <= initialTokenBalance);

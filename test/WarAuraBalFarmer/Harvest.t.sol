@@ -4,15 +4,15 @@ pragma solidity 0.8.16;
 import "./WarAuraBalFarmerTest.sol";
 
 contract Stake is WarAuraBalFarmerTest {
-/*
   function setUp() public override {
-    WarAuraBalStakerTest.setUp();
+    WarAuraBalFarmerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
+    warAuraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
+    warAuraBalFarmer.stake(address(bal), bal.balanceOf(controller));
     vm.stopPrank();
   }
 
+  /*
   function _defaultBehavior(uint256 time) internal {
     _assertNoPendingRewards();
 
@@ -26,7 +26,6 @@ contract Stake is WarAuraBalFarmerTest {
 
     _assertNoPendingRewards();
   }
-
   function testDefaultBehavior(uint256 weight, uint256 time) public {
     vm.assume(weight >= 0 && weight < 10_000);
     vm.assume(time > 0 && time < 10_000 days);
