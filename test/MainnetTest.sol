@@ -2,12 +2,12 @@
 pragma solidity 0.8.16;
 
 import "./BaseTest.sol";
-import "interfaces/external/vlCvx.sol";
-import "interfaces/external/vlAura.sol";
-import "interfaces/external/AuraDepositor.sol";
-import {CvxCrvStaking} from "interfaces/external/CvxCrvStaking.sol";
-import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
-import {BaseRewardPool} from "interfaces/external/AuraBalStaker.sol";
+import "interfaces/external/convex/vlCvx.sol";
+import "interfaces/external/aura/vlAura.sol";
+import "interfaces/external/aura/AuraDepositor.sol";
+import {CvxCrvStaking} from "interfaces/external/convex/CvxCrvStaking.sol";
+import {CrvDepositor} from "interfaces/external/convex/CrvDepositor.sol";
+import {BaseRewardPool} from "interfaces/external/aura/AuraBalStaker.sol";
 
 contract MainnetTest is BaseTest {
   // Curve

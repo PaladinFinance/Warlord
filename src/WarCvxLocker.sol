@@ -7,7 +7,7 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
-import {CvxLockerV2} from "interfaces/external/vlCvx.sol";
+import {CvxLockerV2} from "interfaces/external/convex/vlCvx.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 import {IWarRedeemModule} from "interfaces/IWarRedeemModule.sol";

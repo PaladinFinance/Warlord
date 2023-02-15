@@ -3,8 +3,8 @@ pragma solidity 0.8.16;
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
-import {CvxCrvStaking} from "interfaces/external/CvxCrvStaking.sol";
-import {CrvDepositor} from "interfaces/external/CrvDepositor.sol";
+import {CvxCrvStaking} from "interfaces/external/convex/CvxCrvStaking.sol";
+import {CrvDepositor} from "interfaces/external/convex/CrvDepositor.sol";
 import "./WarBaseFarmer.sol";
 
 // TODO test for event emission

@@ -3,8 +3,8 @@ pragma solidity 0.8.16;
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
-import {BaseRewardPool} from "interfaces/external/AuraBalStaker.sol";
-import {CrvDepositorWrapper} from "interfaces/external/AuraDepositor.sol";
+import {BaseRewardPool} from "interfaces/external/aura/AuraBalStaker.sol";
+import {CrvDepositorWrapper} from "interfaces/external/aura/AuraDepositor.sol";
 import {IRewards} from "interfaces/external/aura/IRewards.sol";
 import "./WarBaseFarmer.sol";
 
