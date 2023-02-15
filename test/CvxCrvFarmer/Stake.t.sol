@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvFarmerTest.sol";
+import "./CvxCrvFarmerTest.sol";
 
-contract Stake is WarCvxCrvFarmerTest {
+contract Stake is CvxCrvFarmerTest {
   function _stake(address source, uint256 amount) internal {
     uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
     //TODO test emits and compare with auraBal

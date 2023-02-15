@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract Constructor is WarBaseFarmerTest {
+contract Constructor is BaseFarmerTest {
   function testDefaultBehavior() public {
     assertEq(warMockFarmer.controller(), controller);
     assertEq(warMockFarmer.warStaker(), address(warStaker));

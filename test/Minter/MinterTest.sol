@@ -8,7 +8,7 @@ import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {vlMockLocker} from "mocks/vlMockLocker.sol";
 import {MockMintRatio} from "mocks/MockMintRatio.sol";
 
-contract WarMinterTest is MainnetTest {
+contract MinterTest is MainnetTest {
   WarToken war;
   WarMinter minter;
   IWarLocker auraLocker;

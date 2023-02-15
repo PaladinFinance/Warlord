@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarMinterTest.sol";
+import "./MinterTest.sol";
 
-contract SetMintRatio is WarMinterTest {
+contract SetMintRatio is MinterTest {
   function testDefaultBehavior(address _mintRatio) public {
     vm.assume(_mintRatio != zero);
     vm.prank(admin);

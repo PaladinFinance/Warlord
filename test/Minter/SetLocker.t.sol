@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarMinterTest.sol";
+import "./MinterTest.sol";
 
-contract SetLocker is WarMinterTest {
+contract SetLocker is MinterTest {
   function testDefaultBehavior(uint256 amount, uint256 ratio) public {
     vm.assume(amount > 0 && amount < 1e27);
     vm.assume(ratio > 0 && ratio < 1e27);

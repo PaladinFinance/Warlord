@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract GetCurrentIndex is WarBaseFarmerTest {
+contract GetCurrentIndex is BaseFarmerTest {
   function testDefaultBehvior() public {
     assertEq(warMockFarmer.getCurrentIndex(), 0);
   }

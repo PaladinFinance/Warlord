@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarTokenTest.sol";
+import "./TokenTest.sol";
 
-contract GrantRole is WarTokenTest {
+contract GrantRole is TokenTest {
   function testDefaultBehavior() public {
     assertFalse(war.hasRole(MINTER_ROLE, alice));
     assertFalse(war.hasRole(BURNER_ROLE, bob));

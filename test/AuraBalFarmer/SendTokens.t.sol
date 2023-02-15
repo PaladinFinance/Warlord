@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarAuraBalFarmerTest.sol";
+import "./AuraBalFarmerTest.sol";
 
-contract SendTokens is WarAuraBalFarmerTest {
+contract SendTokens is AuraBalFarmerTest {
 /*
   function setUp() public override {
     WarAuraBalStakerTest.setUp();

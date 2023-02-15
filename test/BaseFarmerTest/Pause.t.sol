@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract Pause is WarBaseFarmerTest {
+contract Pause is BaseFarmerTest {
   function testDefaultBehavior() public {
     assertEq(warMockFarmer.paused(), false);
     vm.prank(admin);

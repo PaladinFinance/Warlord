@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarStakerTest.sol";
+import "./StakerTest.sol";
 
-contract Stake is WarStakerTest {
+contract Stake is StakerTest {
   function testDefaultBehavior(uint256 amount) public {
     // TODO more assertions
     // TODO missing getters that would make tests more accurate? like userCurrentStakedAmount

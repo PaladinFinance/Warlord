@@ -9,7 +9,7 @@ import "../MainnetTest.sol";
 import "interfaces/external/IDelegateRegistry.sol";
 import "../mocks/MockMintRatio.sol";
 
-contract WarCvxLockerTest is MainnetTest {
+contract CvxLockerTest is MainnetTest {
   WarCvxLocker locker;
   address delegatee = makeAddr("delegatee");
   address controller = makeAddr("controller");

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxCrvFarmerTest.sol";
+import "./CvxCrvFarmerTest.sol";
 
-contract Migrate is WarCvxCrvFarmerTest {
+contract Migrate is CvxCrvFarmerTest {
   address migration = makeAddr("migration");
 
   function setUp() public override {
-    WarCvxCrvFarmerTest.setUp();
+    CvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
     warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
     warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));

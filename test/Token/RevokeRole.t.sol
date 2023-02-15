@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarTokenTest.sol";
+import "./TokenTest.sol";
 
-contract RevokeRole is WarTokenTest {
+contract RevokeRole is TokenTest {
   function testDefaultBehavior() public {
     assertTrue(war.hasRole(MINTER_ROLE, minter));
     assertTrue(war.hasRole(BURNER_ROLE, burner));

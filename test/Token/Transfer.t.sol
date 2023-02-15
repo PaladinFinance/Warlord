@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarTokenTest.sol";
+import "./TokenTest.sol";
 
-contract Transfer is WarTokenTest {
+contract Transfer is TokenTest {
   function testDefaultBehavior(uint256 amountMint, uint256 amountTransfer) public {
     vm.assume(amountMint > 0 && amountMint >= amountTransfer);
     assertEq(war.totalSupply(), 0);

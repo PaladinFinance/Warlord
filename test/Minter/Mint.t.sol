@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarMinterTest.sol";
+import "./MinterTest.sol";
 
-contract Mint is WarMinterTest {
+contract Mint is MinterTest {
   // TODO test for emits
   function _mint(address source, uint256 amount, address receiver) internal {
     vm.assume(receiver != alice && receiver != zero);

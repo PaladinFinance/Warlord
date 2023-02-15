@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxLockerTest.sol";
+import "./CvxLockerTest.sol";
 
-contract SetDelegate is WarCvxLockerTest {
+contract SetDelegate is CvxLockerTest {
   function testDefaultBehavior(address _delegatee) public {
     console.log(locker.owner());
     console.log(admin);

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarMinterTest.sol";
+import "./MinterTest.sol";
 
-contract Constructor is WarMinterTest {
+contract Constructor is MinterTest {
   function testDefaultBehavior() public {
     assertEq(minter.warToken(), address(war));
     assertEq(minter.mintRatio(), address(mintRatio));

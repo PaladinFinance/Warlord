@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarTokenTest.sol";
+import "./TokenTest.sol";
 
-contract TransferOwnership is WarTokenTest {
+contract TransferOwnership is TokenTest {
   function testDefaultBehavior() public {
     vm.prank(admin);
     vm.expectEmit(true, true, false, true);

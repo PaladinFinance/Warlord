@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarAuraBalFarmerTest.sol";
+import "./AuraBalFarmerTest.sol";
 
-contract Harvest is WarAuraBalFarmerTest {
+contract Harvest is AuraBalFarmerTest {
   function setUp() public override {
-    WarAuraBalFarmerTest.setUp();
+    AuraBalFarmerTest.setUp();
     vm.startPrank(controller);
     warAuraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
     warAuraBalFarmer.stake(address(bal), bal.balanceOf(controller));

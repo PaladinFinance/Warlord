@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "../../src/Token.sol";
 import "../BaseTest.sol";
 
-contract WarTokenTest is BaseTest {
+contract TokenTest is BaseTest {
   event NewPendingOwner(address indexed previousPendingOwner, address indexed newPendingOwner);
 
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");

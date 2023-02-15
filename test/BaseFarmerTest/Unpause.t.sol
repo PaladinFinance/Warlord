@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract Unpause is WarBaseFarmerTest {
+contract Unpause is BaseFarmerTest {
   function setUp() public override {
-    WarBaseFarmerTest.setUp();
+    BaseFarmerTest.setUp();
     vm.prank(admin);
     warMockFarmer.pause();
   }

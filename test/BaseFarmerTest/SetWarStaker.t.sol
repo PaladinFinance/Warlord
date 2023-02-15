@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract SetWarStaker is WarBaseFarmerTest {
+contract SetWarStaker is BaseFarmerTest {
   function testDefaultBehavior(address newWarStaker) public {
     vm.assume(newWarStaker != zero && newWarStaker != address(warStaker));
     vm.prank(admin);

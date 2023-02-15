@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxLockerTest.sol";
+import "./CvxLockerTest.sol";
 
-contract Lock is WarCvxLockerTest {
+contract Lock is CvxLockerTest {
   function testDefaultBehavior(uint256 amount) public {
     uint256 initialAmount = cvx.balanceOf(address(minter));
     vm.assume(amount > 0 && amount < initialAmount);

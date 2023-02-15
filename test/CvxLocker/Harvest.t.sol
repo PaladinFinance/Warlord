@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxLockerTest.sol";
+import "./CvxLockerTest.sol";
 
-contract Harvest is WarCvxLockerTest {
+contract Harvest is CvxLockerTest {
   function setUp() public override {
-    WarCvxLockerTest.setUp();
+    CvxLockerTest.setUp();
     uint256 amountToStake = cvx.balanceOf(address(minter));
     vm.prank(address(minter));
     locker.lock(amountToStake);

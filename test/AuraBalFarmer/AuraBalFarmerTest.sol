@@ -6,7 +6,7 @@ import "../../src/AuraBalFarmer.sol";
 import {WarStaker} from "../../src/Staker.sol";
 import "../../src/Token.sol";
 
-contract WarAuraBalFarmerTest is MainnetTest {
+contract AuraBalFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarAuraBalFarmerTest.sol";
+import "./AuraBalFarmerTest.sol";
 
-contract GetCurrentIndex is WarAuraBalFarmerTest {
+contract GetCurrentIndex is AuraBalFarmerTest {
 /*
   function testDefaultBehvior(uint256 amount1, uint256 amount2, uint256 amount3) public {
     vm.assume(amount1 < 1e18 && amount2 < 1e18 && amount3 < 1e18 && amount1 + amount2 + amount3 < 1e18);

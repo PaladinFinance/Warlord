@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarTokenTest.sol";
+import "./TokenTest.sol";
 
-contract Mint is WarTokenTest {
+contract Mint is TokenTest {
   function testDefaultBehavior(uint256 amount) public {
     vm.prank(admin);
     war.grantRole(MINTER_ROLE, alice);

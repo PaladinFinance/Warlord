@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarAuraBalFarmerTest.sol";
+import "./AuraBalFarmerTest.sol";
 
-contract Stake is WarAuraBalFarmerTest {
+contract Stake is AuraBalFarmerTest {
   function _stake(address source, uint256 amount) internal {
     uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
 

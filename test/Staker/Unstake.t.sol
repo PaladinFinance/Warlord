@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarStakerTest.sol";
+import "./StakerTest.sol";
 
-contract Unstake is WarStakerTest {
+contract Unstake is StakerTest {
   function setUp() public override {
-    WarStakerTest.setUp();
+    StakerTest.setUp();
     // staker.stake(50e18, alice);
   }
 

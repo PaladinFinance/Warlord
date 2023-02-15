@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarBaseFarmerTest.sol";
+import "./BaseFarmerTest.sol";
 
-contract SetController is WarBaseFarmerTest {
+contract SetController is BaseFarmerTest {
   function testDefaultBehavior(address newController) public {
     vm.assume(newController != zero && newController != controller);
     vm.prank(admin);

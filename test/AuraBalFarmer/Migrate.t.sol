@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarAuraBalFarmerTest.sol";
+import "./AuraBalFarmerTest.sol";
 
-contract Migrate is WarAuraBalFarmerTest {
+contract Migrate is AuraBalFarmerTest {
 /*
   address migration = makeAddr("migration");
 

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarMinterTest.sol";
+import "./MinterTest.sol";
 
-contract MintMultiple is WarMinterTest {
+contract MintMultiple is MinterTest {
   function testDefaultBehavior(uint256 amount1, uint256 amount2) public {
     vm.assume(amount1 > 0 && amount2 > 0);
     vm.assume(amount1 < cvx.balanceOf(alice) && amount2 < aura.balanceOf(alice));

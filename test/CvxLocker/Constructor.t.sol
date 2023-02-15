@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./WarCvxLockerTest.sol";
+import "./CvxLockerTest.sol";
 
-contract Constructor is WarCvxLockerTest {
+contract Constructor is CvxLockerTest {
   function testDefaultBehavior() public {
     assertEq(locker.token(), address(cvx));
     assertEq(locker.controller(), controller);

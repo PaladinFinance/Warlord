@@ -5,7 +5,7 @@ import "../MainnetTest.sol";
 import "../../src/Staker.sol";
 import "../../src/Token.sol";
 
-contract WarStakerTest is MainnetTest {
+contract StakerTest is MainnetTest {
   event Staked(address indexed caller, address indexed receiver, uint256 amount);
   event Unstaked(address indexed owner, address indexed receiver, uint256 amount);
   event Transfer(address indexed from, address indexed to, uint256 amount);
