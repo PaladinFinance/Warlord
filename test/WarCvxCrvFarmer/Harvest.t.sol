@@ -28,9 +28,16 @@ contract Harvest is WarCvxCrvFarmerTest {
 
   function testDefaultBehavior(uint256 weight, uint256 time) public {
     vm.assume(weight >= 0 && weight < 10_000);
-    vm.assume(time > 0 && time < 10_000 days);
+    vm.assume(time < 10_000 days);
     vm.prank(admin);
     warCvxCrvFarmer.setRewardWeight(weight);
     _defaultBehavior(time);
+  }
+
+  function testWhenNotPaused() public {
+    vm.prank(admin);
+    warCvxCrvFarmer.pause();
+    vm.expectRevert("Pausable: paused");
+    warCvxCrvFarmer.harvest();
   }
 }
