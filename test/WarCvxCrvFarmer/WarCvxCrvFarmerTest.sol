@@ -22,6 +22,7 @@ contract WarCvxCrvFarmerTest is MainnetTest {
     warCvxCrvFarmer = new WarCvxCrvFarmer(controller, address(warStaker));
     vm.stopPrank();
 
+    // TODO deal bigger amounts
     deal(address(crv), controller, 100e18);
     deal(address(cvxCrv), controller, 100e18);
 
