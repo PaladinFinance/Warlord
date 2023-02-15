@@ -11,7 +11,7 @@ import "./WarBaseFarmer.sol";
 contract WarCvxCrvFarmer is WarBaseFarmer {
   IERC20 private constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
-  CvxCrvStaking private constant cvxCrvStaking = CvxCrvStaking(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
+  CvxCrvStaking private constant cvxCrvStaker = CvxCrvStaking(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
   CrvDepositor private constant crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
 
   using SafeERC20 for IERC20;
@@ -19,7 +19,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
 
   function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
-    cvxCrvStaking.setRewardWeight(weight);
+    cvxCrvStaker.setRewardWeight(weight);
   }
 
   function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
@@ -39,8 +39,8 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     } else {
       _index += amount;
     }
-    cvxCrv.safeApprove(address(cvxCrvStaking), amount);
-    cvxCrvStaking.stake(amount, address(this));
+    cvxCrv.safeApprove(address(cvxCrvStaker), amount);
+    cvxCrvStaker.stake(amount, address(this));
 
     emit Staked(amount, _index);
   }
@@ -50,15 +50,15 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   }
 
   function _harvest() internal {
-    cvxCrvStaking.getReward(address(this), controller);
+    cvxCrvStaker.getReward(address(this), controller);
   }
 
   function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
-    if (cvxCrvStaking.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+    if (cvxCrvStaker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
 
-    cvxCrvStaking.withdraw(amount);
+    cvxCrvStaker.withdraw(amount);
     cvxCrv.safeTransfer(receiver, amount);
   }
 
@@ -66,8 +66,8 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
     // Unstake and send cvxCrv
-    uint256 cvxCrvStakedBalance = cvxCrvStaking.balanceOf(address(this));
-    cvxCrvStaking.withdraw(cvxCrvStakedBalance);
+    uint256 cvxCrvStakedBalance = cvxCrvStaker.balanceOf(address(this));
+    cvxCrvStaker.withdraw(cvxCrvStakedBalance);
     cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
 
     // Harvest and send rewards to the controller
