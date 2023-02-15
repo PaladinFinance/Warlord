@@ -5,13 +5,15 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {BaseRewardPool} from "interfaces/external/AuraBalStaker.sol";
 import {CrvDepositorWrapper} from "interfaces/external/AuraDepositor.sol";
+import {IRewards} from "interfaces/external/aura/IRewards.sol";
 import "./WarBaseFarmer.sol";
 
 // TODO test for event emission
 contract WarAuraBalFarmer is WarBaseFarmer {
   IERC20 private constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
+  IERC20 private constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   IERC20 private constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
-  BaseRewardPool constant auraBalStaking = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
+  BaseRewardPool private constant auraBalStaker = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
   CrvDepositorWrapper private constant balDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
 
   uint256 public slippageBps;
@@ -52,8 +54,8 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     _index += stakableAmount;
 
-    auraBal.safeApprove(address(auraBalStaking), stakableAmount);
-    auraBalStaking.stake(stakableAmount);
+    auraBal.safeApprove(address(auraBalStaker), stakableAmount);
+    auraBalStaker.stake(stakableAmount);
 
     emit Staked(stakableAmount, _index);
   }
@@ -63,15 +65,31 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   }
 
   function _harvest() internal {
-    auraBalStaking.getReward(controller, false);
+    auraBalStaker.getReward(address(this), true);
+
+    bal.safeTransfer(controller, bal.balanceOf(address(this)));
+    aura.safeTransfer(controller, aura.balanceOf(address(this)));
+
+    uint256 extraRewardslength = auraBalStaker.extraRewardsLength();
+
+    for (uint256 i; i < extraRewardslength;) {
+      IRewards rewarder = IRewards(auraBalStaker.extraRewards(i));
+      IERC20 token = IERC20(rewarder.rewardToken());
+      uint256 balance = token.balanceOf(address(this));
+      token.transfer(controller, balance);
+
+      unchecked {
+        ++i;
+      }
+    }
   }
 
   function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
-    if (auraBalStaking.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+    if (auraBalStaker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
 
-    auraBalStaking.withdraw(amount, false);
+    auraBalStaker.withdraw(amount, false);
     auraBal.safeTransfer(receiver, amount);
   }
 
@@ -79,9 +97,9 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
     // Unstake and send cvxCrv
-    uint256 auraBalStakedBalance = auraBalStaking.balanceOf(address(this));
+    uint256 auraBalStakedBalance = auraBalStaker.balanceOf(address(this));
     // TODO check that claim does NOT send to the controller
-    auraBalStaking.withdraw(auraBalStakedBalance, false);
+    auraBalStaker.withdraw(auraBalStakedBalance, false);
     auraBal.safeTransfer(receiver, auraBalStakedBalance);
 
     // Harvest and send rewards to the controller
