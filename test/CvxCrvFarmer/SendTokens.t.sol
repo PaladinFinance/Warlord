@@ -35,4 +35,9 @@ contract SendTokens is CvxCrvFarmerTest {
     vm.prank(address(warStaker));
     warCvxCrvFarmer.sendTokens(zero, randomValue);
   }
+
+  function testOnlyWarStaker() public {
+    vm.expectRevert(Errors.CallerNotAllowed.selector);
+    warCvxCrvFarmer.sendTokens(alice, 500);
+  }
 }
