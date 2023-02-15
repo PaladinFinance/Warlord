@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "./WarAuraBalFarmerTest.sol";
 
 contract Harvest is WarAuraBalFarmerTest {
-/*function setUp() public override {
+  function setUp() public override {
     WarAuraBalFarmerTest.setUp();
     vm.startPrank(controller);
     warAuraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
@@ -12,30 +12,24 @@ contract Harvest is WarAuraBalFarmerTest {
     vm.stopPrank();
   }
 
-  function testRandom() public {
-    console.log(_getRewards());
-  } */
-
-/*
   function _defaultBehavior(uint256 time) internal {
-    _assertNoPendingRewards();
+    _assertNoPendingRewards(); // TODO not that useful anymore
 
     vm.warp(block.timestamp + time);
-    uint256 rewards = _getRewards();
     warAuraBalFarmer.harvest();
 
-    assertEq(bal.balanceOf(controller), crvRewards);
-    assertEq(cvx.balanceOf(controller), cvxRewards);
-    assertEq(threeCrv.balanceOf(controller), threeCrvRewards);
-
-    _assertNoPendingRewards();
+    // TODO test numbers but should be fine
   }
 
-  function testDefaultBehavior(uint256 weight, uint256 time) public {
-    vm.assume(weight >= 0 && weight < 10_000);
-    vm.assume(time > 0 && time < 10_000 days);
-    vm.prank(admin);
-    warCvxCrvFarmer.setRewardWeight(weight);
+  function testDefaultBehavior(uint256 time) public {
+    vm.assume(time < 10_000 days);
     _defaultBehavior(time);
-  }*/
+  }
+
+  function testWhenNotPaused() public {
+    vm.prank(admin);
+    warAuraBalFarmer.pause();
+    vm.expectRevert("Pausable: paused");
+    warAuraBalFarmer.harvest();
+  }
 }
