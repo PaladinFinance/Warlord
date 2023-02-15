@@ -55,7 +55,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     auraBal.safeApprove(address(auraBalStaking), stakableAmount);
     auraBalStaking.stake(stakableAmount);
 
-    emit Staked(amount, _index);
+    emit Staked(stakableAmount, _index);
   }
 
   function harvest() external whenNotPaused nonReentrant {
