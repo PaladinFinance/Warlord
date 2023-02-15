@@ -12,6 +12,9 @@ contract AuraBalFarmerTest is MainnetTest {
   WarStaker warStaker;
   WarAuraBalFarmer auraBalFarmer;
 
+  uint256 constant setUpBalBalance = 150_000e18;
+  uint256 constant setUpAuraBalBalance = 150_000e18;
+
   event SetController(address controller);
   event SetWarStaker(address warStaker);
   event Staked(uint256 amount, uint256 index);
@@ -27,8 +30,8 @@ contract AuraBalFarmerTest is MainnetTest {
     vm.stopPrank();
 
     // dealing around 1.5m dollars in bal
-    deal(address(bal), controller, 150_000e18);
-    deal(address(auraBal), controller, 150_000e18);
+    deal(address(bal), controller, setUpBalBalance);
+    deal(address(auraBal), controller, setUpAuraBalBalance);
 
     vm.startPrank(controller);
     bal.approve(address(auraBalFarmer), bal.balanceOf(controller));
