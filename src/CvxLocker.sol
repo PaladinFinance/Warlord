@@ -12,7 +12,7 @@ import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 import {IWarRedeemModule} from "interfaces/IWarRedeemModule.sol";
 import {Math} from "openzeppelin/utils/math/Math.sol";
-import {WarMinter} from "src/WarMinter.sol";
+import {WarMinter} from "src/Minter.sol";
 
 contract WarCvxLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
   CvxLockerV2 private constant locker = CvxLockerV2(0x72a19342e8F1838460eBFCCEf09F6585e32db86E);

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../../src/WarToken.sol";
-import "../../src/WarMinter.sol";
+import "../../src/Token.sol";
+import "../../src/Minter.sol";
 import "../MainnetTest.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {vlMockLocker} from "mocks/vlMockLocker.sol";

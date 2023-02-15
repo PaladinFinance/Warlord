@@ -2,9 +2,9 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/WarBaseFarmer.sol";
-import {WarStaker} from "../../src/WarStaker.sol";
-import "../../src/WarToken.sol";
+import "../../src/BaseFarmer.sol";
+import {WarStaker} from "../../src/Staker.sol";
+import "../../src/Token.sol";
 
 contract WarBaseFarmerTest is MainnetTest {
   address controller = makeAddr("controller");

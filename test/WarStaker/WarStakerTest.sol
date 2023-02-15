@@ -2,8 +2,8 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/WarStaker.sol";
-import "../../src/WarToken.sol";
+import "../../src/Staker.sol";
+import "../../src/Token.sol";
 
 contract WarStakerTest is MainnetTest {
   event Staked(address indexed caller, address indexed receiver, uint256 amount);

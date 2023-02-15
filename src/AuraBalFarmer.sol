@@ -6,7 +6,7 @@ import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {BaseRewardPool} from "interfaces/external/aura/AuraBalStaker.sol";
 import {CrvDepositorWrapper} from "interfaces/external/aura/AuraDepositor.sol";
 import {IRewards} from "interfaces/external/aura/IRewards.sol";
-import "./WarBaseFarmer.sol";
+import "./BaseFarmer.sol";
 
 // TODO test for event emission
 contract WarAuraBalFarmer is WarBaseFarmer {
