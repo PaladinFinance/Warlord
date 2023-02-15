@@ -10,7 +10,7 @@ contract AuraBalFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;
-  WarAuraBalFarmer warAuraBalFarmer;
+  WarAuraBalFarmer auraBalFarmer;
 
   event SetController(address controller);
   event SetWarStaker(address warStaker);
@@ -23,7 +23,7 @@ contract AuraBalFarmerTest is MainnetTest {
     vm.startPrank(admin);
     war = new WarToken();
     warStaker = new WarStaker(address(war));
-    warAuraBalFarmer = new WarAuraBalFarmer(controller, address(warStaker));
+    auraBalFarmer = new WarAuraBalFarmer(controller, address(warStaker));
     vm.stopPrank();
 
     // dealing around 1.5m dollars in bal
@@ -31,14 +31,14 @@ contract AuraBalFarmerTest is MainnetTest {
     deal(address(auraBal), controller, 150_000e18);
 
     vm.startPrank(controller);
-    bal.approve(address(warAuraBalFarmer), bal.balanceOf(controller));
-    auraBal.approve(address(warAuraBalFarmer), auraBal.balanceOf(controller));
+    bal.approve(address(auraBalFarmer), bal.balanceOf(controller));
+    auraBal.approve(address(auraBalFarmer), auraBal.balanceOf(controller));
     vm.stopPrank();
   }
 
   function _getRewards() internal view returns (uint256 rewards) {
     // TODO something is wrong since multiple rewards
-    rewards = auraBalStaker.earned(address(warAuraBalFarmer));
+    rewards = auraBalStaker.earned(address(auraBalFarmer));
   }
 
   function _assertNoPendingRewards() internal {

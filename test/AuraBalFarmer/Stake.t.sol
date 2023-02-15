@@ -11,34 +11,34 @@ contract Stake is AuraBalFarmerTest {
     vm.assume(amount <= initialTokenBalance);
 
     // Initial balance for the staked auraBal is 0
-    assertEq(auraBalStaker.balanceOf(address(warAuraBalFarmer)), 0);
+    assertEq(auraBalStaker.balanceOf(address(auraBalFarmer)), 0);
 
     // Initial index is 0
-    assertEq(warAuraBalFarmer.getCurrentIndex(), 0);
+    assertEq(auraBalFarmer.getCurrentIndex(), 0);
 
     // Testing the emissions
     vm.expectEmit(true, true, false, false); // TODO preciser errors
-    emit Staked(auraBalStaker.balanceOf(address(warAuraBalFarmer)), warAuraBalFarmer.getCurrentIndex());
+    emit Staked(auraBalStaker.balanceOf(address(auraBalFarmer)), auraBalFarmer.getCurrentIndex());
 
     vm.startPrank(controller);
-    warAuraBalFarmer.stake(source, amount);
+    auraBalFarmer.stake(source, amount);
     vm.stopPrank();
 
     // Make sure the minimum amount was respected
-    uint256 minOut = balDepositor.getMinOut(amount, warAuraBalFarmer.slippageBps());
-    assertGe(warAuraBalFarmer.getCurrentIndex(), minOut);
+    uint256 minOut = balDepositor.getMinOut(amount, auraBalFarmer.slippageBps());
+    assertGe(auraBalFarmer.getCurrentIndex(), minOut);
 
     // If auraBal is already minted no zap needed so we can expect exact amounts
     if (source == address(auraBal)) {
-      assertEq(auraBalStaker.balanceOf(address(warAuraBalFarmer)), amount);
+      assertEq(auraBalStaker.balanceOf(address(auraBalFarmer)), amount);
     }
     // If bal is minted we just expected the balance to have increase from zero
     if (source == address(bal)) {
-      assertGt(auraBalStaker.balanceOf(address(warAuraBalFarmer)), 0);
+      assertGt(auraBalStaker.balanceOf(address(auraBalFarmer)), 0);
     }
 
     // Index increases accordingly
-    assertEq(warAuraBalFarmer.getCurrentIndex(), auraBalStaker.balanceOf(address(warAuraBalFarmer)));
+    assertEq(auraBalFarmer.getCurrentIndex(), auraBalStaker.balanceOf(address(auraBalFarmer)));
 
     // Check balance was deducted correctly
     assertEq(IERC20(source).balanceOf(address(controller)), initialTokenBalance - amount);
@@ -48,7 +48,7 @@ contract Stake is AuraBalFarmerTest {
     // Testing with different slippage values
     uint256 slippage = amount % 500 >= 50 ? amount % 500 : 50;
     vm.prank(admin);
-    warAuraBalFarmer.setSlippage(slippage);
+    auraBalFarmer.setSlippage(slippage);
 
     // Minimum amount to prevent high slippage when zapping
     vm.assume(amount > 1e18);
@@ -66,21 +66,21 @@ contract Stake is AuraBalFarmerTest {
     vm.assume(source != address(auraBal) && source != address(bal));
     vm.prank(controller);
     vm.expectRevert(Errors.IncorrectToken.selector);
-    warAuraBalFarmer.stake(source, 500);
+    auraBalFarmer.stake(source, 500);
   }
 
   function testZeroValue() public {
     vm.startPrank(controller);
     vm.expectRevert(Errors.ZeroValue.selector);
-    warAuraBalFarmer.stake(address(bal), 0);
+    auraBalFarmer.stake(address(bal), 0);
     vm.expectRevert(Errors.ZeroValue.selector);
-    warAuraBalFarmer.stake(address(auraBal), 0);
+    auraBalFarmer.stake(address(auraBal), 0);
     vm.stopPrank();
   }
 
   function testOnlyController() public {
     vm.prank(alice);
     vm.expectRevert(Errors.CallerNotAllowed.selector);
-    warAuraBalFarmer.stake(address(bal), 0);
+    auraBalFarmer.stake(address(bal), 0);
   }
 }

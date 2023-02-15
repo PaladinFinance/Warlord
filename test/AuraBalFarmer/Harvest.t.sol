@@ -7,8 +7,8 @@ contract Harvest is AuraBalFarmerTest {
   function setUp() public override {
     AuraBalFarmerTest.setUp();
     vm.startPrank(controller);
-    warAuraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
-    warAuraBalFarmer.stake(address(bal), bal.balanceOf(controller));
+    auraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
+    auraBalFarmer.stake(address(bal), bal.balanceOf(controller));
     vm.stopPrank();
   }
 
@@ -16,7 +16,7 @@ contract Harvest is AuraBalFarmerTest {
     _assertNoPendingRewards(); // TODO not that useful anymore
 
     vm.warp(block.timestamp + time);
-    warAuraBalFarmer.harvest();
+    auraBalFarmer.harvest();
 
     // TODO test numbers but should be fine
   }
@@ -28,8 +28,8 @@ contract Harvest is AuraBalFarmerTest {
 
   function testWhenNotPaused() public {
     vm.prank(admin);
-    warAuraBalFarmer.pause();
+    auraBalFarmer.pause();
     vm.expectRevert("Pausable: paused");
-    warAuraBalFarmer.harvest();
+    auraBalFarmer.harvest();
   }
 }
