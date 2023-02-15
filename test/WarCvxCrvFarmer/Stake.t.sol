@@ -6,12 +6,18 @@ import "./WarCvxCrvFarmerTest.sol";
 contract Stake is WarCvxCrvFarmerTest {
   function _stake(address source, uint256 amount) internal {
     uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
+    //TODO test emits and compare with auraBal
+
+    // Balance amount is non-zero and can't be more than balance
     vm.assume(amount > 0 && amount <= initialTokenBalance);
+
     // Initial staked amount is 0 in all groups
     assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), 0);
+
     // Initial index is 0
     assertEq(warCvxCrvFarmer.getCurrentIndex(), 0);
-    // TODO check this in setRewardsWeight.t.sol
+
+    // Initial balance is zero in all reward groups
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), 0);
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
 
@@ -21,9 +27,13 @@ contract Stake is WarCvxCrvFarmerTest {
 
     // Balance gets updated to staked amount
     assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), amount);
+
     // Index increases accordingly
     assertEq(warCvxCrvFarmer.getCurrentIndex(), amount);
+
+    // Amount is deducted accordingly from balance
     assertEq(IERC20(source).balanceOf(address(controller)), initialTokenBalance - amount);
+
     // Check that everything is staked in the correct rewards group
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), amount);
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
