@@ -12,10 +12,11 @@ import {BaseRewardPool} from "interfaces/external/AuraBalStaker.sol";
 contract MainnetTest is BaseTest {
   // Curve
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
-  IERC20 threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
+  IERC20 constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
 
   // Balancer
   IERC20 constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
+  IERC20 constant bbAUsd = IERC20(0xA13a9247ea42D743238089903570127DdA72fE44);
 
   // Convex
   // - Cvx contracts
@@ -49,6 +50,9 @@ contract MainnetTest is BaseTest {
 
     vm.label(address(balDepositor), "balDepositor");
     vm.label(address(auraBalStaker), "auraBalStaker");
+
+    vm.label(address(threeCrv), "3Crv");
+    vm.label(address(bbAUsd), "bbAUsd");
   }
 
   function fork() public {
