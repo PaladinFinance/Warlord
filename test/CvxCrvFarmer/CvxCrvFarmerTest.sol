@@ -10,7 +10,7 @@ contract CvxCrvFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;
-  WarCvxCrvFarmer warCvxCrvFarmer;
+  WarCvxCrvFarmer warCvxCrvFarmer; // TODO change old nomenclature
 
   function setUp() public virtual override {
     MainnetTest.setUp();
