@@ -18,7 +18,10 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
   using SafeERC20 for IERC20;
 
-  constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
+  constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {
+    // Slippage initial set at 0.5%
+    slippageBps = 9950;
+  }
 
   function setSlippage(uint256 _slippageBps) public onlyOwner {
     if (_slippageBps > 500) revert Errors.SlippageTooHigh();
