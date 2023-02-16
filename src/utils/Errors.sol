@@ -14,11 +14,11 @@ library Errors {
   error CallerNotPendingOwner();
   error CallerNotAllowed();
 
-  // WarLocker
+  // Locker
   error NoWarLocker(); // _locker[token] == 0x0
   error MismatchingLocker(address expected, address actual);
 
-  // WarStaker
+  // Staker
   error AlreadyListedDepositor();
   error NotListedDepositor();
   error AlreadySetFarmer();
@@ -26,6 +26,7 @@ library Errors {
   // MintRatio
   error ZeroMintAmount();
   error SupplyAlreadySet();
+  error MintAmountBiggerThanSupply();
 
   // IFarmer
   error IncorrectToken();
@@ -34,6 +35,6 @@ library Errors {
   // Maths
   error NumberExceed128Bits();
 
-  // WarAuraBalFarmer
+  // AuraBalFarmer
   error SlippageTooHigh();
 }
