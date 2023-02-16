@@ -6,7 +6,8 @@ import "../../src/MintRatio.sol";
 
 contract MintRatioTest is MainnetTest {
   IMintRatio mintRatio;
-  uint256 cvxMaxSupply = 100_000_000e18;
+  uint256 constant cvxMaxSupply = 100_000_000e18;
+  uint256 constant auraMaxSupply = 100_000_000e18;
 
   function setUp() public override {
     MainnetTest.setUp();
@@ -15,6 +16,6 @@ contract MintRatioTest is MainnetTest {
     vm.startPrank(admin);
     mintRatio = new WarMintRatio();
     mintRatio.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    // TODO add aura
+    mintRatio.addTokenWithSupply(address(aura), auraMaxSupply);
   }
 }

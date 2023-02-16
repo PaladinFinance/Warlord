@@ -4,29 +4,84 @@ pragma solidity 0.8.16;
 import "./MintRatioTest.sol";
 
 contract GetMintAmount is MintRatioTest {
-  uint256 immutable SUPPLY_UNIT = cvxMaxSupply / 1e18;
+  uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
 
-  function testMinCvxMintAmount() public {
-    uint256 mintAmount = mintRatio.getMintAmount(address(cvx), SUPPLY_UNIT);
-    assertEq(mintAmount, 1);
+  function testMaxWarSupplyCvx() public {
+    _maxWarSupplyPerToken(address(cvx), cvxMaxSupply);
   }
 
-  /*function testHalfSupplyCvxMintAmount() public {
-    uint256 mintAmount = mintRatio.getMintAmount(address(cvx), cvxMaxSupply);
-    console.log(mintAmount);
-    // assertEq(mintAmount, 500_000_000_000_000_000);
-    // TODO assertEq(mintAmount, 1_000_000_000_000_000_000);
-  } */
+  function testMaxWarSupplyAura() public {
+    _maxWarSupplyPerToken(address(aura), auraMaxSupply);
+  }
 
-  //TODO fuzz this
+  function _maxWarSupplyPerToken(address token, uint256 maxSupply) internal {
+    uint256 mintAmount = mintRatio.getMintAmount(token, maxSupply);
+    assertEq(mintAmount, MAX_WAR_SUPPLY_PER_TOKEN);
+  }
 
-  function testRevertWithZeroAddress() public {
+  function testHalfWarSupplyCvx() public {
+    _halfWarSupplyPerToken(address(cvx), cvxMaxSupply);
+  }
+
+  function testHalfWarSupplyAura() public {
+    _halfWarSupplyPerToken(address(aura), auraMaxSupply);
+  }
+
+  function _halfWarSupplyPerToken(address token, uint256 maxSupply) public {
+    uint256 mintAmount = mintRatio.getMintAmount(token, maxSupply / 2);
+    assertEq(mintAmount, MAX_WAR_SUPPLY_PER_TOKEN / 2);
+  }
+
+  function _defaultBehavior(address token, uint256 maxSupply, uint256 amount) internal {
+    vm.assume(amount >= 1e4 && amount <= maxSupply);
+    uint256 mintAmount = mintRatio.getMintAmount(address(token), amount);
+    assertGt(mintAmount, 0);
+  }
+
+  function testDefaultBehaviorWithAura(uint256 amount) public {
+    _defaultBehavior(address(aura), auraMaxSupply, amount);
+  }
+
+  function testDefaultBehaviorWithCvx(uint256 amount) public {
+    _defaultBehavior(address(cvx), cvxMaxSupply, amount);
+  }
+
+  function _precisionLoss(address token, uint256 amount) internal {
+    assertEq(mintRatio.getMintAmount(token, amount), 0);
+  }
+
+  function testCvxPrecisionLoss(uint256 amount) public {
+    vm.assume(amount > 0 && amount < 1e4);
+    _precisionLoss(address(cvx), amount);
+  }
+
+  function testAuraPrecisionLoss(uint256 amount) public {
+    vm.assume(amount > 0 && amount < 1e4);
+    _precisionLoss(address(aura), amount);
+  }
+
+  function tesZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     mintRatio.getMintAmount(zero, 1e10);
   }
 
-  function testRevertWithZeroAmount() public {
+  function testZeroAmount() public {
     vm.expectRevert(Errors.ZeroValue.selector);
-    mintRatio.getMintAmount(address(cvx), 0);
+    mintRatio.getMintAmount(address(aura), 0);
+  }
+
+  function _mintMoreThanMaxSupply(address token, uint256 maxSupply, uint256 amount) internal {
+    vm.expectRevert(Errors.MintAmountBiggerThanSupply.selector);
+    mintRatio.getMintAmount(token, maxSupply + amount);
+  }
+
+  function testMintMoreThanMaxSupplyCvx(uint256 amount) public {
+    vm.assume(amount >= 1e4 && amount <= 1e32);
+    _mintMoreThanMaxSupply(address(cvx), cvxMaxSupply, amount);
+  }
+
+  function testMintMoreThanMaxSupplyAura(uint256 amount) public {
+    vm.assume(amount >= 1e4 && amount <= 1e32);
+    _mintMoreThanMaxSupply(address(aura), auraMaxSupply, amount);
   }
 }
