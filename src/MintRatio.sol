@@ -8,27 +8,24 @@ import {Owner} from "utils/Owner.sol";
 
 contract WarMintRatio is IMintRatio, Owner {
   uint256 private constant UNIT = 1e18;
-  mapping(address => uint256) _maxSupply;
+  uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
+
+  mapping(address => uint256) public warPerToken;
 
   function addTokenWithSupply(address token, uint256 maxSupply) public onlyOwner {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (maxSupply == 0) revert Errors.ZeroValue();
-    uint256 tokenMaxSupply = _maxSupply[token];
-    if (tokenMaxSupply != 0) revert Errors.SupplyAlreadySet();
-    _maxSupply[token] = maxSupply;
+    if (warPerToken[token] != 0) revert Errors.SupplyAlreadySet();
+
+    warPerToken[token] = MAX_WAR_SUPPLY_PER_TOKEN * UNIT / maxSupply;
   }
 
-  function getMintAmount(address token, uint256 amount) public view returns (uint256) {
-    // TODO tackle overflows
+  function getMintAmount(address token, uint256 amount) public view returns (uint256 mintAmount) {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
-    // TODO should I check if amount is bigger than the maxSupply
-    // uint256 totalWarForHundredPercent = 10_000e18;
 
-    // uint256 maxSupply = 100_000_000 * UNIT; // cvx supply
-    uint256 maxSupply = _maxSupply[token]; // TODO should I make a specific error for unset mapping or is this already covered by the other check
-    uint256 mintRatio = (amount * UNIT) / maxSupply;
-    // uint256 mintAmount = (mintRatio * totalWarForHundredPercent)
-    return mintRatio;
+    mintAmount = amount * warPerToken[token] / UNIT;
+
+    if (mintAmount > MAX_WAR_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
   }
 }
