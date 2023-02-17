@@ -51,7 +51,8 @@ contract WarCvxLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
     if (amount == 0) revert Errors.ZeroValue();
 
     cvx.safeTransferFrom(msg.sender, address(this), amount);
-    cvx.safeApprove(address(locker), amount);
+    cvx.safeApprove(address(locker), 0);
+    cvx.safeIncreaseAllowance(address(locker), amount);
     locker.lock(address(this), amount, 0); // TODO what is _spendRatio
   }
 
@@ -85,7 +86,8 @@ contract WarCvxLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
 
       // TODO are variable assignment that expensive gas wise
       uint256 relock = unlockableBalance - withdrawalAmount;
-      cvx.safeApprove(address(locker), relock);
+      cvx.safeApprove(address(locker), 0);
+      cvx.safeIncreaseAllowance(address(locker), relock);
       locker.lock(address(this), relock, 0);
     }
   }

@@ -36,7 +36,7 @@ contract CvxLockerTest is MainnetTest {
     deal(address(cvx), address(minter), 100e18);
 
     vm.startPrank(address(minter));
-    cvx.safeApprove(address(locker), cvx.balanceOf(address(minter)));
+    cvx.approve(address(locker), cvx.balanceOf(address(minter)));
     vm.stopPrank();
   }
 }

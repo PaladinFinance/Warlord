@@ -43,7 +43,8 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     if (token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
-      bal.safeApprove(address(balDepositor), amount);
+      bal.safeApprove(address(balDepositor), 0);
+      bal.safeIncreaseAllowance(address(balDepositor), amount);
       uint256 minOut = balDepositor.getMinOut(amount, slippageBps);
       balDepositor.deposit(amount, minOut, true, address(0));
 
@@ -54,7 +55,8 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     _index += stakableAmount;
 
-    auraBal.safeApprove(address(auraBalStaker), stakableAmount);
+    auraBal.safeApprove(address(auraBalStaker), 0);
+    auraBal.safeIncreaseAllowance(address(auraBalStaker), stakableAmount);
     auraBalStaker.stake(stakableAmount);
 
     emit Staked(stakableAmount, _index);

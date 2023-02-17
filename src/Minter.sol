@@ -56,7 +56,8 @@ contract WarMinter is Owner {
     IWarLocker locker = IWarLocker(_locker[vlToken]);
 
     IERC20(vlToken).safeTransferFrom(msg.sender, address(this), amount);
-    IERC20(vlToken).safeApprove(address(locker), amount);
+    IERC20(vlToken).safeApprove(address(locker), 0);
+    IERC20(vlToken).safeIncreaseAllowance(address(locker), amount);
     locker.lock(amount);
 
     uint256 mintAmount = IMintRatio(_mintRatio).getMintAmount(vlToken, amount);
