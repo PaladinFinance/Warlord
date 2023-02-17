@@ -4,55 +4,55 @@ pragma solidity 0.8.16;
 import "./AuraBalFarmerTest.sol";
 
 contract Migrate is AuraBalFarmerTest {
-/*
   address migration = makeAddr("migration");
 
   function setUp() public override {
-    WarAuraBalStakerTest.setUp();
+    AuraBalFarmerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
+    auraBalFarmer.stake(address(auraBal), auraBal.balanceOf(controller));
+    auraBalFarmer.stake(address(bal), bal.balanceOf(controller));
     vm.stopPrank();
     vm.warp(block.timestamp + 100 days);
+
     vm.prank(admin);
-    warCvxCrvFarmer.pause();
+    auraBalFarmer.pause();
   }
 
   function testDefaultBehavior() public {
-    (uint256 crvRewards, uint256 cvxRewards, uint256 threeCrvRewards) = _getRewards();
+    (uint256 balRewards, uint256 auraRewards, uint256 bbAUsdRewards) = _getRewards();
 
-    uint256 stakedBalance = convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer));
-    assertEq(cvxCrv.balanceOf(migration), 0);
+    uint256 stakedBalance = auraBalStaker.balanceOf(address(auraBalFarmer));
+    assertEq(auraBal.balanceOf(migration), 0);
 
     vm.prank(admin);
-    warCvxCrvFarmer.migrate(migration);
+    auraBalFarmer.migrate(migration);
 
-    assertEq(cvxCrv.balanceOf(migration), stakedBalance);
+    assertEq(auraBal.balanceOf(migration), stakedBalance);
 
-    assertEq(crv.balanceOf(controller), crvRewards);
-    assertEq(cvx.balanceOf(controller), cvxRewards);
-    assertEq(threeCrv.balanceOf(controller), threeCrvRewards);
+    assertEq(bal.balanceOf(controller), balRewards);
+    assertEq(aura.balanceOf(controller), auraRewards);
+    assertEq(bbAUsd.balanceOf(controller), bbAUsdRewards);
 
     _assertNoPendingRewards();
   }
 
   function testWhenIsPaused() public {
     vm.startPrank(admin);
-    warCvxCrvFarmer.unpause();
+    auraBalFarmer.unpause();
     vm.expectRevert("Pausable: not paused");
-    warCvxCrvFarmer.migrate(migration);
+    auraBalFarmer.migrate(migration);
     vm.stopPrank();
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
     vm.prank(alice);
-    warCvxCrvFarmer.migrate(alice);
+    auraBalFarmer.migrate(alice);
   }
 
   function testZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(admin);
-    warCvxCrvFarmer.migrate(zero);
-  }*/
+    auraBalFarmer.migrate(zero);
+  }
 }
