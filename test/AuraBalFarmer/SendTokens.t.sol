@@ -34,7 +34,6 @@ contract SendTokens is AuraBalFarmerTest {
   }
 
   function testZeroAmount(address randomAddress) public {
-    // TODO probably inverted names in origianl test
     vm.assume(randomAddress != zero);
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(address(warStaker));
