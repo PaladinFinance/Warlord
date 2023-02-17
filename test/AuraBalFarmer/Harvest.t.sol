@@ -13,12 +13,17 @@ contract Harvest is AuraBalFarmerTest {
   }
 
   function _defaultBehavior(uint256 time) internal {
-    _assertNoPendingRewards(); // TODO not that useful anymore
+    _assertNoPendingRewards();
 
     vm.warp(block.timestamp + time);
+    (uint256 balRewards, uint256 auraRewards, uint256 bbAUsdRewards) = _getRewards();
     auraBalFarmer.harvest();
 
-    // TODO test numbers but should be fine
+    assertEq(bal.balanceOf(address(controller)), balRewards);
+    assertEq(aura.balanceOf(address(controller)), auraRewards);
+    assertEq(bbAUsd.balanceOf(address(controller)), bbAUsdRewards);
+
+    _assertNoPendingRewards();
   }
 
   function testDefaultBehavior(uint256 time) public {
