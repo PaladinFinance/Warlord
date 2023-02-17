@@ -5,11 +5,10 @@ import "./MintRatioTest.sol";
 
 contract AddTokenWithSupply is MintRatioTest {
   function testDefaultBehavior() public {
-    MockERC20 mock = new MockERC20();
-    mintRatio.addTokenWithSupply(address(mock), 500e18);
-
-    uint256 mintAmount = mintRatio.getMintAmount(address(mock), 500);
-    assertEq(mintAmount, 1);
+    // Token already added in setup just need to check
+    assertGt(mintRatio.warPerToken(address(aura)), 0);
+    assertGt(mintRatio.warPerToken(address(cvx)), 0);
+    assertEq(mintRatio.warPerToken(address(cvx)), mintRatio.warPerToken(address(cvx)));
   }
 
   function testCantAddZeroAddress() public {

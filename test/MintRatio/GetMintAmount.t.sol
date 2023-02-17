@@ -4,8 +4,6 @@ pragma solidity 0.8.16;
 import "./MintRatioTest.sol";
 
 contract GetMintAmount is MintRatioTest {
-  uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
-
   function testMaxWarSupplyCvx() public {
     _maxWarSupplyPerToken(address(cvx), cvxMaxSupply);
   }
