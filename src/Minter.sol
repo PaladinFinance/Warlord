@@ -10,9 +10,11 @@ import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
-  WarToken _war;
+  uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
+  WarToken _war; // TODO replace this with public modifiers
   IMintRatio _mintRatio;
-  mapping(address => address) _locker;
+  mapping(address => address) public lockers; // TODO test this
+  mapping(address => uint256) public amountMintedPerToken;
 
   using SafeERC20 for IERC20;
 
@@ -40,7 +42,7 @@ contract WarMinter is Owner {
     if (warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != vlToken) revert Errors.MismatchingLocker(expectedToken, vlToken);
-    _locker[vlToken] = warLocker;
+    lockers[vlToken] = warLocker;
   }
 
   // TODO handle reentrancy
@@ -51,9 +53,9 @@ contract WarMinter is Owner {
   function mint(address vlToken, uint256 amount, address receiver) public {
     if (amount == 0) revert Errors.ZeroValue();
     if (vlToken == address(0) || receiver == address(0)) revert Errors.ZeroAddress();
-    if (_locker[vlToken] == address(0)) revert Errors.NoWarLocker();
+    if (lockers[vlToken] == address(0)) revert Errors.NoWarLocker();
 
-    IWarLocker locker = IWarLocker(_locker[vlToken]);
+    IWarLocker locker = IWarLocker(lockers[vlToken]);
 
     IERC20(vlToken).safeTransferFrom(msg.sender, address(this), amount);
     IERC20(vlToken).safeApprove(address(locker), 0);
@@ -62,6 +64,8 @@ contract WarMinter is Owner {
 
     uint256 mintAmount = IMintRatio(_mintRatio).getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
+    amountMintedPerToken[vlToken] += mintAmount;
+    if (amountMintedPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
     _war.mint(receiver, mintAmount);
   }
 

@@ -25,7 +25,5 @@ contract WarMintRatio is IMintRatio, Owner {
     if (amount == 0) revert Errors.ZeroValue();
 
     mintAmount = amount * warPerToken[token] / UNIT;
-
-    if (mintAmount > MAX_WAR_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
   }
 }

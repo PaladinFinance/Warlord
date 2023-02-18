@@ -18,6 +18,9 @@ library Errors {
   error NoWarLocker(); // _locker[token] == 0x0
   error MismatchingLocker(address expected, address actual);
 
+  // Minter
+  error MintAmountBiggerThanSupply();
+
   // Staker
   error AlreadyListedDepositor();
   error NotListedDepositor();
@@ -26,7 +29,6 @@ library Errors {
   // MintRatio
   error ZeroMintAmount();
   error SupplyAlreadySet();
-  error MintAmountBiggerThanSupply();
 
   // IFarmer
   error IncorrectToken();
