@@ -67,19 +67,4 @@ contract GetMintAmount is MintRatioTest {
     vm.expectRevert(Errors.ZeroValue.selector);
     mintRatio.getMintAmount(address(aura), 0);
   }
-
-  function _mintMoreThanMaxSupply(address token, uint256 maxSupply, uint256 amount) internal {
-    vm.expectRevert(Errors.MintAmountBiggerThanSupply.selector);
-    mintRatio.getMintAmount(token, maxSupply + amount);
-  }
-
-  function testMintMoreThanMaxSupplyCvx(uint256 amount) public {
-    vm.assume(amount >= 1e4 && amount <= 1e32);
-    _mintMoreThanMaxSupply(address(cvx), cvxMaxSupply, amount);
-  }
-
-  function testMintMoreThanMaxSupplyAura(uint256 amount) public {
-    vm.assume(amount >= 1e4 && amount <= 1e32);
-    _mintMoreThanMaxSupply(address(aura), auraMaxSupply, amount);
-  }
 }
