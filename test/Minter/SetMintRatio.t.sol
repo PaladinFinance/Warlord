@@ -10,13 +10,13 @@ contract SetMintRatio is MinterTest {
     minter.setMintRatio(_mintRatio);
   }
 
-  function testOnlyAdminCanCall(address _mintRatio) public {
+  function testOnlyOwner(address _mintRatio) public {
     vm.prank(bob);
     vm.expectRevert("Ownable: caller is not the owner");
     minter.setMintRatio(_mintRatio);
   }
 
-  function testCantUseZeroAddress() public {
+  function testZeroAddress() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.setMintRatio(zero);
