@@ -13,9 +13,12 @@ contract Mint is MinterTest {
     assertEq(war.balanceOf(receiver), 0);
     vm.prank(alice);
     minter.mint(source, amount, receiver);
-    assertEq(war.totalSupply(), amount * 15);
+    uint256 expectedMintAmount = mintRatio.getMintAmount(source, amount);
+    assertEq(war.totalSupply(), expectedMintAmount);
+    // TODO assertEq(IERC20(source).balanceOf(alice), 0);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(receiver), amount * 15);
+    assertEq(war.balanceOf(receiver), expectedMintAmount);
+    assertEq(minter.amountMintedPerToken(source), expectedMintAmount);
   }
 
   function _mintWithImplicitReceiver(address source, uint256 amount) internal {
@@ -24,24 +27,36 @@ contract Mint is MinterTest {
     assertEq(war.balanceOf(alice), 0);
     vm.prank(alice);
     minter.mint(source, amount);
-    assertEq(war.totalSupply(), amount * 15); // TODO make a getter for mint ratio
-    assertEq(war.balanceOf(alice), amount * 15);
+    uint256 expectedMintAmount = mintRatio.getMintAmount(source, amount);
+    assertEq(war.balanceOf(alice), expectedMintAmount);
+    assertEq(minter.amountMintedPerToken(source), expectedMintAmount);
   }
 
-  function testDefaultBehaviorCvx(uint256 amount, address receiver) public {
-    _mint(address(cvx), amount, receiver);
+  function testDefaultBehavior(uint256 amount, address receiver) public {
+    vm.assume(amount > 1e4);
+    address token = randomVlToken(amount);
+    _mint(token, amount, receiver);
   }
 
-  function testDefaultBehaviorCvxWithImplicitReceiver(uint256 amount) public {
-    _mintWithImplicitReceiver(address(cvx), amount);
+  function testDefaultBehaviorWithImplicitReceiver(uint256 amount) public {
+    vm.assume(amount > 1e4);
+    address token = randomVlToken(amount);
+    _mintWithImplicitReceiver(token, amount);
   }
 
-  function testDefaultBehaviorAura(uint256 amount, address receiver) public {
-    // TODO _mint(address(aura), amount, receiver);
+  function _mintMoreThanMaxSupply(address token, uint256 amount) internal {
+    vm.startPrank(alice);
+    IERC20(token).approve(address(minter), amount);
+    vm.expectRevert(Errors.MintAmountBiggerThanSupply.selector);
+    minter.mint(token, amount);
+    vm.stopPrank();
   }
 
-  function testDefaultBehaviorAuraWithImplicitReceiver(uint256 amount) public {
-    // TODO _mintWithImplicitReceiver(address(aura), amount);
+  function testMintMoreThanMaxSupply(uint256 amount) public {
+    vm.assume(amount >= 1e32 && amount <= 1e50);
+    address token = randomVlToken(amount);
+    deal(token, alice, amount);
+    _mintMoreThanMaxSupply(token, amount);
   }
 
   function testZeroAddress(uint256 amount) public {
@@ -73,10 +88,10 @@ contract Mint is MinterTest {
     minter.mint(address(aura), 0);
   }
 
-  function testRevertsWithZeroMintAmount() public {
-    MockMintRatio(address(mintRatio)).setRatio(address(cvx), 0);
+  function testRevertsWithZeroMintAmount(uint256 amount) public {
+    vm.assume(amount > 0 && amount < 1e4);
     vm.prank(alice);
     vm.expectRevert(Errors.ZeroMintAmount.selector);
-    minter.mint(address(cvx), 1e18);
+    minter.mint(address(cvx), amount);
   }
 }
