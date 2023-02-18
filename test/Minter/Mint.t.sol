@@ -18,7 +18,7 @@ contract Mint is MinterTest {
     // TODO assertEq(IERC20(source).balanceOf(alice), 0);
     assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(receiver), expectedMintAmount);
-    assertEq(minter.amountMintedPerToken(source), expectedMintAmount);
+    assertEq(minter.mintedSupplyPerToken(source), expectedMintAmount);
   }
 
   function _mintWithImplicitReceiver(address source, uint256 amount) internal {
@@ -29,7 +29,7 @@ contract Mint is MinterTest {
     minter.mint(source, amount);
     uint256 expectedMintAmount = mintRatio.getMintAmount(source, amount);
     assertEq(war.balanceOf(alice), expectedMintAmount);
-    assertEq(minter.amountMintedPerToken(source), expectedMintAmount);
+    assertEq(minter.mintedSupplyPerToken(source), expectedMintAmount);
   }
 
   function testDefaultBehavior(uint256 amount, address receiver) public {
