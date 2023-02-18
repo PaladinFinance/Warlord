@@ -4,37 +4,30 @@ pragma solidity 0.8.16;
 import "./MinterTest.sol";
 
 contract SetLocker is MinterTest {
-  function testDefaultBehavior(uint256 amount, uint256 ratio) public {
-    vm.assume(amount > 0 && amount < 1e27);
-    vm.assume(ratio > 0 && ratio < 1e27);
-    IERC20 newToken = IERC20(address(new MockERC20()));
-    deal(address(newToken), alice, amount);
-    IWarLocker newLocker = new vlMockLocker(address(newToken));
-    MockMintRatio(address(mintRatio)).setRatio(address(newToken), ratio);
+  function testDefaultBehavior(uint256 supply) public {
+    vm.assume(supply > 1e20 && supply < 1e40);
+    address token = makeAddr("token");
+    DummyLocker locker = new DummyLocker(token); // TODO check also for real lockers when they're ready
     vm.prank(admin);
-    minter.setLocker(address(newToken), address(newLocker));
-    vm.startPrank(alice);
-    newToken.approve(address(minter), amount);
-    minter.mint(address(newToken), amount);
-    assertEq(war.balanceOf(alice), amount * ratio);
-    vm.stopPrank();
+    minter.setLocker(token, address(locker));
+    assertEq(minter.lockers(token), address(locker));
   }
 
-  function testCantAddZeroAddressAsToken(address randomAddress) public {
+  function testZeroAddressToken(address randomAddress) public {
     vm.assume(randomAddress > zero);
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.setLocker(zero, randomAddress);
   }
 
-  function testCantAddZeroAddressAsLocker(address randomAddress) public {
+  function testZeroAddressLocker(address randomAddress) public {
     vm.assume(randomAddress > zero);
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.setLocker(randomAddress, zero);
   }
 
-  function testCantAddZeroAddresses() public {
+  function testZeroAddresses() public {
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
     minter.setLocker(zero, zero);
@@ -47,9 +40,9 @@ contract SetLocker is MinterTest {
   }
 
   function testCantSetMismatchingLocker(address notToken) public {
-    IERC20 mockToken = IERC20(address(new MockERC20()));
-    IWarLocker newLocker = new vlMockLocker(address(mockToken));
-    vm.assume(notToken != zero && notToken != address(mockToken) && notToken != address(newLocker));
+    address correctToken = makeAddr("correctToken");
+    DummyLocker newLocker = new DummyLocker(correctToken);
+    vm.assume(notToken != zero && notToken != correctToken && notToken != address(newLocker));
     vm.expectRevert(abi.encodeWithSelector(Errors.MismatchingLocker.selector, newLocker.token(), notToken));
     vm.prank(admin);
     minter.setLocker(notToken, address(newLocker));

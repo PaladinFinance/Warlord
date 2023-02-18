@@ -5,8 +5,23 @@ import "../../src/Token.sol";
 import "../../src/Minter.sol";
 import "../MainnetTest.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {vlMockLocker} from "mocks/vlMockLocker.sol";
 import {WarMintRatio} from "../../src/MintRatio.sol";
+import {WarCvxLocker} from "../../src/CvxLocker.sol";
+
+contract DummyLocker is IWarLocker {
+  address _token;
+
+  constructor(address token_) {
+    _token = token_;
+  }
+
+  function token() external view returns (address) {
+    return _token;
+  }
+
+  function lock(uint256 amount) external {}
+  function harvest() external {}
+}
 
 contract MinterTest is MainnetTest {
   uint256 constant cvxMaxSupply = 100_000_000e18;
@@ -24,8 +39,8 @@ contract MinterTest is MainnetTest {
 
     vm.prank(admin);
     war = new WarToken();
-    auraLocker = new vlMockLocker(address(aura));
-    cvxLocker = new vlMockLocker(address(cvx));
+    auraLocker = new DummyLocker(address(aura));
+    cvxLocker = new DummyLocker(address(cvx));
 
     // Mint ratio set up
     mintRatio = new WarMintRatio();
@@ -43,7 +58,7 @@ contract MinterTest is MainnetTest {
     minter.setLocker(address(aura), address(auraLocker));
     vm.stopPrank();
 
-    deal(address(cvx), alice, 100e18); // TODO always deal max supply in this kind of tests
+    deal(address(cvx), alice, 100e18);
     deal(address(aura), alice, 100e18);
 
     vm.startPrank(alice);
