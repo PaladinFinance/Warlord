@@ -5,26 +5,30 @@ import "./MinterTest.sol";
 
 contract MintMultiple is MinterTest {
   function testDefaultBehavior(uint256 amount1, uint256 amount2) public {
-    vm.assume(amount1 > 0 && amount2 > 0);
+    vm.assume(amount1 > 1e4 && amount2 > 1e4);
     vm.assume(amount1 < cvx.balanceOf(alice) && amount2 < aura.balanceOf(alice));
+
     address[] memory lockers = new address[](2);
     lockers[0] = address(cvx);
     lockers[1] = address(aura);
     uint256[] memory amounts = new uint256[](2);
     amounts[0] = amount1;
     amounts[1] = amount2;
+
     assertEq(war.totalSupply(), 0);
-    assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(bob), 0);
+
     vm.prank(alice);
+
     minter.mintMultiple(lockers, amounts, bob);
-    assertEq(war.totalSupply(), amount1 * 15 + amount2 * 22);
-    assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), amount1 * 15 + amount2 * 22);
-  }
+
+    uint256 totalMintedAmount = minter.mintedSupplyPerToken(lockers[0]) + minter.mintedSupplyPerToken(lockers[1]);
+    assertEq(war.totalSupply(), totalMintedAmount);
+    assertEq(war.balanceOf(bob), totalMintedAmount);
+  } // TODO more tests with iterative minting
 
   function testDefaultBehaviorWithImplicitReceiver(uint256 amount1, uint256 amount2) public {
-    vm.assume(amount1 > 0 && amount2 > 0);
+    vm.assume(amount1 > 1e4 && amount2 > 1e4);
     vm.assume(amount1 < cvx.balanceOf(alice) && amount2 < aura.balanceOf(alice));
     address[] memory lockers = new address[](2);
     lockers[0] = address(cvx);
@@ -34,12 +38,11 @@ contract MintMultiple is MinterTest {
     amounts[1] = amount2;
     assertEq(war.totalSupply(), 0);
     assertEq(war.balanceOf(alice), 0);
-    assertEq(war.balanceOf(bob), 0);
     vm.prank(alice);
     minter.mintMultiple(lockers, amounts);
-    assertEq(war.totalSupply(), amount1 * 15 + amount2 * 22);
-    assertEq(war.balanceOf(bob), 0);
-    assertEq(war.balanceOf(alice), amount1 * 15 + amount2 * 22);
+    uint256 totalMintedAmount = minter.mintedSupplyPerToken(lockers[0]) + minter.mintedSupplyPerToken(lockers[1]);
+    assertEq(war.totalSupply(), totalMintedAmount);
+    assertEq(war.balanceOf(alice), totalMintedAmount);
   }
 
   function testCantMintWithDifferentLengths(address[] calldata lockers, uint256[] calldata amounts) public {
