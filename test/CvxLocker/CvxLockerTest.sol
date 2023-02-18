@@ -4,10 +4,10 @@ pragma solidity 0.8.16;
 import "../../src/CvxLocker.sol";
 import "../../src/Token.sol";
 import "../../src/Minter.sol";
+import "../../src/MintRatio.sol";
 import "../mocks/MockRedeemModule.sol";
 import "../MainnetTest.sol";
 import "interfaces/external/IDelegateRegistry.sol";
-import "../mocks/MockMintRatio.sol";
 
 contract CvxLockerTest is MainnetTest {
   WarCvxLocker locker;
@@ -15,7 +15,7 @@ contract CvxLockerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarMinter minter;
   WarToken war;
-  IMintRatio mintRatio;
+  WarMintRatio mintRatio;
   MockRedeem redeemModule;
   IDelegateRegistry registry = IDelegateRegistry(0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446);
 
@@ -26,7 +26,7 @@ contract CvxLockerTest is MainnetTest {
     fork();
 
     war = new WarToken();
-    mintRatio = new MockMintRatio();
+    mintRatio = new WarMintRatio();
     minter = new WarMinter(address(war), address(mintRatio));
 
     redeemModule = new MockRedeem();
