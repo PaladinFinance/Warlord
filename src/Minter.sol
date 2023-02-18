@@ -13,8 +13,8 @@ contract WarMinter is Owner {
   uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
   WarToken _war; // TODO replace this with public modifiers
   IMintRatio _mintRatio;
-  mapping(address => address) public lockers; // TODO test this
-  mapping(address => uint256) public amountMintedPerToken;
+  mapping(address => address) public lockers;
+  mapping(address => uint256) public mintedSupplyPerToken;
 
   using SafeERC20 for IERC20;
 
@@ -38,8 +38,7 @@ contract WarMinter is Owner {
   }
 
   function setLocker(address vlToken, address warLocker) public onlyOwner {
-    if (vlToken == address(0)) revert Errors.ZeroAddress();
-    if (warLocker == address(0)) revert Errors.ZeroAddress();
+    if (vlToken == address(0) || warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != vlToken) revert Errors.MismatchingLocker(expectedToken, vlToken);
     lockers[vlToken] = warLocker;
@@ -64,8 +63,8 @@ contract WarMinter is Owner {
 
     uint256 mintAmount = IMintRatio(_mintRatio).getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
-    amountMintedPerToken[vlToken] += mintAmount;
-    if (amountMintedPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
+    mintedSupplyPerToken[vlToken] += mintAmount;
+    if (mintedSupplyPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
     _war.mint(receiver, mintAmount);
   }
 
