@@ -13,24 +13,29 @@ import {WarMinter} from "src/Minter.sol";
 
 abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
   address public delegatee;
-  IWarRedeemModule public redeemModule;
+  address public redeemModule;
   address public controller;
-
-  WarMinter warMinter;
+  address public warMinter;
+  bool public killed;
 
   // TODO add events
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee) {
     if (_controller == address(0) || _redeemModule == address(0) || _warMinter == address(0)) {
       revert Errors.ZeroAddress();
     }
-    warMinter = WarMinter(_warMinter);
+    warMinter = _warMinter;
     controller = _controller;
-    redeemModule = IWarRedeemModule(_redeemModule);
+    redeemModule = _redeemModule;
     delegatee = _delegatee;
   }
 
   modifier onlyWarMinter() {
-    if (address(warMinter) != msg.sender) revert Errors.CallerNotAllowed();
+    if (warMinter != msg.sender) revert Errors.CallerNotAllowed();
+    _;
+  }
+
+  modifier whenAlive() {
+    if (killed) revert Errors.ContractKilled();
     _;
   }
 
@@ -44,16 +49,20 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   function setRedeemModule(address _redeemModule) external onlyOwner {
     if (_redeemModule == address(0)) revert Errors.ZeroAddress();
     if (_redeemModule == address(redeemModule)) revert Errors.AlreadySet();
-    redeemModule = redeemModule;
+    redeemModule = _redeemModule;
   }
 
   function pause() external onlyOwner {
     _pause();
   }
 
-  function unpause() external onlyOwner {
+  function unpause() external onlyOwner whenAlive {
     _unpause();
   }
 
-  function migrate() external virtual;
+  function kill() external onlyOwner whenPaused {
+    killed = true;
+  }
+
+  function migrate(address receiver) external virtual;
 }
