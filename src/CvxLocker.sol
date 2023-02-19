@@ -50,7 +50,7 @@ contract WarCvxLocker is WarBaseLocker {
     (, uint256 unlockableBalance,,) = locker.lockedBalances(address(this));
     if (unlockableBalance == 0) return;
 
-    uint256 withdrawalAmount = redeemModule.queuedForWithdrawal();
+    uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal();
 
     // If unlock == 0 relock everything
     if (withdrawalAmount == 0) {
@@ -61,7 +61,7 @@ contract WarCvxLocker is WarBaseLocker {
       locker.processExpiredLocks(false);
       withdrawalAmount = Math.min(unlockableBalance, withdrawalAmount);
       cvx.transfer(address(redeemModule), withdrawalAmount);
-      redeemModule.notifyUnlock(address(cvx), withdrawalAmount);
+      IWarRedeemModule(redeemModule).notifyUnlock(address(cvx), withdrawalAmount);
 
       // TODO are variable assignment that expensive gas wise
       uint256 relock = unlockableBalance - withdrawalAmount;
@@ -71,5 +71,5 @@ contract WarCvxLocker is WarBaseLocker {
     }
   }
 
-  function migrate() external override onlyOwner whenPaused {}
+  function migrate(address receiver) external override onlyOwner whenPaused {}
 }
