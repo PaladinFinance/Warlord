@@ -35,6 +35,17 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   }
 
   // TODO setter for controller and redeem module
+  function setController(address _controller) external onlyOwner {
+    if (_controller == address(0)) revert Errors.ZeroAddress();
+    if (_controller == controller) revert Errors.AlreadySet();
+    controller = _controller;
+  }
+
+  function setRedeemModule(address _redeemModule) external onlyOwner {
+    if (_redeemModule == address(0)) revert Errors.ZeroAddress();
+    if (_redeemModule == address(redeemModule)) revert Errors.AlreadySet();
+    redeemModule = redeemModule;
+  }
 
   function pause() external onlyOwner {
     _pause();
