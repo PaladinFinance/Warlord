@@ -46,11 +46,23 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     redeemModule = _redeemModule;
   }
 
+  function _lock(uint256 amount) internal virtual;
+
+  function lock(uint256 amount) external onlyWarMinter whenNotPaused {
+    _lock(amount);
+  }
+
+  function _harvest() internal virtual;
+
   function harvest() external whenNotPaused {
     _harvest();
   }
 
-  function _harvest() internal virtual;
+  function _migrate(address receiver) internal virtual;
+
+  function migrate(address receiver) external onlyOwner whenPaused {
+    _migrate(receiver);
+  }
 
   function pause() external onlyOwner {
     _pause();
@@ -64,6 +76,4 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   function shutdown() external onlyOwner whenPaused {
     isShutdown = true;
   }
-
-  function migrate(address receiver) external virtual;
 }

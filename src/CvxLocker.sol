@@ -26,7 +26,7 @@ contract WarCvxLocker is WarBaseLocker {
     return address(cvx);
   }
 
-  function lock(uint256 amount) external onlyWarMinter whenNotPaused {
+  function _lock(uint256 amount) internal override {
     if (amount == 0) revert Errors.ZeroValue();
 
     cvx.safeTransferFrom(msg.sender, address(this), amount);
@@ -46,6 +46,7 @@ contract WarCvxLocker is WarBaseLocker {
     registry.setDelegate("cvx.eth", _delegatee);
   }
 
+  // TODO modifiers ?
   function processUnlock() external {
     _harvest();
 
@@ -73,7 +74,7 @@ contract WarCvxLocker is WarBaseLocker {
     }
   }
 
-  function migrate(address receiver) external override onlyOwner whenPaused {
+  function _migrate(address receiver) internal override {
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
     if (locker.isShutdown() || isShutdown) {}
