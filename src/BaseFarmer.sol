@@ -7,6 +7,7 @@ import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {IFarmer} from "interfaces/IFarmer.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
+// TODO enforce modifiers here
 abstract contract WarBaseFarmer is Owner, Pausable, ReentrancyGuard {
   address public controller;
   address public warStaker;
