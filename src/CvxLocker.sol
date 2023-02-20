@@ -76,6 +76,7 @@ contract WarCvxLocker is WarBaseLocker {
 
   function _migrate(address receiver) internal override {
     if (receiver == address(0)) revert Errors.ZeroAddress();
+    if (!vlCvx.isShutdown() && !isShutdown) revert Errors.LockerStillAlive();
 
     if (locker.isShutdown() || isShutdown) {}
   }

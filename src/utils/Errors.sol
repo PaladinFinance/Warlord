@@ -16,7 +16,8 @@ library Errors {
 
   // Locker
   error NoWarLocker(); // _locker[token] == 0x0
-  error ContractKilled();
+  error LockerShutdown();
+  error LockerStillAlive();
   error MismatchingLocker(address expected, address actual);
 
   // Minter

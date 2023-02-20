@@ -58,6 +58,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     _harvest();
   }
 
+  // TODO move modifier tests to base class tests
   function _migrate(address receiver) internal virtual;
 
   function migrate(address receiver) external onlyOwner whenPaused {
@@ -69,7 +70,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   }
 
   function unpause() external onlyOwner {
-    if (isShutdown) revert Errors.ContractKilled();
+    if (isShutdown) revert Errors.LockerShutdown();
     _unpause();
   }
 
