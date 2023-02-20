@@ -11,14 +11,21 @@ contract Harvest is CvxLockerTest {
     locker.lock(amountToStake);
   }
 
-  function testDefaultBehavior() public {
-    /*
-    TODO 
-    console.log(vlCvx.lockedBalanceOf(address(locker)));
-    vm.prank(vlCvx.owner());
-    vlCvx.notifyRewardAmount(address(cvxCrv), 500);
+  function testDefaultBehavior(uint256 time) public {
+    vm.assume(time < 10_000 days);
+
+    _assertNoPendingRewards();
+
+    vm.warp(block.timestamp + time);
+
+    (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();
     locker.harvest();
-    assertTrue(false);
-    */
+
+    // check accrued rewards harvest to controller
+    assertEq(cvxCrvRewards, cvxCrv.balanceOf(controller), "expecting no pending rewards for cvxCrv");
+    assertEq(cvxFxsRewards, cvxFxs.balanceOf(controller), "expecting no pending rewards for cvxFxs");
+
+    // check there's no rewards lefts after harvesting
+    _assertNoPendingRewards();
   }
 }

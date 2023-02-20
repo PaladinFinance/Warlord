@@ -39,4 +39,16 @@ contract CvxLockerTest is MainnetTest {
     cvx.approve(address(locker), cvx.balanceOf(address(minter)));
     vm.stopPrank();
   }
+
+  function _getRewards() internal view returns (uint256 cvxCrvRewards, uint256 cvxFxsRewards) {
+    CvxLockerV2.EarnedData[] memory rewards = vlCvx.claimableRewards(address(locker));
+    cvxCrvRewards = rewards[0].amount;
+    cvxFxsRewards = rewards[1].amount;
+  }
+
+  function _assertNoPendingRewards() internal {
+    (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();
+    assertEq(cvxCrvRewards, 0);
+    assertEq(cvxFxsRewards, 0);
+  }
 }
