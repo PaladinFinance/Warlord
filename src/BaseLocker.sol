@@ -29,11 +29,6 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     delegatee = _delegatee;
   }
 
-  modifier onlyWarMinter() {
-    if (warMinter != msg.sender) revert Errors.CallerNotAllowed();
-    _;
-  }
-
   function setController(address _controller) external onlyOwner {
     if (_controller == address(0)) revert Errors.ZeroAddress();
     if (_controller == controller) revert Errors.AlreadySet();
@@ -48,8 +43,15 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
 
   function _lock(uint256 amount) internal virtual;
 
-  function lock(uint256 amount) external onlyWarMinter whenNotPaused {
+  function lock(uint256 amount) external whenNotPaused {
+    if (warMinter != msg.sender) revert Errors.CallerNotAllowed();
     _lock(amount);
+  }
+
+  function _processUnlock() internal virtual;
+
+  function processUnlock() external whenNotPaused {
+    _processUnlock();
   }
 
   function _harvest() internal virtual;

@@ -39,6 +39,7 @@ contract WarDummyLocker is WarBaseLocker, Test {
   function _lock(uint256 amount) internal override {}
   function _harvest() internal override {}
   function _migrate(address receiver) internal override {}
+  function _processUnlock() internal override {}
 
   function token() external pure returns (address) {
     return address(0x1234123412341234);
