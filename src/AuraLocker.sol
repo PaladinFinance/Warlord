@@ -13,8 +13,7 @@ contract WarAuraLocker is WarBaseLocker {
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
-  {
-  }
+  {}
 
   function token() external pure returns (address) {
     return address(aura);
@@ -71,7 +70,7 @@ contract WarAuraLocker is WarBaseLocker {
       aura.safeApprove(address(vlAura), 0);
       aura.safeIncreaseAllowance(address(vlAura), relock);
       vlAura.lock(address(this), relock);
-    }  
+    }
   }
 
   function _migrate(address receiver) internal override {
