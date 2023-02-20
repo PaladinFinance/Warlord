@@ -30,12 +30,14 @@ contract WarCvxLocker is WarBaseLocker {
     if (amount == 0) revert Errors.ZeroValue();
 
     cvx.safeTransferFrom(msg.sender, address(this), amount);
+
     cvx.safeApprove(address(locker), 0);
     cvx.safeIncreaseAllowance(address(locker), amount);
+
     locker.lock(address(this), amount, 0); // TODO what is _spendRatio
   }
 
-  function harvest() public whenNotPaused {
+  function _harvest() internal override {
     locker.getReward(controller, false);
   }
 
@@ -45,7 +47,7 @@ contract WarCvxLocker is WarBaseLocker {
   }
 
   function processUnlock() external {
-    harvest();
+    _harvest();
 
     (, uint256 unlockableBalance,,) = locker.lockedBalances(address(this));
     if (unlockableBalance == 0) return;

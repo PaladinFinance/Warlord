@@ -35,10 +35,10 @@ contract WarDummyLocker is WarBaseLocker, Test {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegate)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegate)
   {}
-  function harvest() external {}
   function sendTokens(address receiver, uint256 amount) external {}
   function migrate(address receiver) external override {}
   function lock(uint256 amount) external {}
+  function _harvest() internal override {}
 
   function token() external pure returns (address) {
     return address(0x1234123412341234);

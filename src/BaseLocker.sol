@@ -46,6 +46,12 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     redeemModule = _redeemModule;
   }
 
+  function harvest() external whenNotPaused {
+    _harvest();
+  }
+
+  function _harvest() internal virtual;
+
   function pause() external onlyOwner {
     _pause();
   }
