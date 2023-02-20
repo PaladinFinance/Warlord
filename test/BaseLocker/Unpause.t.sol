@@ -23,9 +23,9 @@ contract Unpause is BaseLockerTest {
     dummyLocker.unpause();
   }
 
-  function testWhenAlive() public {
+  function testShutdown() public {
     vm.startPrank(admin);
-    dummyLocker.kill();
+    dummyLocker.shutdown();
 
     vm.expectRevert(Errors.ContractKilled.selector);
     dummyLocker.unpause();

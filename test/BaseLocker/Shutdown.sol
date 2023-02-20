@@ -3,29 +3,29 @@ pragma solidity 0.8.16;
 
 import "./BaseLockerTest.sol";
 
-contract Kill is BaseLockerTest {
+contract Shutdown is BaseLockerTest {
   function testDefaultBehavior() public {
-    assertEq(dummyLocker.killed(), false);
+    assertEq(dummyLocker.isShutdown(), false);
 
     vm.startPrank(admin);
     dummyLocker.pause();
-    dummyLocker.kill();
+    dummyLocker.shutdown();
     vm.stopPrank();
 
-    assertEq(dummyLocker.killed(), true);
+    assertEq(dummyLocker.isShutdown(), true);
   }
 
   function testOnlyOwner() public {
     vm.prank(admin);
     dummyLocker.pause();
     vm.expectRevert("Ownable: caller is not the owner");
-    dummyLocker.kill();
+    dummyLocker.shutdown();
   }
 
   function testWhenPaused() public {
     vm.prank(admin);
 
     vm.expectRevert("Pausable: not paused");
-    dummyLocker.kill();
+    dummyLocker.shutdown();
   }
 }

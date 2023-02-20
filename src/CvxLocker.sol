@@ -71,5 +71,9 @@ contract WarCvxLocker is WarBaseLocker {
     }
   }
 
-  function migrate(address receiver) external override onlyOwner whenPaused {}
+  function migrate(address receiver) external override onlyOwner whenPaused {
+    if (receiver == address(0)) revert Errors.ZeroAddress();
+
+    if (locker.isShutdown() || isShutdown) {}
+  }
 }

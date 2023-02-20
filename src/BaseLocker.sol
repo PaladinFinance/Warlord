@@ -16,7 +16,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   address public redeemModule;
   address public controller;
   address public warMinter;
-  bool public killed;
+  bool public isShutdown;
 
   // TODO add events
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee) {
@@ -34,12 +34,6 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     _;
   }
 
-  modifier whenAlive() {
-    if (killed) revert Errors.ContractKilled();
-    _;
-  }
-
-  // TODO setter for controller and redeem module
   function setController(address _controller) external onlyOwner {
     if (_controller == address(0)) revert Errors.ZeroAddress();
     if (_controller == controller) revert Errors.AlreadySet();
@@ -56,12 +50,13 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     _pause();
   }
 
-  function unpause() external onlyOwner whenAlive {
+  function unpause() external onlyOwner {
+    if (isShutdown) revert Errors.ContractKilled();
     _unpause();
   }
 
-  function kill() external onlyOwner whenPaused {
-    killed = true;
+  function shutdown() external onlyOwner whenPaused {
+    isShutdown = true;
   }
 
   function migrate(address receiver) external virtual;
