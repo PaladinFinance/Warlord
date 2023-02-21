@@ -9,6 +9,7 @@ contract Constructor is BaseLockerTest {
     assertEq(dummyLocker.redeemModule(), address(redeemModule));
     assertEq(dummyLocker.warMinter(), address(minter));
     assertEq(dummyLocker.delegatee(), delegate);
+    assertFalse(dummyLocker.isShutdown());
   }
 
   function testZeroAddressController() public {

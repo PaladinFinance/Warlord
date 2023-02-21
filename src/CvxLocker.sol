@@ -27,8 +27,6 @@ contract WarCvxLocker is WarBaseLocker {
   }
 
   function _lock(uint256 amount) internal override {
-    if (amount == 0) revert Errors.ZeroValue();
-
     cvx.safeTransferFrom(msg.sender, address(this), amount);
 
     cvx.safeApprove(address(vlCvx), 0);

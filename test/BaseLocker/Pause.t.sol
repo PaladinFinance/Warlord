@@ -5,10 +5,10 @@ import "./BaseLockerTest.sol";
 
 contract Pause is BaseLockerTest {
   function testDefaultBehavior() public {
-    assertEq(dummyLocker.paused(), false);
+    assertFalse(dummyLocker.paused());
     vm.prank(admin);
     dummyLocker.pause();
-    assertEq(dummyLocker.paused(), true);
+    assertTrue(dummyLocker.paused());
   }
 
   function testOnlyOwner() public {

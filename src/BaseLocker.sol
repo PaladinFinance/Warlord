@@ -45,6 +45,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
 
   function lock(uint256 amount) external whenNotPaused {
     if (warMinter != msg.sender) revert Errors.CallerNotAllowed();
+    if (amount == 0) revert Errors.ZeroValue();
     _lock(amount);
   }
 
@@ -60,7 +61,6 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     _harvest();
   }
 
-  // TODO move modifier tests to base class tests
   function _migrate(address receiver) internal virtual;
 
   function migrate(address receiver) external onlyOwner whenPaused {

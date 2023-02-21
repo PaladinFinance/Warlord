@@ -12,15 +12,4 @@ contract Lock is CvxLockerTest {
     assertEq(vlCvx.lockedBalanceOf(address(locker)), amount);
     assertEq(cvx.balanceOf(address(minter)), initialAmount - amount);
   }
-
-  function testZeroAmount() public {
-    vm.expectRevert(Errors.ZeroValue.selector);
-    vm.prank(address(minter));
-    locker.lock(0);
-  }
-
-  function testOnlyWarMinter() public {
-    vm.expectRevert(Errors.CallerNotAllowed.selector);
-    locker.lock(423_759_020);
-  }
 }

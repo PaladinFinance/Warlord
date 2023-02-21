@@ -11,10 +11,10 @@ contract Unpause is BaseLockerTest {
   }
 
   function testDefaultBehavior() public {
-    assertEq(dummyLocker.paused(), true);
+    assertTrue(dummyLocker.paused());
     vm.prank(admin);
     dummyLocker.unpause();
-    assertEq(dummyLocker.paused(), false);
+    assertFalse(dummyLocker.paused());
   }
 
   function testOnlyOwner() public {

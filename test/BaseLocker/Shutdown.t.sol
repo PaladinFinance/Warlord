@@ -5,14 +5,14 @@ import "./BaseLockerTest.sol";
 
 contract Shutdown is BaseLockerTest {
   function testDefaultBehavior() public {
-    assertEq(dummyLocker.isShutdown(), false);
+    assertFalse(dummyLocker.isShutdown());
 
     vm.startPrank(admin);
     dummyLocker.pause();
     dummyLocker.shutdown();
     vm.stopPrank();
 
-    assertEq(dummyLocker.isShutdown(), true);
+    assertTrue(dummyLocker.isShutdown());
   }
 
   function testOnlyOwner() public {
