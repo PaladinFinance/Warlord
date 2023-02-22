@@ -8,6 +8,7 @@ library Errors {
   error DifferentSizeArrays(uint256 size1, uint256 size2);
   error EmptyArray();
   error AlreadySet();
+  error SameAddress();
 
   // Ownership
   error CannotBeOwner();
