@@ -7,6 +7,7 @@ libs = ['lib']
 [fmt]
 tab_width = 2
 number_underscore = 'thousands'
+ignore = ['src/HolyPaladinDistributor.sol']
 
 [rpc_endpoints]
 mainnet = 'https://rpc.ankr.com/eth'
