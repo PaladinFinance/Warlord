@@ -35,8 +35,9 @@ contract WarAuraLocker is WarBaseLocker {
     vlAura.getReward(address(this), false);
 
     for (uint256 i; i < rewardsLength;) {
-      // TODO is it cheaper with a variable assignment instead of array access twice?
-      IERC20(rewards[i].token).safeTransfer(controller, rewards[i].amount);
+      IERC20 rewardToken = IERC20(rewards[i].token);
+      uint256 rewardBalance = rewardToken.balanceOf(address(this));
+      rewardToken.safeTransfer(controller, rewardBalance);
 
       unchecked {
         ++i;
