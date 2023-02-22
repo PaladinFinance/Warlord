@@ -16,9 +16,6 @@ contract WarCvxLocker is WarBaseLocker {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
   {
-    if (_controller == address(0) || _redeemModule == address(0) || _warMinter == address(0)) {
-      revert Errors.ZeroAddress();
-    }
     registry.setDelegate("cvx.eth", _delegatee);
   }
 
@@ -42,8 +39,9 @@ contract WarCvxLocker is WarBaseLocker {
     vlCvx.getReward(address(this), false);
 
     for (uint256 i; i < rewardsLength;) {
-      // TODO is it cheaper with a variable assignment instead of array access twice?
-      IERC20(rewards[i].token).safeTransfer(controller, rewards[i].amount);
+      IERC20 rewardToken = IERC20(rewards[i].token);
+      uint256 rewardBalance = rewardToken.balanceOf(address(this));
+      rewardToken.safeTransfer(controller, rewardBalance);
 
       unchecked {
         ++i;
@@ -67,7 +65,6 @@ contract WarCvxLocker is WarBaseLocker {
     // If unlock == 0 relock everything
     if (withdrawalAmount == 0) {
       vlCvx.processExpiredLocks(true);
-      return;
     } else {
       // otherwise withdraw everything and lock only what's left
       vlCvx.processExpiredLocks(false);
