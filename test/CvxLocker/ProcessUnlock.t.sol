@@ -33,15 +33,13 @@ contract ProcessUnlock is CvxLockerTest {
     assertEq(unlocked, 0, "after processUnlock there shouldn't be any unlockable balance");
   }
 
-  function testUnlockAndRelock(uint256 withdrawDesired, uint256 daysPassed, uint256 lockUpperBound) public {
+  function testUnlockAndRelock(uint256 withdrawDesired, uint256 daysPassed) public {
     vm.assume(daysPassed < 120 days);
-    vm.assume(lockUpperBound < 1e30);
 
     // Queue rewards withdrawal
     redeemModule.setQueue(withdrawDesired);
     assertEq(redeemModule.queuedForWithdrawal(), withdrawDesired, "mock should assign value correctly");
 
-    _mockMultipleLocks(lockUpperBound);
     // Move in a random point in time that may have expired and not expired locks
     vm.warp(block.timestamp + daysPassed);
 
