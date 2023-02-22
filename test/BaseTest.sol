@@ -6,6 +6,7 @@ import {Errors} from "../src/utils/Errors.sol";
 import {IERC20} from "openzeppelin/interfaces/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
+import "solgen/Generators.sol";
 
 contract BaseTest is Test {
   using SafeERC20 for IERC20;
