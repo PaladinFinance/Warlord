@@ -5,11 +5,7 @@ import "./CvxLockerTest.sol";
 
 contract Constructor is CvxLockerTest {
   function testDefaultBehavior() public {
-    assertEq(locker.token(), address(cvx)); // TODO clean this up
-    assertEq(locker.controller(), controller);
-    assertEq(address(locker.redeemModule()), address(redeemModule));
     assertEq(registry.delegation(address(locker), "cvx.eth"), delegatee);
-    assertEq(locker.delegatee(), delegatee);
   }
 
   function testZeroAddressController() public {

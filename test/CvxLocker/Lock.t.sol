@@ -6,10 +6,12 @@ import "./CvxLockerTest.sol";
 contract Lock is CvxLockerTest {
   function testDefaultBehavior(uint256 amount) public {
     uint256 initialAmount = cvx.balanceOf(address(minter));
+
     vm.assume(amount > 0 && amount < initialAmount);
     vm.prank(address(minter));
     locker.lock(amount);
-    assertEq(vlCvx.lockedBalanceOf(address(locker)), amount);
-    assertEq(cvx.balanceOf(address(minter)), initialAmount - amount);
+
+    assertEq(vlCvx.lockedBalanceOf(address(locker)), amount, "locked balance is equivalent to initial cvx amount");
+    assertEq(cvx.balanceOf(address(minter)), initialAmount - amount, "locked amount is deducted from cvx balance");
   }
 }

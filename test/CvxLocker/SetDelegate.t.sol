@@ -5,13 +5,12 @@ import "./CvxLockerTest.sol";
 
 contract SetDelegate is CvxLockerTest {
   function testDefaultBehavior(address _delegatee) public {
-    console.log(locker.owner());
-    console.log(admin);
     vm.assume(_delegatee != locker.delegatee() && _delegatee != zero);
-    vm.startPrank(admin);
+    vm.prank(admin);
     locker.setDelegate(_delegatee);
-    vm.stopPrank();
-    assertEq(locker.delegatee(), _delegatee);
-    assertEq(registry.delegation(address(locker), "cvx.eth"), _delegatee);
+    assertEq(locker.delegatee(), _delegatee, "delegation value in contract has to be changed correctly");
+    assertEq(
+      registry.delegation(address(locker), "cvx.eth"), _delegatee, "the delegation registry has to change accordingly"
+    );
   }
 }

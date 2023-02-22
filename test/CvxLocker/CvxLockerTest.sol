@@ -33,10 +33,10 @@ contract CvxLockerTest is MainnetTest {
     vm.prank(admin);
     locker = new WarCvxLocker(controller, address(redeemModule), address(minter), delegatee);
 
-    deal(address(cvx), address(minter), 100e18);
+    deal(address(cvx), address(minter), 1e30);
 
     vm.startPrank(address(minter));
-    cvx.approve(address(locker), cvx.balanceOf(address(minter)));
+    cvx.approve(address(locker), type(uint256).max);
     vm.stopPrank();
   }
 
