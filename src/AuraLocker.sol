@@ -72,9 +72,11 @@ contract WarAuraLocker is WarBaseLocker {
     }
   }
 
-  function _migrate(address receiver) internal override {
-    if (!vlAura.isShutdown() && !isShutdown) revert Errors.LockerStillAlive();
+  function _externalShutdown() internal view override returns (bool) {
+    return vlAura.isShutdown();
+  }
 
+  function _migrate(address receiver) internal override {
     // withdraws unlockable balance to receiver
     vlAura.processExpiredLocks(false);
     uint256 unlockedBalance = aura.balanceOf(address(this));
