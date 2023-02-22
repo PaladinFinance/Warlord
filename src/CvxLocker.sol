@@ -72,11 +72,12 @@ contract WarCvxLocker is WarBaseLocker {
       cvx.transfer(address(redeemModule), withdrawalAmount);
       IWarRedeemModule(redeemModule).notifyUnlock(address(cvx), withdrawalAmount);
 
-      // TODO are variable assignment that expensive gas wise
       uint256 relock = unlockableBalance - withdrawalAmount;
-      cvx.safeApprove(address(vlCvx), 0);
-      cvx.safeIncreaseAllowance(address(vlCvx), relock);
-      vlCvx.lock(address(this), relock, 0);
+      if (relock > 0) {
+        if (cvx.allowance(address(this), address(vlCvx)) != 0) cvx.safeApprove(address(vlCvx), 0);
+        cvx.safeIncreaseAllowance(address(vlCvx), relock);
+        vlCvx.lock(address(this), relock, 0);
+      }
     }
   }
 
