@@ -81,10 +81,6 @@ contract WarCvxLocker is WarBaseLocker {
     }
   }
 
-  function _externalShutdown() internal view override returns (bool) {
-    return vlCvx.isShutdown();
-  }
-
   function _migrate(address receiver) internal override {
     // withdraws unlockable balance to receiver
     vlCvx.withdrawExpiredLocksTo(receiver);

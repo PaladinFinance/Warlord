@@ -32,8 +32,6 @@ contract BaseLockerTest is MainnetTest {
 }
 
 contract WarDummyLocker is WarBaseLocker, Test {
-  bool extShutdown;
-
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegate)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegate)
   {}
@@ -42,14 +40,6 @@ contract WarDummyLocker is WarBaseLocker, Test {
   function _harvest() internal override {}
   function _migrate(address receiver) internal override {}
   function _processUnlock() internal override {}
-
-  function _externalShutdown() internal view override returns (bool) {
-    return extShutdown;
-  }
-
-  function activateExternalShutdown() external {
-    extShutdown = true;
-  }
 
   function token() external pure returns (address) {
     return address(0x1234123412341234);

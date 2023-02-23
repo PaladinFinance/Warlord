@@ -26,37 +26,4 @@ contract Harvest is BaseLockerTest {
     vm.prank(admin);
     dummyLocker.migrate(zero);
   }
-
-  function testLockerStillAlive() public {
-    vm.startPrank(admin);
-    dummyLocker.pause();
-    vm.expectRevert(Errors.LockerStillAlive.selector);
-    dummyLocker.migrate(randomReceiver);
-    vm.stopPrank();
-  }
-
-  function testExternalShutdown() public {
-    dummyLocker.activateExternalShutdown();
-    vm.startPrank(admin);
-    dummyLocker.pause();
-    dummyLocker.migrate(randomReceiver);
-    vm.stopPrank();
-  }
-
-  function testInternalShutdown() public {
-    vm.startPrank(admin);
-    dummyLocker.pause();
-    dummyLocker.shutdown();
-    dummyLocker.migrate(randomReceiver);
-    vm.stopPrank();
-  }
-
-  function testInternalAndExternalShutdown() public {
-    dummyLocker.activateExternalShutdown();
-    vm.startPrank(admin);
-    dummyLocker.pause();
-    dummyLocker.shutdown();
-    dummyLocker.migrate(randomReceiver);
-    vm.stopPrank();
-  }
 }
