@@ -16,8 +16,8 @@ contract WarAuraLocker is WarBaseLocker {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
   {
+    // delegating only on snapshoht because on chain delegation requires locking first
     registry.setDelegate("aurafinance.eth", _delegatee);
-    vlAura.delegate(_delegatee);
   }
 
   function token() external pure returns (address) {
