@@ -6,15 +6,12 @@ import "./CvxLockerTest.sol";
 contract Harvest is CvxLockerTest {
   function setUp() public override {
     CvxLockerTest.setUp();
-    uint256 amountToStake = cvx.balanceOf(address(minter));
-    vm.prank(address(minter));
-    locker.lock(amountToStake);
+    _assertNoPendingRewards();
+    _mockMultipleLocks(1e25);
   }
 
   function testDefaultBehavior(uint256 time) public {
     vm.assume(time < 10_000 days);
-
-    _assertNoPendingRewards();
 
     vm.warp(block.timestamp + time);
 
@@ -22,8 +19,8 @@ contract Harvest is CvxLockerTest {
     locker.harvest();
 
     // check accrued rewards harvest to controller
-    assertEq(cvxCrvRewards, cvxCrv.balanceOf(controller), "expecting no pending rewards for cvxCrv");
-    assertEq(cvxFxsRewards, cvxFxs.balanceOf(controller), "expecting no pending rewards for cvxFxs");
+    assertEq(cvxCrvRewards, cvxCrv.balanceOf(controller), "expecting pending rewards for cvxCrv");
+    assertEq(cvxFxsRewards, cvxFxs.balanceOf(controller), "expecting pending rewards for cvxFxs");
 
     // check there's no rewards lefts after harvesting
     _assertNoPendingRewards();

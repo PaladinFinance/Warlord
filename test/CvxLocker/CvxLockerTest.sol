@@ -51,4 +51,24 @@ contract CvxLockerTest is MainnetTest {
     assertEq(cvxCrvRewards, 0);
     assertEq(cvxFxsRewards, 0);
   }
+
+  function _mockMultipleLocks(uint256 locksUpperBound) public {
+    deal(address(cvx), address(minter), locksUpperBound * 1e10);
+    uint256 totalLockAmount;
+
+    // 112 days before locks start to expire, a new lock every day
+    uint256[] memory lockAmounts = linspace(uint256(1e18), uint256(locksUpperBound), 114);
+    vm.startPrank(address(minter));
+    for (uint256 i; i < lockAmounts.length; ++i) {
+      uint256 amount = lockAmounts[i];
+      vm.warp(block.timestamp + 1 days);
+      locker.lock(amount);
+      totalLockAmount += amount;
+    }
+    vm.stopPrank();
+
+    (, uint256 unlocked, uint256 locked,) = vlCvx.lockedBalances(address(locker));
+    assertEq(unlocked, 0, "failed multiple locks setup");
+    assertEq(locked, totalLockAmount, "failed multiple locks setup");
+  }
 }
