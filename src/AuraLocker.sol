@@ -50,7 +50,7 @@ contract WarAuraLocker is WarBaseLocker {
     (, uint256 unlockableBalance,,) = vlAura.lockedBalances(address(this));
     if (unlockableBalance == 0) return;
 
-    uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal();
+    uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal(address(aura));
 
     // If unlock == 0 relock everything
     if (withdrawalAmount == 0) {

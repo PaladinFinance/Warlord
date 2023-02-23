@@ -26,4 +26,11 @@ contract WarMintRatio is IMintRatio, Owner {
 
     mintAmount = amount * warPerToken[token] / UNIT;
   }
+
+  function getRedeemAmount(address token, uint256 burnAmount) public view returns (uint256 redeemAmount) {
+    if (token == address(0)) revert Errors.ZeroAddress();
+    if (burnAmount == 0) revert Errors.ZeroValue();
+
+    redeemAmount = burnAmount * UNIT / warPerToken[token];
+  }
 }

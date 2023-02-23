@@ -9,6 +9,7 @@ library Errors {
   error EmptyArray();
   error AlreadySet();
   error SameAddress();
+  error InvalidParameter();
 
   // Ownership
   error CannotBeOwner();
@@ -23,6 +24,13 @@ library Errors {
 
   // Minter
   error MintAmountBiggerThanSupply();
+
+  // Redeemer
+  error NotListedLocker();
+  error InvalidIndex();
+  error CannotRedeemYet();
+  error AlreadyRedeemed();
+  error WeightOverflow();
 
   // Staker
   error AlreadyListedDepositor();
@@ -42,4 +50,7 @@ library Errors {
 
   // AuraBalFarmer
   error SlippageTooHigh();
+
+  // Admin
+  error RecoverForbidden();
 }

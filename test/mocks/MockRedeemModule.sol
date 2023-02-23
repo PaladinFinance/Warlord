@@ -7,7 +7,8 @@ import "utils/Owner.sol";
 contract MockRedeem is IWarRedeemModule, Owner {
   uint256 queued;
 
-  function queuedForWithdrawal() external view returns (uint256) {
+  function queuedForWithdrawal(address token) external view returns (uint256) {
+    token;
     return queued;
   }
 

@@ -26,7 +26,7 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
 
     // Struct 
 
-    struct Distribution {
+    struct Distribution { // TODO see to pack better for gas opti
         uint256 blockNumber;
         uint256 timestamp;
         uint256 amount;
@@ -205,6 +205,20 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
         distributionManager = newDistributionManager;
 
         emit DistributionManagerUpdated(oldDistributionManager, newDistributionManager);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+    function recoverERC20(address token) external onlyOwner {
+        if(token == address(war)) revert Errors.RecoverForbidden();
+        
+        IERC20(token).safeTransfer(owner(), IERC20(token).balanceOf(address(this)));
     }
 
 }

@@ -62,7 +62,7 @@ contract WarCvxLocker is WarBaseLocker {
     (, uint256 unlockableBalance,,) = vlCvx.lockedBalances(address(this));
     if (unlockableBalance == 0) return;
 
-    uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal();
+    uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal(address(cvx));
 
     // If unlock == 0 relock everything
     if (withdrawalAmount == 0) {
