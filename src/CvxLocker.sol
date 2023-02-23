@@ -26,7 +26,7 @@ contract WarCvxLocker is WarBaseLocker {
   function _lock(uint256 amount) internal override {
     cvx.safeTransferFrom(msg.sender, address(this), amount);
 
-    cvx.safeApprove(address(vlCvx), 0);
+    if (cvx.allowance(address(this), address(vlCvx)) != 0) cvx.safeApprove(address(vlCvx), 0);
     cvx.safeIncreaseAllowance(address(vlCvx), amount);
 
     vlCvx.lock(address(this), amount, 0); // TODO what is _spendRatio
