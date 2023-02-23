@@ -38,7 +38,7 @@ contract ProcessUnlock is CvxLockerTest {
 
     // Queue rewards withdrawal
     redeemModule.setQueue(withdrawDesired);
-    assertEq(redeemModule.queuedForWithdrawal(), withdrawDesired, "mock should assign value correctly");
+    assertEq(redeemModule.queuedForWithdrawal(address(cvx)), withdrawDesired, "mock should assign value correctly");
 
     // Move in a random point in time that may have expired and not expired locks
     vm.warp(block.timestamp + daysPassed);
@@ -50,7 +50,7 @@ contract ProcessUnlock is CvxLockerTest {
     assertEq(unlocked, 0, "there should be no more unlocked cvx");
 
     uint256 newLocks = locked - initiallyLocked;
-    uint256 amountWithdrawn = withdrawDesired - redeemModule.queuedForWithdrawal();
+    uint256 amountWithdrawn = withdrawDesired - redeemModule.queuedForWithdrawal(address(cvx));
     assertEq(newLocks + amountWithdrawn, initiallyUnlocked, "the unlocked funds have to go into relock or redeemModule");
   }
 
