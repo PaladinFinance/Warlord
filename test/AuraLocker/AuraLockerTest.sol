@@ -40,15 +40,33 @@ contract AuraLockerTest is MainnetTest {
     vm.stopPrank();
   }
 
-  function _getRewards() internal view returns (uint256 cvxCrvRewards, uint256 cvxFxsRewards) {
-    /* CvxLockerV2.EarnedData[] memory rewards = vlCvx.claimableRewards(address(locker));
-    cvxCrvRewards = rewards[0].amount;
-    cvxFxsRewards = rewards[1].amount; */
+  function _getRewards() internal view returns (uint256 auraBalRewards) {
+    AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(locker));
+    auraBalRewards = rewards[0].amount;
   }
 
   function _assertNoPendingRewards() internal {
-    (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();
-    assertEq(cvxCrvRewards, 0);
-    assertEq(cvxFxsRewards, 0);
+    uint256 auraBalRewards = _getRewards();
+    assertEq(auraBalRewards, 0, "there are no pending auraBal rewards");
+  }
+
+  function _mockMultipleLocks(uint256 locksUpperBound) public {
+    deal(address(cvx), address(minter), locksUpperBound * 1e10);
+    uint256 totalLockAmount;
+
+    // 112 days before locks start to expire, a new lock every day
+    uint256[] memory lockAmounts = linspace(uint256(1e18), uint256(locksUpperBound), 114);
+    vm.startPrank(address(minter));
+    for (uint256 i; i < lockAmounts.length; ++i) {
+      uint256 amount = lockAmounts[i];
+      vm.warp(block.timestamp + 1 days);
+      locker.lock(amount);
+      totalLockAmount += amount;
+    }
+    vm.stopPrank();
+
+    (, uint256 unlocked, uint256 locked,) = vlAura.lockedBalances(address(locker));
+    assertEq(unlocked, 0, "failed multiple locks setup");
+    assertEq(locked, totalLockAmount, "failed multiple locks setup");
   }
 }
