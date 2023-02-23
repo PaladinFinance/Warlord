@@ -43,7 +43,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     if (token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
-      bal.safeApprove(address(balDepositor), 0);
+      bal.safeApprove(address(balDepositor), 0); // TODO should I check here as well for zero approval
       bal.safeIncreaseAllowance(address(balDepositor), amount);
       uint256 minOut = balDepositor.getMinOut(amount, slippageBps);
       balDepositor.deposit(amount, minOut, true, address(0));

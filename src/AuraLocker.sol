@@ -27,7 +27,7 @@ contract WarAuraLocker is WarBaseLocker {
   function _lock(uint256 amount) internal override {
     aura.safeTransferFrom(msg.sender, address(this), amount);
 
-    aura.safeApprove(address(vlAura), 0);
+    if (aura.allowance(address(this), address(aura)) != 0) aura.safeApprove(address(vlAura), 0);
     aura.safeIncreaseAllowance(address(vlAura), amount);
 
     vlAura.lock(address(this), amount);
