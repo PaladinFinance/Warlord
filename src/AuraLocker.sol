@@ -56,7 +56,6 @@ contract WarAuraLocker is WarBaseLocker {
     // If unlock == 0 relock everything
     if (withdrawalAmount == 0) {
       vlAura.processExpiredLocks(true);
-      return;
     } else {
       // otherwise withdraw everything and lock only what's left
       vlAura.processExpiredLocks(false);
@@ -64,11 +63,12 @@ contract WarAuraLocker is WarBaseLocker {
       aura.transfer(address(redeemModule), withdrawalAmount);
       IWarRedeemModule(redeemModule).notifyUnlock(address(aura), withdrawalAmount);
 
-      // TODO are variable assignment that expensive gas wise
       uint256 relock = unlockableBalance - withdrawalAmount;
-      aura.safeApprove(address(vlAura), 0);
-      aura.safeIncreaseAllowance(address(vlAura), relock);
-      vlAura.lock(address(this), relock);
+      if (relock > 0) {
+        if (aura.allowance(address(this), address(aura)) != 0) aura.safeApprove(address(vlAura), 0);
+        aura.safeIncreaseAllowance(address(vlAura), relock);
+        vlAura.lock(address(this), relock);
+      }
     }
   }
 
