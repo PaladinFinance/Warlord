@@ -8,12 +8,11 @@ contract Migrate is CvxLockerTest {
 
   function setUp() public override {
     CvxLockerTest.setUp();
-    vm.startPrank(address(minter));
-    locker.lock(cvx.balanceOf(address(minter)));
-    vm.stopPrank();
+
+    _mockMultipleLocks(1e25);
+
     vm.startPrank(admin);
     locker.pause();
-    locker.shutdown();
     vm.stopPrank();
   }
 
