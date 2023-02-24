@@ -18,7 +18,10 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
   address public warMinter;
   bool public isShutdown;
 
-  // TODO add events
+  event SetController(address newController);
+  event SetRedeemModule(address newRedeemModule);
+  event Shutdown();
+
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee) {
     if (_controller == address(0) || _redeemModule == address(0) || _warMinter == address(0)) {
       revert Errors.ZeroAddress();
@@ -33,12 +36,16 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     if (_controller == address(0)) revert Errors.ZeroAddress();
     if (_controller == controller) revert Errors.AlreadySet();
     controller = _controller;
+
+    emit SetController(_controller);
   }
 
   function setRedeemModule(address _redeemModule) external onlyOwner {
     if (_redeemModule == address(0)) revert Errors.ZeroAddress();
     if (_redeemModule == address(redeemModule)) revert Errors.AlreadySet();
     redeemModule = _redeemModule;
+
+    emit SetRedeemModule(_redeemModule);
   }
 
   function _lock(uint256 amount) internal virtual;
@@ -79,5 +86,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
 
   function shutdown() external onlyOwner whenPaused {
     isShutdown = true;
+
+    emit Shutdown();
   }
 }
