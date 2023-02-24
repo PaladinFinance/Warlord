@@ -52,8 +52,14 @@ contract WarAuraLocker is WarBaseLocker {
 
   function setDelegate(address _delegatee) external onlyOwner {
     delegatee = _delegatee;
-    registry.setDelegate("cvx.eth", _delegatee);
-    vlAura.delegate(_delegatee);
+    if (registry.delegation(address(this), "aurafinance.eth") != _delegatee) {
+      registry.setDelegate("aurafinance.eth", _delegatee);
+    }
+
+    (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
+    if (lockedBalance != 0) {
+      vlAura.delegate(_delegatee);
+    }
   }
 
   function _processUnlock() internal override {
