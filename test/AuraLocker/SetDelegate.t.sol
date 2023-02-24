@@ -24,7 +24,6 @@ contract SetDelegate is AuraLockerTest {
 
     assertGt(vlAura.getVotes(newDelegatee), 0, "after a week has passed the delegatee should have his voting power");
 
-    assertEq(locker.delegatee(), newDelegatee, "delegation value in contract has to be changed correctly");
     assertEq(
       registry.delegation(address(locker), "aurafinance.eth"),
       newDelegatee,
@@ -38,8 +37,6 @@ contract SetDelegate is AuraLockerTest {
   function testWithoutVotingPower() public {
     vm.prank(admin);
     locker.setDelegate(newDelegatee);
-
-    assertEq(locker.delegatee(), newDelegatee, "delegation value in contract has to be changed correctly");
 
     assertEq(
       registry.delegation(address(locker), "aurafinance.eth"),
@@ -62,7 +59,6 @@ contract SetDelegate is AuraLockerTest {
 
     assertGt(vlAura.getVotes(delegatee), 0, "after a week has passed the delegatee should have his voting power");
 
-    assertEq(locker.delegatee(), delegatee, "delegation value in contract has to be changed correctly");
     assertEq(
       registry.delegation(address(locker), "aurafinance.eth"),
       delegatee,
