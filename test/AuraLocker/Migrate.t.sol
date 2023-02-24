@@ -17,7 +17,8 @@ contract Migrate is AuraLockerTest {
     vm.stopPrank();
   }
 
-  function testDefaultBehavior() public { // TODO make this test migrate multiple times
+  function testDefaultBehavior() public {
+    // TODO make this test migrate multiple times
     vm.warp(block.timestamp + 1000 days);
     uint256 auraBalRewards = _getRewards();
     (,, uint256 initialLockedBalance,) = vlAura.lockedBalances(address(locker));
@@ -33,6 +34,6 @@ contract Migrate is AuraLockerTest {
     // all rewards were claimed
     _assertNoPendingRewards();
 
-    assertEq(auraBalRewards, auraBal.balanceOf(controller), "check accrued rewards to controller for cvxCrv"); 
+    assertEq(auraBalRewards, auraBal.balanceOf(controller), "check accrued rewards to controller for cvxCrv");
   }
 }
