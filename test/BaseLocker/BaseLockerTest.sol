@@ -19,6 +19,7 @@ contract BaseLockerTest is MainnetTest {
 
   event SetController(address newController);
   event SetRedeemModule(address newRedeemModule);
+  event SetDelegate(address newDelegatee);
   event Shutdown();
 
   function setUp() public virtual override {
@@ -44,6 +45,7 @@ contract WarDummyLocker is WarBaseLocker, Test {
   function _harvest() internal override {}
   function _migrate(address receiver) internal override {}
   function _processUnlock() internal override {}
+  function _setDelegate(address delegatee) internal override {}
 
   function token() external pure returns (address) {
     return address(0x1234123412341234);
