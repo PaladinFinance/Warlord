@@ -20,6 +20,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
 
   event SetController(address newController);
   event SetRedeemModule(address newRedeemModule);
+  event SetDelegate(address newDelegatee);
   event Shutdown();
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee) {
@@ -54,6 +55,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     delegatee = _delegatee;
     _setDelegate(_delegatee);
 
+    emit SetDelegate(_delegatee);
   }
 
   function _lock(uint256 amount) internal virtual;
