@@ -10,13 +10,15 @@ contract SetDelegate is AuraLockerTest {
     _mockMultipleLocks(1e25);
   }
 
-  function testDefaultBehavior(address _delegatee) public {
-    vm.assume(_delegatee != locker.delegatee() && _delegatee != zero && _delegatee != address(locker));
+  function testDefaultBehavior() public {
     vm.prank(admin);
-    locker.setDelegate(_delegatee);
-    assertEq(locker.delegatee(), _delegatee, "delegation value in contract has to be changed correctly");
+    locker.setDelegate(delegatee);
+    assertEq(locker.delegatee(), delegatee, "delegation value in contract has to be changed correctly");
     assertEq(
-      registry.delegation(address(locker), "aurafinance.eth"), _delegatee, "the delegation registry has to change accordingly"
+      registry.delegation(address(locker), "aurafinance.eth"),
+      delegatee,
+      "the delegation registry has to change accordingly"
     );
+    assertEq(vlAura.delegates(address(locker)), delegatee, "onchain delegation should be assigned to the right address");
   }
 }
