@@ -17,6 +17,10 @@ contract BaseLockerTest is MainnetTest {
   MockRedeem redeemModule;
   WarDummyLocker dummyLocker;
 
+  event SetController(address newController);
+  event SetRedeemModule(address newRedeemModule);
+  event Shutdown();
+
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();

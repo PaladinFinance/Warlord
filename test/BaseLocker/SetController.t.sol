@@ -7,8 +7,13 @@ contract SetController is BaseLockerTest {
   function testDefaultBehavior(address newController) public {
     vm.assume(newController != zero && newController != controller);
     vm.prank(admin);
+
+    vm.expectEmit(true, false, false, true);
+    emit SetController(newController);
+
     dummyLocker.setController(newController);
-    assertEq(dummyLocker.controller(), newController);
+
+    assertEq(dummyLocker.controller(), newController, "newController should be the new controller");
   }
 
   function testRevertWithZeroAddress() public {

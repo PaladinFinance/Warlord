@@ -7,8 +7,13 @@ contract SetRedeemModule is BaseLockerTest {
   function testDefaultBehavior(address newRedeemModule) public {
     vm.assume(newRedeemModule != zero && newRedeemModule != address(redeemModule));
     vm.prank(admin);
+
+    vm.expectEmit(true, false, false, true);
+    emit SetRedeemModule(newRedeemModule);
+
     dummyLocker.setRedeemModule(newRedeemModule);
-    assertEq(address(dummyLocker.redeemModule()), newRedeemModule);
+
+    assertEq(address(dummyLocker.redeemModule()), newRedeemModule, "newRedeemModule should be the new redeem module");
   }
 
   function testRevertWithZeroAddress() public {
