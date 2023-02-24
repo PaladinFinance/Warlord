@@ -49,8 +49,7 @@ contract WarCvxLocker is WarBaseLocker {
     }
   }
 
-  function setDelegate(address _delegatee) external onlyOwner {
-    delegatee = _delegatee;
+  function _setDelegate(address _delegatee) internal override {
     registry.setDelegate("cvx.eth", _delegatee);
   }
 

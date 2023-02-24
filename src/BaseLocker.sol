@@ -48,6 +48,14 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard 
     emit SetRedeemModule(_redeemModule);
   }
 
+  function _setDelegate(address _delegatee) internal virtual;
+
+  function setDelegate(address _delegatee) external onlyOwner {
+    delegatee = _delegatee;
+    _setDelegate(_delegatee);
+
+  }
+
   function _lock(uint256 amount) internal virtual;
 
   function lock(uint256 amount) external whenNotPaused {
