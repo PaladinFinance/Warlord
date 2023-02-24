@@ -10,7 +10,7 @@ contract Shutdown is BaseLockerTest {
     vm.startPrank(admin);
     dummyLocker.pause();
 
-    vm.expectEmit(false, false, false, false);
+    vm.expectEmit(false, false, false, true);
     emit Shutdown();
 
     dummyLocker.shutdown();

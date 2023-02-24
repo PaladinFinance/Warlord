@@ -8,7 +8,7 @@ contract SetController is BaseLockerTest {
     vm.assume(newController != zero && newController != controller);
     vm.prank(admin);
 
-    vm.expectEmit(true, false, false, true);
+    vm.expectEmit(false, false, false, true);
     emit SetController(newController);
 
     dummyLocker.setController(newController);

@@ -8,7 +8,7 @@ contract SetRedeemModule is BaseLockerTest {
     vm.assume(newRedeemModule != zero && newRedeemModule != address(redeemModule));
     vm.prank(admin);
 
-    vm.expectEmit(true, false, false, true);
+    vm.expectEmit(false, false, false, true);
     emit SetRedeemModule(newRedeemModule);
 
     dummyLocker.setRedeemModule(newRedeemModule);
