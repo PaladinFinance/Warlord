@@ -49,6 +49,7 @@ contract MainnetTest is BaseTest {
     vm.label(address(vlCvx), "vlCvx");
     vm.label(address(convexCvxCrvStaker), "convexCvxCrvStaker");
 
+    vm.label(address(vlAura), "vlAura");
     vm.label(address(balDepositor), "balDepositor");
     vm.label(address(auraBalStaker), "auraBalStaker");
 
