@@ -8,7 +8,7 @@ import {IFarmer} from "interfaces/IFarmer.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
 // TODO enforce modifiers here
-abstract contract WarBaseFarmer is Owner, Pausable, ReentrancyGuard {
+abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
   address public controller;
   address public warStaker;
 
