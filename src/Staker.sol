@@ -241,9 +241,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     if (amount == 0) revert Errors.ZeroValue();
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
-    // We just want to update the reward states for the user who's balance gonna change
-    _updateAllUserRewardStates(receiver);
-
     // If given MAX_UINT256, we want to deposit the full user balance
     if (amount == MAX_UINT256) amount = IERC20(warToken).balanceOf(msg.sender);
 
@@ -251,6 +248,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     IERC20(warToken).safeTransferFrom(msg.sender, address(this), amount);
 
     // Mint the staked tokens
+    // It will also update the reward states for the user who's balance gonna change
     _mint(receiver, amount);
 
     emit Staked(msg.sender, receiver, amount);
@@ -269,13 +267,11 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     if (amount == 0) revert Errors.ZeroValue();
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
-    // We just want to update the reward states for the user who's balance gonna change
-    _updateAllUserRewardStates(msg.sender);
-
     // If given MAX_UINT256, we want to withdraw the full user balance
     if (amount == MAX_UINT256) amount = balanceOf(msg.sender);
 
     // Burn the staked tokens
+    // It will also update the reward states for the user who's balance gonna change
     _burn(msg.sender, amount);
 
     // And send the tokens to the given receiver
