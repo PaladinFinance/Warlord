@@ -9,4 +9,5 @@ interface IFarmer is IHarvestable {
   function sendTokens(address receiver, uint256 amount) external;
   function harvest() external;
   function stake(address token, uint256 amount) external;
+  function token() external view returns (address);
 }

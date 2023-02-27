@@ -18,33 +18,37 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
 
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
 
+  function token() external pure returns (address) {
+    return address(cvxCrv);
+  }
+
   function setRewardWeight(uint256 weight) external onlyOwner whenNotPaused {
     cvxCrvStaker.setRewardWeight(weight);
   }
 
-  function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
-    if (token != address(cvxCrv) && token != address(crv)) revert Errors.IncorrectToken();
-    if (amount == 0) revert Errors.ZeroValue();
+  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
+    if (_token != address(cvxCrv) && _token != address(crv)) revert Errors.IncorrectToken();
+    if (_amount == 0) revert Errors.ZeroValue();
 
     // TODO test if it works when a bonus is available
 
-    IERC20(token).safeTransferFrom(controller, address(this), amount);
+    IERC20(_token).safeTransferFrom(controller, address(this), _amount);
 
-    if (token == address(crv)) {
+    if (_token == address(crv)) {
       uint256 initialBalance = cvxCrv.balanceOf(address(this));
       crv.safeApprove(address(crvDepositor), 0);
-      crv.safeIncreaseAllowance(address(crvDepositor), amount);
-      crvDepositor.deposit(amount, true, address(0));
+      crv.safeIncreaseAllowance(address(crvDepositor), _amount);
+      crvDepositor.deposit(_amount, true, address(0));
       // Take into account possible bonus for locking crv
       _index += cvxCrv.balanceOf(address(this)) - initialBalance;
     } else {
-      _index += amount;
+      _index += _amount;
     }
     cvxCrv.safeApprove(address(cvxCrvStaker), 0);
-    cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), amount);
-    cvxCrvStaker.stake(amount, address(this));
+    cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), _amount);
+    cvxCrvStaker.stake(_amount, address(this));
 
-    emit Staked(amount, _index);
+    emit Staked(_amount, _index);
   }
 
   function harvest() external whenNotPaused nonReentrant {

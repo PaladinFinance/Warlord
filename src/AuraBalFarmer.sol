@@ -25,28 +25,32 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     slippageBps = 9950;
   }
 
+  function token() external pure returns (address) {
+    return address(auraBal);
+  }
+
   function setSlippage(uint256 _slippageBps) public onlyOwner {
     if (_slippageBps > 500) revert Errors.SlippageTooHigh();
     slippageBps = 10_000 - _slippageBps;
   }
 
-  function stake(address token, uint256 amount) external onlyController whenNotPaused nonReentrant {
-    if (token != address(auraBal) && token != address(bal)) revert Errors.IncorrectToken();
-    if (amount == 0) revert Errors.ZeroValue();
+  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
+    if (_token != address(auraBal) && _token != address(bal)) revert Errors.IncorrectToken();
+    if (_amount == 0) revert Errors.ZeroValue();
 
     // TODO test if it works when a bonus is available
 
-    IERC20(token).safeTransferFrom(controller, address(this), amount);
+    IERC20(_token).safeTransferFrom(controller, address(this), _amount);
 
     // Variable used to store the amount of BPT created if token is bal
-    uint256 stakableAmount = amount;
+    uint256 stakableAmount = _amount;
 
-    if (token == address(bal)) {
+    if (_token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
       bal.safeApprove(address(balDepositor), 0); // TODO should I check here as well for zero approval
-      bal.safeIncreaseAllowance(address(balDepositor), amount);
-      uint256 minOut = balDepositor.getMinOut(amount, slippageBps);
-      balDepositor.deposit(amount, minOut, true, address(0));
+      bal.safeIncreaseAllowance(address(balDepositor), _amount);
+      uint256 minOut = balDepositor.getMinOut(_amount, slippageBps);
+      balDepositor.deposit(_amount, minOut, true, address(0));
 
       // TODO check if locking bonus is available as in convex
       // Take into account possible bonus for locking crv
@@ -76,9 +80,9 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     for (uint256 i; i < extraRewardslength;) {
       IRewards rewarder = IRewards(auraBalStaker.extraRewards(i));
-      IERC20 token = IERC20(rewarder.rewardToken());
-      uint256 balance = token.balanceOf(address(this));
-      token.transfer(controller, balance);
+      IERC20 _token = IERC20(rewarder.rewardToken());
+      uint256 balance = _token.balanceOf(address(this));
+      _token.transfer(controller, balance);
 
       unchecked {
         ++i;
