@@ -5,6 +5,7 @@ import {IFarmer} from "interfaces/IFarmer.sol";
 import {Owner} from "utils/Owner.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
+import {ERC20} from "openzeppelin/token/ERC20/ERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {ReentrancyGuard} from "openzeppelin/security/ReentrancyGuard.sol";
 import {Errors} from "utils/Errors.sol";
@@ -14,7 +15,7 @@ import {Errors} from "utils/Errors.sol";
  * @author xx
  * @notice Staking system for Warlord to distribute yield & rewards
  */
-contract WarStaker is ReentrancyGuard, Pausable, Owner {
+contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
 
   // Constants
@@ -98,9 +99,6 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
 
   address public immutable warToken;
 
-  uint256 public totalStakedAmount;
-  mapping(address => uint256) public stakedAmounts;
-
   address[] public rewardTokens;
   mapping(address => RewardState) public rewardStates;
   mapping(address => address) public rewardFarmers;
@@ -157,7 +155,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
 
   // Constructor
 
-  constructor(address _warToken) {
+  constructor(address _warToken) ERC20("Staked Warlord token", "stkWAR") {
     if (_warToken == address(0)) revert Errors.ZeroAddress();
     warToken = _warToken;
   }
@@ -252,9 +250,8 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     // Pull the tokens from the user
     IERC20(warToken).safeTransferFrom(msg.sender, address(this), amount);
 
-    // Update storage
-    stakedAmounts[receiver] += amount;
-    totalStakedAmount += amount;
+    // Mint the staked tokens
+    _mint(receiver, amount);
 
     emit Staked(msg.sender, receiver, amount);
 
@@ -276,11 +273,10 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     _updateAllUserRewardStates(msg.sender);
 
     // If given MAX_UINT256, we want to withdraw the full user balance
-    if (amount == MAX_UINT256) amount = stakedAmounts[msg.sender];
+    if (amount == MAX_UINT256) amount = balanceOf(msg.sender);
 
-    // Update storage
-    stakedAmounts[msg.sender] -= amount;
-    totalStakedAmount -= amount;
+    // Burn the staked tokens
+    _burn(msg.sender, amount);
 
     // And send the tokens to the given receiver
     IERC20(warToken).safeTransfer(receiver, amount);
@@ -414,6 +410,19 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
 
   // Internal functions
 
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256 amount
+  ) internal override {
+    if (from != address(0)) {
+      _updateAllUserRewardStates(from);
+    }
+    if (to != address(0)) {
+      _updateAllUserRewardStates(to);
+    }
+  }
+
   /**
    * @dev Calculate the new rewardPerToken value for a reward token distribution
    * @param reward Address of the reward token
@@ -423,6 +432,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     RewardState storage state = rewardStates[reward];
 
     // If no fudns are deposited, we don't want to distribute rewards
+    uint256 totalStakedAmount = totalSupply();
     if (totalStakedAmount == 0) return state.rewardPerToken;
 
     // Get the last update timestamp
@@ -455,7 +465,7 @@ contract WarStaker is ReentrancyGuard, Pausable, Owner {
     UserRewardState storage userState = rewardStates[reward].userStates[user];
 
     // Get the user scaled balance
-    uint256 userStakedAmount = stakedAmounts[user];
+    uint256 userStakedAmount = balanceOf(user);
 
     if (userStakedAmount == 0) return 0;
 
