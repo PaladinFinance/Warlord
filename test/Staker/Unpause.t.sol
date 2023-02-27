@@ -23,4 +23,3 @@ contract Unpause is StakerTest {
     staker.unpause();
   }
 }
-

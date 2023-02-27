@@ -45,7 +45,7 @@ contract StakerTest is MainnetTest {
     deal(address(pal), yieldDumper, 1e28);
     deal(address(weth), yieldDumper, 1e35);
 
-    deal(address(war), controller, 1000e18); 
+    deal(address(war), controller, 1000e18);
 
     // Linking farmers
     staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
