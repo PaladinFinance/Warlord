@@ -2,7 +2,8 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/Staker.sol";
+import {WarStaker} from "../../src/Staker.sol";
+import "../../src/BaseFarmer.sol";
 import "../../src/Token.sol";
 import "../../src/MintRatio.sol";
 import {WarCvxCrvFarmer} from "../../src/CvxCrvFarmer.sol";
@@ -60,5 +61,24 @@ contract StakerTest is MainnetTest {
     deal(address(war), alice, 100e18);
     vm.prank(alice);
     war.approve(address(staker), type(uint256).max);
+  }
+}
+
+contract WarDummyFarmerWithToken is WarBaseFarmer {
+  address constant _controller = address(92_345_378);
+  address constant _warStaker = address(9_298_435);
+  address token_;
+
+  constructor(address _token) WarBaseFarmer(_controller, _warStaker) {
+    token_ = _token;
+  }
+
+  function stake(address _token, uint256 _amount) external {}
+  function harvest() external {}
+  function sendTokens(address receiver, uint256 amount) external {}
+  function migrate(address receiver) external override {}
+
+  function token() external view returns (address) {
+    return token_;
   }
 }
