@@ -10,6 +10,8 @@ import {CrvDepositor} from "interfaces/external/convex/CrvDepositor.sol";
 import {BaseRewardPool} from "interfaces/external/aura/AuraBalStaker.sol";
 
 contract MainnetTest is BaseTest {
+  IERC20 constant weth = IERC20(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+
   // Curve
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
@@ -30,11 +32,16 @@ contract MainnetTest is BaseTest {
   IERC20 constant cvxFxs = IERC20(0xFEEf77d3f69374f66429C91d732A244f074bdf74);
 
   // Aura
-  CrvDepositorWrapper constant balDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
+  // - Aura contracts
   IERC20 constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   AuraLocker constant vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
+  // - AuraBal contracts
+  CrvDepositorWrapper constant balDepositor = CrvDepositorWrapper(0x68655AD9852a99C87C0934c7290BB62CFa5D4123);
   IERC20 constant auraBal = IERC20(0x616e8BfA43F920657B3497DBf40D6b1A02D4608d);
   BaseRewardPool constant auraBalStaker = BaseRewardPool(0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2);
+
+  // Paladin
+  IERC20 constant pal = IERC20(0xAB846Fb6C81370327e784Ae7CbB6d6a6af6Ff4BF);
 
   function setUp() public virtual {
     vm.label(address(crv), "crv");
