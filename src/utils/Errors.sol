@@ -34,7 +34,6 @@ library Errors {
   // Staker
   error AlreadyListedDepositor();
   error NotListedDepositor();
-  error AlreadySetFarmer();
   error MismatchingFarmer();
 
   // MintRatio
