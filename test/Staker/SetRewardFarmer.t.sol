@@ -51,19 +51,7 @@ contract SetRewardFarmer is StakerTest {
     staker.setRewardFarmer(zero, zero);
   }
 
-  function testRewardTokenAlreadySet(address rewardToken, address initialFarmer, address newFarmer) public {
-    /* TODO really wanna keep this ?
-    vm.assume(rewardToken != zero && initialFarmer != zero && newFarmer != zero);
-    vm.assume(initialFarmer != newFarmer);
-
-    vm.startPrank(admin);
-    staker.setRewardFarmer(rewardToken, initialFarmer);
-
-    vm.expectRevert(Errors.AlreadySetFarmer.selector);
-    staker.setRewardFarmer(rewardToken, newFarmer);
-    vm.stopPrank();
-    */
-  }
+ 
 
   function testMismatchingFarmers(address rewardToken, address notRewardToken) public {
     vm.assume(rewardToken != zero && notRewardToken != zero && rewardToken != notRewardToken);
