@@ -25,10 +25,14 @@ contract BaseFarmerTest is MainnetTest {
 }
 
 contract WarDummyFarmer is WarBaseFarmer {
+  uint256 stakedBalance;
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
-  function stake(address _token, uint256 _amount) external {}
-  function harvest() external {}
-  function sendTokens(address receiver, uint256 amount) external {}
-  function migrate(address receiver) external override {}
+  function _stake(address _token, uint256 _amount) internal override returns (uint256) {
+    stakedBalance += amount;
+  }
+  function _harvest() internal override {}
+  function _sendTokens(address receiver, uint256 amount) internal {}
+  function _migrate(address receiver) internal override {}
   function token() external view returns (address) {}
+  function _isTokenSupported(address _token);
 }

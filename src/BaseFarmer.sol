@@ -34,8 +34,48 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
     _;
   }
 
+  function _isTokenSupported(address _token) virtual internal returns (bool);
+
+  function _stake(address _token, uint256 _amount) virtual internal returns (uint256);
+  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
+    if (!_isTokenSupported(_token)) revert Errors.IncorrectToken();
+    if (_amount == 0) revert Errors.ZeroValue();
+
+    uint256 amountStaked = _stake(_token, _amount);
+
+    emit Staked(amountStaked, _index);
+  }
+
+  function _harvest() virtual internal;
+
+  function harvest() external whenNotPaused nonReentrant {
+    _harvest();
+  }
+
   function getCurrentIndex() external view returns (uint256) {
     return _index;
+  }
+
+  function _stakedBalance() internal virtual returns (uint256);
+
+  function _sendTokens() internal virtual;
+  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
+    if (receiver == address(0)) revert Errors.ZeroAddress();
+    if (amount == 0) revert Errors.ZeroValue();
+    if (_stakedBalance() < amount) revert Errors.UnstakingMoreThanBalance();
+
+    _sendTokens();
+  }
+
+  function _migrate(address receiver) internal virtual;
+
+  function migrate(address receiver) external onlyOwner whenPaused {
+    if (receiver == address(0)) revert Errors.ZeroAddress();
+
+    _migrate(receiver);
+
+    // Harvest and send rewards to the controller
+    _harvest();
   }
 
   function setController(address _controller) external onlyOwner {
@@ -53,8 +93,6 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
     emit SetWarStaker(_warStaker);
   }
-
-  function migrate(address receiver) external virtual;
 
   function pause() external onlyOwner {
     _pause();

@@ -26,10 +26,11 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     cvxCrvStaker.setRewardWeight(weight);
   }
 
-  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
-    if (_token != address(cvxCrv) && _token != address(crv)) revert Errors.IncorrectToken();
-    if (_amount == 0) revert Errors.ZeroValue();
+  function _isTokenSupported(address _token) internal override returns (bool) {
+    return _token == address(crv) || _token == address(cvxCrv);
+  }
 
+  function _stake(address _token, uint256 _amount) internal override returns (uint256) {
     // TODO test if it works when a bonus is available
 
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
@@ -47,36 +48,26 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     cvxCrv.safeApprove(address(cvxCrvStaker), 0);
     cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), _amount);
     cvxCrvStaker.stake(_amount, address(this));
-
-    emit Staked(_amount, _index);
+    return _amount;
   }
 
-  function harvest() external whenNotPaused nonReentrant {
-    _harvest();
-  }
-
-  function _harvest() internal {
+  function _harvest() override internal {
     cvxCrvStaker.getReward(address(this), controller);
   }
 
-  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-    if (amount == 0) revert Errors.ZeroValue();
-    if (cvxCrvStaker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+  function _stakedBalance() internal override returns (uint256) {
+    return cvxCrvStaker.balanceOf(address(this));
+  }
 
+  function _sendTokens(address receiver, uint256 amount) external {
     cvxCrvStaker.withdraw(amount);
     cvxCrv.safeTransfer(receiver, amount);
   }
 
-  function migrate(address receiver) external override onlyOwner whenPaused {
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-
+  function _migrate(address receiver) internal override {
     // Unstake and send cvxCrv
     uint256 cvxCrvStakedBalance = cvxCrvStaker.balanceOf(address(this));
     cvxCrvStaker.withdraw(cvxCrvStakedBalance);
     cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
-
-    // Harvest and send rewards to the controller
-    _harvest();
   }
 }
