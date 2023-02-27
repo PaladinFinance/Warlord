@@ -666,6 +666,8 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   function setRewardFarmer(address rewardToken, address farmer) external onlyOwner {
     if (rewardToken == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
     if (rewardFarmers[rewardToken] != address(0)) revert Errors.AlreadySetFarmer();
+    address expectedToken = IFarmer(farmer).token();
+    if (rewardToken != expectedToken) revert Errors.MismatchingFarmer();
 
     rewardFarmers[rewardToken] = farmer;
 

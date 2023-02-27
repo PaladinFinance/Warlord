@@ -35,6 +35,7 @@ library Errors {
   error AlreadyListedDepositor();
   error NotListedDepositor();
   error AlreadySetFarmer();
+  error MismatchingFarmer();
 
   // MintRatio
   error ZeroMintAmount();
