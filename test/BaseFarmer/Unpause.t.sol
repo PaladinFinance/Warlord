@@ -7,19 +7,19 @@ contract Unpause is BaseFarmerTest {
   function setUp() public override {
     BaseFarmerTest.setUp();
     vm.prank(admin);
-    warMockFarmer.pause();
+    dummyFarmer.pause();
   }
 
   function testDefaultBehavior() public {
-    assertEq(warMockFarmer.paused(), true);
+    assertEq(dummyFarmer.paused(), true);
     vm.prank(admin);
-    warMockFarmer.unpause();
-    assertEq(warMockFarmer.paused(), false);
+    dummyFarmer.unpause();
+    assertEq(dummyFarmer.paused(), false);
   }
 
   function testOnlyOwner() public {
     vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
-    warMockFarmer.unpause();
+    dummyFarmer.unpause();
   }
 }

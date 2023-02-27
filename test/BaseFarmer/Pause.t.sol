@@ -5,15 +5,15 @@ import "./BaseFarmerTest.sol";
 
 contract Pause is BaseFarmerTest {
   function testDefaultBehavior() public {
-    assertEq(warMockFarmer.paused(), false);
+    assertEq(dummyFarmer.paused(), false);
     vm.prank(admin);
-    warMockFarmer.pause();
-    assertEq(warMockFarmer.paused(), true);
+    dummyFarmer.pause();
+    assertEq(dummyFarmer.paused(), true);
   }
 
   function testOnlyOwner() public {
     vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
-    warMockFarmer.pause();
+    dummyFarmer.pause();
   }
 }

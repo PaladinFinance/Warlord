@@ -5,6 +5,6 @@ import "./BaseFarmerTest.sol";
 
 contract GetCurrentIndex is BaseFarmerTest {
   function testDefaultBehvior() public {
-    assertEq(warMockFarmer.getCurrentIndex(), 0);
+    assertEq(dummyFarmer.getCurrentIndex(), 0);
   }
 }

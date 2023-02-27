@@ -10,7 +10,7 @@ contract BaseFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;
-  WarBaseFarmer warMockFarmer;
+  WarBaseFarmer dummyFarmer;
 
   function setUp() public virtual override {
     MainnetTest.setUp();
@@ -19,14 +19,16 @@ contract BaseFarmerTest is MainnetTest {
     vm.startPrank(admin);
     war = new WarToken();
     warStaker = new WarStaker(address(war));
-    warMockFarmer = new WarMockFarmer(controller, address(warStaker));
+    dummyFarmer = new WarDummyFarmer(controller, address(warStaker));
     vm.stopPrank();
   }
 }
 
-contract WarMockFarmer is WarBaseFarmer {
+contract WarDummyFarmer is WarBaseFarmer {
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
+  function stake(address _token, uint256 _amount) external {}
   function harvest() external {}
   function sendTokens(address receiver, uint256 amount) external {}
   function migrate(address receiver) external override {}
+  function token() external view returns (address) {}
 }

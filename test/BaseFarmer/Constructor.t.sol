@@ -5,22 +5,22 @@ import "./BaseFarmerTest.sol";
 
 contract Constructor is BaseFarmerTest {
   function testDefaultBehavior() public {
-    assertEq(warMockFarmer.controller(), controller);
-    assertEq(warMockFarmer.warStaker(), address(warStaker));
+    assertEq(dummyFarmer.controller(), controller);
+    assertEq(dummyFarmer.warStaker(), address(warStaker));
   }
 
   function testZeroControllerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMockFarmer(zero, alice);
+    new WarDummyFarmer(zero, alice);
   }
 
   function testZeroWarStakerReverts() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMockFarmer(bob, zero);
+    new WarDummyFarmer(bob, zero);
   }
 
   function testZeroAddresses() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMockFarmer(zero, zero);
+    new WarDummyFarmer(zero, zero);
   }
 }

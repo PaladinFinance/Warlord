@@ -7,24 +7,24 @@ contract SetController is BaseFarmerTest {
   function testDefaultBehavior(address newController) public {
     vm.assume(newController != zero && newController != controller);
     vm.prank(admin);
-    warMockFarmer.setController(newController);
-    assertEq(warMockFarmer.controller(), newController);
+    dummyFarmer.setController(newController);
+    assertEq(dummyFarmer.controller(), newController);
   }
 
   function testRevertWithZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(admin);
-    warMockFarmer.setController(zero);
+    dummyFarmer.setController(zero);
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
-    warMockFarmer.setController(alice);
+    dummyFarmer.setController(alice);
   }
 
   function testSameValue() public {
     vm.expectRevert(Errors.AlreadySet.selector);
     vm.prank(admin);
-    warMockFarmer.setController(controller);
+    dummyFarmer.setController(controller);
   }
 }
