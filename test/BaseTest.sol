@@ -21,3 +21,17 @@ contract BaseTest is Test {
 contract MockERC20 is ERC20 {
   constructor() ERC20("MockToken", "MCK", 18) {}
 }
+
+
+// make a function that takes a list of addresses and returns a random one
+function randomAddress(address[] memory addrs, uint256 seed) pure returns (address) {
+  return addrs[seed % addrs.length];
+}
+
+function randomBinaryAddress(address option1, address option2, uint256 seed) pure returns (address) {
+  // implement using previous function
+  address[] memory options = new address[](2);
+  options[0] = option1;
+  options[1] = option2;
+  return randomAddress(options, seed);
+}
