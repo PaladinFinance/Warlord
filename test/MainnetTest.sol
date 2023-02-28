@@ -69,6 +69,6 @@ contract MainnetTest is BaseTest {
   }
 
   function randomVlToken(uint256 seed) public pure returns (address token) {
-    token = randomBinaryAddress(address(vlCvx), address(vlAura), seed);
+    token = randomBinaryAddress(address(cvx), address(aura), seed);
   }
 }
