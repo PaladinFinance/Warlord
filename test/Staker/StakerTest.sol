@@ -57,10 +57,6 @@ contract StakerTest is MainnetTest {
     staker.addRewardDepositor(yieldDumper);
 
     vm.stopPrank();
-
-    deal(address(war), alice, 100e18);
-    vm.prank(alice);
-    war.approve(address(staker), type(uint256).max);
   }
 }
 

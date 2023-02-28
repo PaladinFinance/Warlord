@@ -4,40 +4,20 @@ pragma solidity 0.8.16;
 import "./StakerTest.sol";
 
 contract Stake is StakerTest {
-  function testDefaultBehavior(uint256 amount) public {
-    // TODO more assertions
-    // TODO missing getters that would make tests more accurate? like userCurrentStakedAmount
-    // TODO test stake with a different reciever than the caller
-    vm.assume(amount > 0 && amount < war.balanceOf(alice));
-    vm.startPrank(alice);
+  function testDefaultBehavior(uint256 amount, address receiver) public {
+    uint256 initialBalance = 10_000e18;
+    vm.assume(amount > 0 && amount < initialBalance);
 
-    // Checking initial balance
-    assertEq(war.balanceOf(alice), 100e18);
-    assertEq(war.balanceOf(address(staker)), 0);
+    deal(address(war), alice, initialBalance);
 
-    // Check emits
-    vm.expectEmit(true, true, false, true);
-    emit Transfer(alice, address(staker), amount);
-    vm.expectEmit(true, true, false, true);
-    emit Staked(alice, alice, amount);
-
-    // Staking
-    staker.stake(amount, alice);
-
-    // Checking balance after staking
-    assertEq(war.balanceOf(alice), 100e18 - amount);
-    assertEq(war.balanceOf(address(staker)), amount);
-
-    vm.stopPrank();
+    _stakeAndCheck(amount, alice, receiver);
   }
 
-  function testDepositWholeBalance() public {
-    vm.startPrank(alice);
-    assertEq(war.balanceOf(alice), 100e18);
-    war.approve(address(staker), type(uint256).max);
-    staker.stake(type(uint256).max, alice);
-    assertEq(war.balanceOf(alice), 0);
-    vm.stopPrank();
+  function testDepositWholeBalance(uint256 initialBalance, address receiver) public {
+    vm.assume(initialBalance > 0);
+    deal(address(war), alice, initialBalance);
+
+    _stakeAndCheck(type(uint256).max, alice, receiver);
   }
 
   function testCantStakeZeroAmount() public {
@@ -48,5 +28,32 @@ contract Stake is StakerTest {
   function testCantStakeWithZeroAddressReceiver() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     staker.stake(1e18, zero);
+  }
+
+  function _stakeAndCheck(uint256 amount, address sender, address receiver) internal {
+    uint256 initialBalance = war.balanceOf(sender);
+
+    vm.assume(sender != zero && receiver != zero);
+
+    vm.prank(sender);
+    war.approve(address(staker), type(uint256).max);
+
+    assertEq(war.balanceOf(address(staker)), 0, "initial war balance in staker should be zero");
+    assertEq(staker.balanceOf(receiver), 0, "initial staked balance should be zero");
+
+    vm.startPrank(sender);
+
+    uint256 actualAmount = amount == type(uint256).max ? initialBalance : amount;
+
+    vm.expectEmit(true, true, false, true);
+    emit Staked(sender, receiver, actualAmount); // TODO test this
+
+    staker.stake(amount, receiver);
+
+    vm.stopPrank();
+
+    assertEq(war.balanceOf(sender), initialBalance - actualAmount, "sender war tokens should be deducted after staking");
+    assertEq(war.balanceOf(address(staker)), actualAmount, "contract should have received sender's war tokens");
+    assertEq(staker.balanceOf(receiver), actualAmount, "receiver should have a corresponding amount of staked tokens");
   }
 }
