@@ -188,6 +188,11 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
             if(_token.allowance(address(this), address(minter)) != 0) _token.safeApprove(address(minter), 0);
             _token.safeIncreaseAllowance(address(minter), currentBalance);
             minter.mint(token, currentBalance);
+
+            IERC20 _war = IERC20(war);
+            uint256 warBalance = _war.balanceOf(address(this));
+            _war.safeTransfer(address(staker), warBalance);
+            staker.queueRewards(war, warBalance);
         } 
         else if(tokenFarmers[token] != address(0)){
             address _farmer = tokenFarmers[token];
