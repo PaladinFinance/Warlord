@@ -9,15 +9,15 @@ contract Constructor is MinterTest {
     assertEq(minter.mintRatio(), address(mintRatio));
   }
 
-  function testCantConstructWithZeroAddressWar(address randomAddress) public {
-    vm.assume(randomAddress != zero);
+  function testCantConstructWithZeroAddressWar(address mintRatio) public {
+    vm.assume(mintRatio != zero);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(zero, randomAddress);
+    new WarMinter(zero, mintRatio);
   }
 
-  function testCantConstructWithZeroAddressRatio(address randomAddress) public {
-    vm.assume(randomAddress != zero);
+  function testCantConstructWithZeroAddressRatio(address mintRatio) public {
+    vm.assume(mintRatio != zero);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(randomAddress, zero);
+    new WarMinter(mintRatio, zero);
   }
 }

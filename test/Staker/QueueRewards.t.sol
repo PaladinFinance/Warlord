@@ -52,6 +52,6 @@ contract QueueRewards is StakerTest {
   }
 
   function testNonReentrant() public {
-    // TODO 
+    // TODO
   }
 }

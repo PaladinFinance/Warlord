@@ -22,11 +22,11 @@ contract SendTokens is CvxCrvFarmerTest {
     assertEq(cvxCrv.balanceOf(alice), amount);
   }
 
-  function testZeroAmount(address randomAddress) public {
-    vm.assume(randomAddress != zero);
+  function testZeroAmount(address receiver) public {
+    vm.assume(receiver != zero);
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(address(warStaker));
-    warCvxCrvFarmer.sendTokens(randomAddress, 0);
+    warCvxCrvFarmer.sendTokens(receiver, 0);
   }
 
   function testZeroAddress(uint256 randomValue) public {
