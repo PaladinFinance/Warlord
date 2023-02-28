@@ -97,4 +97,20 @@ contract WarAuraLocker is WarBaseLocker {
     // withdraws rewards to controller
     _harvest();
   }
+
+  function rewardTokens() external view returns(address[] memory) { // TODO check for a better way to do this
+    AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(this));
+    uint256 rewardsLength = rewards.length;
+    address[] memory _tokens = new address[](rewardsLength);
+
+    for (uint256 i; i < rewardsLength;) {
+      _tokens[i] = rewards[i].token;
+
+      unchecked {
+        ++i;
+      }
+    }
+
+    return _tokens;
+  }
 }

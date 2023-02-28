@@ -10,6 +10,7 @@ import {Errors} from "utils/Errors.sol";
 import {IHarvestable} from "interfaces/IHarvestable.sol";
 import {IMinter} from "interfaces/IMinter.sol";
 import {IStaker} from "interfaces/IStaker.sol";
+import {IFarmer} from "interfaces/IFarmer.sol";
 
 /**
  * @title Warlord Controller contract
@@ -39,7 +40,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     address[] public farmers;
 
     mapping(address => address) public tokenLockers;
-    mapping(address => address) public tokenFarmer;
+    mapping(address => address) public tokenFarmers;
     mapping(address => bool) public distributionTokens;
 
     mapping(address => uint256) public swapperAmounts;
@@ -47,7 +48,15 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     // Events
 
-    // to do
+    event PullTokens(address indexed swapper, address indexed token, uint256 amount);
+
+    event SetMinter(address oldMinter, address newMinter);
+    event SetStaker(address oldStaker, address newStaker);
+    event SetSwapper(address oldSwapper, address newSwapper);
+
+    event SetLocker(address indexed token, address locker);
+    event SetFarmer(address indexed token, address famer);
+    event SetDistributionToken(address indexed token, bool distribution);
 
 
     // Modifiers
@@ -82,22 +91,242 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     // State changing functions
 
+    function harvest(address target) external nonReentrant whenNotPaused {
+        IHarvestable(target).harvest();
+    }
+
+    function harvestMultiple(address[] calldata targets) external nonReentrant whenNotPaused {
+        uint256 length = targets.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            IHarvestable(targets[i]).harvest();
+
+            unchecked { i++; }
+        }
+    }
+
+    function harvestAll() external nonReentrant whenNotPaused {
+        address[] memory _lockers = lockers;
+        address[] memory _farmers = farmers;
+        uint256 lockersLength = _lockers.length;
+        uint256 farmersLength = _farmers.length;
+
+        for(uint256 i; i < lockersLength;) {
+            IHarvestable(_lockers[i]).harvest();
+
+            unchecked { i++; }
+        }
+
+        for(uint256 i; i < farmersLength;) {
+            IHarvestable(_farmers[i]).harvest();
+
+            unchecked { i++; }
+        }
+    }
+
+    function process(address token) external nonReentrant whenNotPaused {
+        _processReward(token);
+    }
+
+    function processMultiple(address[] calldata tokens) external nonReentrant whenNotPaused {
+        _processMultiple(tokens);
+    }
+
+    function harvestAndProcess(address target) external nonReentrant whenNotPaused {
+        IHarvestable(target).harvest();
+        
+    }
+
+    function harvestAllAndProcessAll() external nonReentrant whenNotPaused {
+        address[] memory _lockers = lockers;
+        address[] memory _farmers = farmers;
+        uint256 lockersLength = _lockers.length;
+        uint256 farmersLength = _farmers.length;
+
+        for(uint256 i; i < lockersLength;) {
+            IHarvestable(_lockers[i]).harvest();
+
+            _processMultiple(IHarvestable(_lockers[i]).rewardTokens());
+
+            unchecked { i++; }
+        }
+
+        for(uint256 i; i < farmersLength;) {
+            IHarvestable(_farmers[i]).harvest();
+
+            _processMultiple(IHarvestable(_farmers[i]).rewardTokens());
+
+            unchecked { i++; }
+        }
+
+    }
+
+    function pullToken(address token) external nonReentrant whenNotPaused onlySwapper {
+        _pullToken(token);
+    }
+
+    function pullMultipleTokens(address[] calldata tokens) external nonReentrant whenNotPaused onlySwapper {
+        uint256 length = tokens.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            _pullToken(tokens[i]);
+
+            unchecked { i++; }
+        }
+    }
+
 
     // Internal functions
+
+    function _processReward(address token) internal {
+        IERC20 _token = IERC20(token);
+        uint256 currentBalance = _token.balanceOf(address(this));
+
+        if(tokenLockers[token] != address(0)){
+            if(_token.allowance(address(this), address(minter)) != 0) _token.safeApprove(address(minter), 0);
+            _token.safeIncreaseAllowance(address(minter), currentBalance);
+            minter.mint(token, currentBalance);
+        } 
+        else if(tokenFarmers[token] != address(0)){
+            address _farmer = tokenFarmers[token];
+            if(_token.allowance(address(this), _farmer) != 0) _token.safeApprove(_farmer, 0);
+            _token.safeIncreaseAllowance(_farmer, currentBalance);
+            IFarmer(_farmer).stake(token, currentBalance);
+        } 
+        else if(distributionTokens[token]){
+            _token.safeTransfer(address(staker), currentBalance);
+            staker.queueRewards(token, currentBalance);
+        } 
+        else {
+            swapperAmounts[token] += currentBalance;
+        }
+    }
+
+    function _processMultiple(address[] memory tokens) internal {
+        uint256 length = tokens.length;
+
+        for(uint256 i; i < length;) {
+            _processReward(tokens[i]);
+
+            unchecked { i++; }
+        }
+    }
+
+    function _pullToken(address token) internal {
+        uint256 amount = swapperAmounts[token];
+        swapperAmounts[token] = 0;
+
+        IERC20(token).safeTransfer(owner(), amount);
+
+        emit PullTokens(msg.sender, token, amount);
+    }
 
 
     // Admin functions
 
-    // set minter
+    function setMinter(address newMinter) external onlyOwner {
+        if (newMinter == address(0)) revert Errors.ZeroAddress();
+        if (newMinter == address(minter)) revert Errors.AlreadySet();
 
-    // set staker
+        address oldMinter = address(minter);
+        minter = IMinter(newMinter);
 
-    // set swapper
+        emit SetMinter(oldMinter, newMinter);
+    }
 
-    // set locker
+    function setStaker(address newStaker) external onlyOwner {
+        if (newStaker == address(0)) revert Errors.ZeroAddress();
+        if (newStaker == address(staker)) revert Errors.AlreadySet();
 
-    // set farmer
+        address oldStaker = address(staker);
+        staker = IStaker(newStaker);
 
-    // set distribution token
+        emit SetStaker(oldStaker, newStaker);
+    }
+
+    function setSwapper(address newSwapper) external onlyOwner {
+        if (newSwapper == address(0)) revert Errors.ZeroAddress();
+        if (newSwapper == swapper) revert Errors.AlreadySet();
+
+        address oldSwapper = swapper;
+        swapper = newSwapper;
+
+        emit SetSwapper(oldSwapper, newSwapper);
+    }
+
+    function setLocker(address token, address locker) external onlyOwner {
+        if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
+
+        if(tokenLockers[token] == address(0)) {
+            lockers.push(token);
+        } else {
+            address oldLocker = tokenLockers[token];
+            address[] memory _lockers = lockers;
+            uint256 length = _lockers.length;
+            uint256 lastIndex = length - 1;
+            for(uint256 i; i < length;){
+                if(_lockers[i] == oldLocker){
+                    if(i != lastIndex){
+                        lockers[i] = _lockers[lastIndex];
+                    }
+
+                    lockers.pop();
+
+                    break;
+                }
+
+                unchecked{ ++i; }
+            }
+            lockers.push(locker);
+        }
+
+        tokenLockers[token] = locker;
+
+        emit SetLocker(token, locker);
+    }
+
+    function setFarmer(address token, address farmer) external onlyOwner {
+        if (token == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
+        if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
+
+        if(tokenFarmers[token] == address(0)) {
+            farmers.push(token);
+        } else {
+            address oldFarmer = tokenFarmers[token];
+            address[] memory _farmers = farmers;
+            uint256 length = _farmers.length;
+            uint256 lastIndex = length - 1;
+            for(uint256 i; i < length;){
+                if(_farmers[i] == oldFarmer){
+                    if(i != lastIndex){
+                        farmers[i] = _farmers[lastIndex];
+                    }
+
+                    farmers.pop();
+
+                    break;
+                }
+
+                unchecked{ ++i; }
+            }
+            farmers.push(farmer);
+        }
+
+        tokenFarmers[token] = farmer;
+
+        emit SetFarmer(token, farmer);
+    }
+
+    function setFarmer(address token, bool distribution) external onlyOwner {
+        if (token == address(0)) revert Errors.ZeroAddress();
+        if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
+        if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
+
+        distributionTokens[token] = distribution;
+
+        emit SetDistributionToken(token, distribution);
+    }
 
 }

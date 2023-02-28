@@ -16,6 +16,10 @@ library Errors {
   error CallerNotPendingOwner();
   error CallerNotAllowed();
 
+  // Controller
+  error ListedLocker();
+  error ListedFarmer();
+
   // Locker
   error NoWarLocker(); // _locker[token] == 0x0
   error LockerShutdown();
