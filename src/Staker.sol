@@ -238,11 +238,11 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @return uint256 : scaled amount for the deposit
    */
   function stake(uint256 amount, address receiver) external nonReentrant whenNotPaused returns (uint256) {
-    if (amount == 0) revert Errors.ZeroValue();
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-
     // If given MAX_UINT256, we want to deposit the full user balance
     if (amount == MAX_UINT256) amount = IERC20(warToken).balanceOf(msg.sender);
+
+    if (amount == 0) revert Errors.ZeroValue();
+    if (receiver == address(0)) revert Errors.ZeroAddress();
 
     // Pull the tokens from the user
     IERC20(warToken).safeTransferFrom(msg.sender, address(this), amount);
@@ -264,11 +264,11 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @return uint256 : amount unstaked
    */
   function unstake(uint256 amount, address receiver) external nonReentrant returns (uint256) {
-    if (amount == 0) revert Errors.ZeroValue();
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-
     // If given MAX_UINT256, we want to withdraw the full user balance
     if (amount == MAX_UINT256) amount = balanceOf(msg.sender);
+
+    if (amount == 0) revert Errors.ZeroValue();
+    if (receiver == address(0)) revert Errors.ZeroAddress();
 
     // Burn the staked tokens
     // It will also update the reward states for the user who's balance gonna change
