@@ -4,6 +4,14 @@ pragma solidity 0.8.16;
 import "./StakerTest.sol";
 
 contract QueueRewards is StakerTest {
+  function setUp() override public {
+    StakerTest.setUp();
+
+    vm.startPrank(admin);
+    staker.addRewardDepositor(controller);
+    staker.addRewardDepositor(yieldDumper);
+    vm.stopPrank();
+  }
   function testDefaultBehavior(uint256 amount) public {
     (address sender, address reward) = randomQueueableReward(amount);
 

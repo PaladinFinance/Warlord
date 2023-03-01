@@ -38,6 +38,7 @@ contract StakerTest is MainnetTest {
     war = new WarToken();
     staker = new WarStaker(address(war));
 
+    /*
     // Deploying farmers
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
@@ -57,19 +58,19 @@ contract StakerTest is MainnetTest {
     staker.addRewardDepositor(controller);
     staker.addRewardDepositor(yieldDumper);
 
+    TODO use this later for other tests
+    */
     vm.stopPrank();
   }
 
-  function randomRewardDepositor(uint256 seed) view public returns (address) {
+  function randomRewardDepositor(uint256 seed) public view returns (address) {
     return randomBinaryAddress(controller, yieldDumper, seed);
   }
 
-  function randomQueueableReward(uint256 seed) view public returns (address sender, address reward) {
-    address[] memory yieldDumperRewards = new address[](2);
-    yieldDumperRewards[0] = address(pal);
-    yieldDumperRewards[1] = address(weth);
-    address[] memory controllerRewards = new address[](1);
-    controllerRewards[0] = address(war);
+  function randomQueueableReward(uint256 seed) public returns (address sender, address reward) {
+    address[] memory controllerRewards = new address[](3);
+    controllerRewards[0] = address(pal);
+    controllerRewards[1] = address(war);
     if (seed % 2 == 0) {
       sender = controller;
       reward = randomAddress(controllerRewards, seed);
@@ -77,6 +78,7 @@ contract StakerTest is MainnetTest {
       sender = yieldDumper;
       reward = address(weth);
     }
+    deal(reward, sender, 1e35);
   }
 }
 

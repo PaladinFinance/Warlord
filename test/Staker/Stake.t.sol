@@ -30,6 +30,18 @@ contract Stake is StakerTest {
     staker.stake(1e18, zero);
   }
 
+  function testNonReentrant() public {
+    // TODO
+  }
+
+  function testWhenNotPaused(uint256 amount, address receiver) public {
+    vm.prank(admin);
+    staker.pause();
+
+    vm.expectRevert("Pausable: paused");
+    staker.stake(amount, receiver);
+  }
+
   function _stakeAndCheck(uint256 amount, address sender, address receiver) internal {
     uint256 initialBalance = war.balanceOf(sender);
 
