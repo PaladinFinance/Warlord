@@ -68,7 +68,7 @@ contract StakerTest is MainnetTest {
   }
 
   function randomQueueableReward(uint256 seed) public returns (address sender, address reward) {
-    address[] memory controllerRewards = new address[](3);
+    address[] memory controllerRewards = new address[](2);
     controllerRewards[0] = address(pal);
     controllerRewards[1] = address(war);
     if (seed % 2 == 0) {
