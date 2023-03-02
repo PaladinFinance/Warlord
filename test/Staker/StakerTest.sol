@@ -38,7 +38,6 @@ contract StakerTest is MainnetTest {
     war = new WarToken();
     staker = new WarStaker(address(war));
 
-    /*
     // Deploying farmers
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
@@ -54,12 +53,10 @@ contract StakerTest is MainnetTest {
     staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
     staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
 
+
     // Linking depositors
     staker.addRewardDepositor(controller);
     staker.addRewardDepositor(yieldDumper);
-
-    TODO use this later for other tests
-    */
     vm.stopPrank();
   }
 
