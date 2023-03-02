@@ -289,7 +289,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @return uint256 : Amount of rewards claimed
    */
   function claimRewards(address reward, address receiver) external nonReentrant whenNotPaused returns (uint256) {
-    // TODO add check reward
+    if (reward == address(0)) revert Errors.ZeroAddress();
     if (receiver == address(0)) revert Errors.ZeroAddress();
 
     return _claimRewards(reward, msg.sender, receiver);
