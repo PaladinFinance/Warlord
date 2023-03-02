@@ -62,6 +62,9 @@ contract MainnetTest is BaseTest {
 
     vm.label(address(threeCrv), "3Crv");
     vm.label(address(bbAUsd), "bbAUsd");
+
+    vm.label(address(weth), "weth");
+    vm.label(address(pal), "pal");
   }
 
   function fork() public {
