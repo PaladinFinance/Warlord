@@ -62,6 +62,9 @@ contract MainnetTest is BaseTest {
 
     vm.label(address(threeCrv), "3Crv");
     vm.label(address(bbAUsd), "bbAUsd");
+
+    vm.label(address(weth), "weth");
+    vm.label(address(pal), "pal");
   }
 
   function fork() public {
@@ -69,6 +72,6 @@ contract MainnetTest is BaseTest {
   }
 
   function randomVlToken(uint256 seed) public pure returns (address token) {
-    token = seed % 2 == 0 ? address(cvx) : address(aura);
+    token = randomBinaryAddress(address(cvx), address(aura), seed);
   }
 }

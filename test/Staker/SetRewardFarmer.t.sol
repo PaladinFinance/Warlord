@@ -51,8 +51,6 @@ contract SetRewardFarmer is StakerTest {
     staker.setRewardFarmer(zero, zero);
   }
 
- 
-
   function testMismatchingFarmers(address rewardToken, address notRewardToken) public {
     vm.assume(rewardToken != zero && notRewardToken != zero && rewardToken != notRewardToken);
 

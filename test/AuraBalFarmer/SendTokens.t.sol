@@ -33,11 +33,11 @@ contract SendTokens is AuraBalFarmerTest {
     assertEq(auraBalStaker.balanceOf(address(auraBalFarmer)), initialBalance - amount);
   }
 
-  function testZeroAmount(address randomAddress) public {
-    vm.assume(randomAddress != zero);
+  function testZeroAmount(address receiver) public {
+    vm.assume(receiver != zero);
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(address(warStaker));
-    auraBalFarmer.sendTokens(randomAddress, 0);
+    auraBalFarmer.sendTokens(receiver, 0);
   }
 
   function testZeroAddress(uint256 randomValue) public {

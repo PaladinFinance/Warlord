@@ -13,5 +13,5 @@ docs/
 # Dotenv file
 .env
 
-test/Temp/*
-ext/*
+# Coverage
+coverage/

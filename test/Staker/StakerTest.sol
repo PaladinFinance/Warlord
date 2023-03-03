@@ -43,20 +43,39 @@ contract StakerTest is MainnetTest {
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
 
     // Dealing depositors their respective tokens
-    deal(address(pal), yieldDumper, 1e28);
     deal(address(weth), yieldDumper, 1e35);
 
+    deal(address(pal), controller, 1e28);
     deal(address(war), controller, 1000e18);
+    deal(address(cvxFxs), controller, 1e28);
 
     // Linking farmers
     staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
     staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
 
+
     // Linking depositors
     staker.addRewardDepositor(controller);
     staker.addRewardDepositor(yieldDumper);
-
     vm.stopPrank();
+  }
+
+  function randomRewardDepositor(uint256 seed) public view returns (address) {
+    return randomBinaryAddress(controller, yieldDumper, seed);
+  }
+
+  function randomQueueableReward(uint256 seed) public returns (address sender, address reward) {
+    address[] memory controllerRewards = new address[](2);
+    controllerRewards[0] = address(pal);
+    controllerRewards[1] = address(war);
+    if (seed % 2 == 0) {
+      sender = controller;
+      reward = randomAddress(controllerRewards, seed);
+    } else {
+      sender = yieldDumper;
+      reward = address(weth);
+    }
+    deal(reward, sender, 1e35);
   }
 }
 

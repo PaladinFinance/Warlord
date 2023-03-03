@@ -13,18 +13,18 @@ contract SetLocker is MinterTest {
     assertEq(minter.lockers(token), address(locker));
   }
 
-  function testZeroAddressToken(address randomAddress) public {
-    vm.assume(randomAddress > zero);
+  function testZeroAddressToken(address locker) public {
+    vm.assume(locker > zero);
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(zero, randomAddress);
+    minter.setLocker(zero, locker);
   }
 
-  function testZeroAddressLocker(address randomAddress) public {
-    vm.assume(randomAddress > zero);
+  function testZeroAddressLocker(address locker) public {
+    vm.assume(locker > zero);
     vm.prank(admin);
     vm.expectRevert(Errors.ZeroAddress.selector);
-    minter.setLocker(randomAddress, zero);
+    minter.setLocker(locker, zero);
   }
 
   function testZeroAddresses() public {
