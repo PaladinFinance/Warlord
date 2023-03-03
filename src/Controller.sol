@@ -11,6 +11,8 @@ import {IHarvestable} from "interfaces/IHarvestable.sol";
 import {IMinter} from "interfaces/IMinter.sol";
 import {IStaker} from "interfaces/IStaker.sol";
 import {IFarmer} from "interfaces/IFarmer.sol";
+import {IIncentivizedLocker} from "interfaces/IIncentivizedLocker.sol";
+import "interfaces/external/incentives/IIncentivesDistributors.sol";
 
 /**
  * @title Warlord Controller contract
@@ -36,6 +38,8 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     address public swapper;
 
+    address public incentivesClaimer;
+
     address[] public lockers;
     address[] public farmers;
 
@@ -53,6 +57,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     event SetMinter(address oldMinter, address newMinter);
     event SetStaker(address oldStaker, address newStaker);
     event SetSwapper(address oldSwapper, address newSwapper);
+    event SetIncentivesClaimer(address oldIncentivesClaimer, address newIncentivesClaimer);
 
     event SetLocker(address indexed token, address locker);
     event SetFarmer(address indexed token, address famer);
@@ -66,6 +71,11 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         _;
     }
 
+    modifier onlyIncentivesClaimer() {
+        if(msg.sender != incentivesClaimer) revert Errors.CallerNotAllowed();
+        _;
+    }
+
 
     // Constructor
 
@@ -73,19 +83,22 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         address _war,
         address _minter,
         address _staker,
-        address _swapper
+        address _swapper,
+        address _incentivesClaimer
     ) {
         if (
             _war == address(0)
             || _minter == address(0)
             || _staker == address(0)
             || _swapper == address(0)
+            || _incentivesClaimer == address(0)
         ) revert Errors.ZeroAddress();
 
         war = _war;
         swapper = _swapper;
         minter = IMinter(_minter);
         staker = IStaker(_staker);
+        incentivesClaimer = _incentivesClaimer;
     }
 
 
@@ -177,6 +190,101 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         }
     }
 
+    function claimQuestRewards(
+        address locker,
+        address distributor,
+        IQuestDistributor.ClaimParams[] calldata claimParams
+    ) external nonReentrant whenNotPaused onlyIncentivesClaimer {
+        if (locker == address(0)|| distributor == address(0)) revert Errors.ZeroAddress();
+
+        uint256 length = claimParams.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            IIncentivizedLocker(locker).claimQuestRewards(
+                distributor,
+                claimParams[i].questID,
+                claimParams[i].period,
+                claimParams[i].index,
+                locker,
+                claimParams[i].amount,
+                claimParams[i].merkleProof
+            );
+
+            unchecked { i++; }
+        }
+    }
+
+    function claimDelegationRewards(
+        address locker,
+        address distributor,
+        IDelegationDistributor.ClaimParams[] calldata claimParams
+    ) external nonReentrant whenNotPaused onlyIncentivesClaimer {
+        if (locker == address(0)|| distributor == address(0)) revert Errors.ZeroAddress();
+
+        uint256 length = claimParams.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            IIncentivizedLocker(locker).claimDelegationRewards(
+                distributor,
+                claimParams[i].token,
+                claimParams[i].index,
+                locker,
+                claimParams[i].amount,
+                claimParams[i].merkleProof
+            );
+
+            unchecked { i++; }
+        }
+    }
+
+    function claimVotiumRewards(
+        address locker,
+        address distributor,
+        IVotiumDistributor.claimParam[] calldata claimParams
+    ) external nonReentrant whenNotPaused onlyIncentivesClaimer {
+        if (locker == address(0)|| distributor == address(0)) revert Errors.ZeroAddress();
+
+        uint256 length = claimParams.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            IIncentivizedLocker(locker).claimVotiumRewards(
+                distributor,
+                claimParams[i].token,
+                claimParams[i].index,
+                locker,
+                claimParams[i].amount,
+                claimParams[i].merkleProof
+            );
+
+            unchecked { i++; }
+        }
+    }
+
+    function claimHiddenHandsRewards(
+        address locker,
+        address distributor,
+        IHiddenHandsDistributor.Claim[] memory claimParams
+    ) external nonReentrant whenNotPaused onlyIncentivesClaimer {
+        if (locker == address(0)|| distributor == address(0)) revert Errors.ZeroAddress();
+
+        uint256 length = claimParams.length;
+        if(length == 0) revert Errors.EmptyArray();
+
+        for(uint256 i; i < length;) {
+            IHiddenHandsDistributor.Claim[] memory claim = new IHiddenHandsDistributor.Claim[](1);
+            claim[0] = claimParams[i];
+            IIncentivizedLocker(locker).claimHiddenHandsRewards(
+                distributor,
+                claim
+            );
+
+            unchecked { i++; }
+        }
+    }
+
 
     // Internal functions
 
@@ -261,6 +369,16 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         emit SetSwapper(oldSwapper, newSwapper);
     }
 
+    function setIncentivesClaimer(address newIncentivesClaimer) external onlyOwner {
+        if (newIncentivesClaimer == address(0)) revert Errors.ZeroAddress();
+        if (newIncentivesClaimer == incentivesClaimer) revert Errors.AlreadySet();
+
+        address oldIncentivesClaimer = incentivesClaimer;
+        incentivesClaimer = newIncentivesClaimer;
+
+        emit SetIncentivesClaimer(oldIncentivesClaimer, newIncentivesClaimer);
+    }
+
     function setLocker(address token, address locker) external onlyOwner {
         if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
 
@@ -324,7 +442,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         emit SetFarmer(token, farmer);
     }
 
-    function setFarmer(address token, bool distribution) external onlyOwner {
+    function setDistributionToken(address token, bool distribution) external onlyOwner {
         if (token == address(0)) revert Errors.ZeroAddress();
         if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
         if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
