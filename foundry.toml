@@ -11,3 +11,4 @@ ignore = ['src/HolyPaladinDistributor.sol', 'src/Redeemer.sol']
 
 [rpc_endpoints]
 mainnet = 'https://rpc.ankr.com/eth'
+ethereum_alchemy = '${ALCHEMY}'
