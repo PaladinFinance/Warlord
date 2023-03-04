@@ -31,4 +31,9 @@ contract WarDummyFarmer is WarBaseFarmer {
   function sendTokens(address receiver, uint256 amount) external {}
   function migrate(address receiver) external override {}
   function token() external view returns (address) {}
+
+  function rewardTokens() external view returns(address[] memory){
+    address[] memory tokens = new address[](1);
+    return tokens;
+  }
 }

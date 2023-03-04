@@ -111,4 +111,20 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     // Harvest and send rewards to the controller
     _harvest();
   }
+
+  function rewardTokens() external view returns(address[] memory) { // TODO check for a better way to do this
+    uint256 rewardsLength = auraBalStaker.extraRewardsLength();
+    address[] memory _tokens = new address[](rewardsLength);
+
+    for (uint256 i; i < rewardsLength;) {
+      IRewards rewarder = IRewards(auraBalStaker.extraRewards(i));
+      _tokens[i] = rewarder.rewardToken();
+
+      unchecked {
+        ++i;
+      }
+    }
+
+    return _tokens;
+  }
 }

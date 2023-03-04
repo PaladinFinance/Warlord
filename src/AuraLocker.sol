@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./BaseLocker.sol";
+import "./IncentivizedLocker.sol";
 import {IDelegateRegistry} from "interfaces/external/IDelegateRegistry.sol";
 import {AuraLocker} from "interfaces/external/aura/vlAura.sol";
 import {Math} from "openzeppelin/utils/math/Math.sol";
 
-contract WarAuraLocker is WarBaseLocker {
+contract WarAuraLocker is IncentivizedLocker {
   AuraLocker private constant vlAura = AuraLocker(0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC);
   IERC20 private constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   IDelegateRegistry private constant registry = IDelegateRegistry(0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446);
@@ -96,5 +96,21 @@ contract WarAuraLocker is WarBaseLocker {
 
     // withdraws rewards to controller
     _harvest();
+  }
+
+  function rewardTokens() external view returns(address[] memory) { // TODO check for a better way to do this
+    AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(this));
+    uint256 rewardsLength = rewards.length;
+    address[] memory _tokens = new address[](rewardsLength);
+
+    for (uint256 i; i < rewardsLength;) {
+      _tokens[i] = rewards[i].token;
+
+      unchecked {
+        ++i;
+      }
+    }
+
+    return _tokens;
   }
 }
