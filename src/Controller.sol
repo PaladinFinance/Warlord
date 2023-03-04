@@ -26,6 +26,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     /** @notice 1e18 scale */
     uint256 public constant UNIT = 1e18;
+    uint256 public constant MAX_BPS = 10_000;
 
 
     // Storage
@@ -39,6 +40,9 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     address public swapper;
 
     address public incentivesClaimer;
+
+    uint256 public feeRatio = 500;
+    address public feeReceiver;
 
     address[] public lockers;
     address[] public farmers;
@@ -57,7 +61,10 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     event SetMinter(address oldMinter, address newMinter);
     event SetStaker(address oldStaker, address newStaker);
     event SetSwapper(address oldSwapper, address newSwapper);
+    event SetFeeReceiver(address oldFeeReceiver, address newFeeReceiver);
     event SetIncentivesClaimer(address oldIncentivesClaimer, address newIncentivesClaimer);
+
+    event SetFeeRatio(uint256 oldFeeRatio, uint256 newFeeRatio);
 
     event SetLocker(address indexed token, address locker);
     event SetFarmer(address indexed token, address famer);
@@ -292,10 +299,15 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         IERC20 _token = IERC20(token);
         uint256 currentBalance = _token.balanceOf(address(this));
 
+        uint256 feeAmount = (currentBalance * feeRatio) / MAX_BPS;
+        uint256 processAmount = currentBalance - feeAmount;
+
+        _sendFees(token, feeAmount);
+
         if(tokenLockers[token] != address(0)){
             if(_token.allowance(address(this), address(minter)) != 0) _token.safeApprove(address(minter), 0);
-            _token.safeIncreaseAllowance(address(minter), currentBalance);
-            minter.mint(token, currentBalance);
+            _token.safeIncreaseAllowance(address(minter), processAmount);
+            minter.mint(token, processAmount);
 
             IERC20 _war = IERC20(war);
             uint256 warBalance = _war.balanceOf(address(this));
@@ -305,15 +317,15 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         else if(tokenFarmers[token] != address(0)){
             address _farmer = tokenFarmers[token];
             if(_token.allowance(address(this), _farmer) != 0) _token.safeApprove(_farmer, 0);
-            _token.safeIncreaseAllowance(_farmer, currentBalance);
-            IFarmer(_farmer).stake(token, currentBalance);
+            _token.safeIncreaseAllowance(_farmer, processAmount);
+            IFarmer(_farmer).stake(token, processAmount);
         } 
         else if(distributionTokens[token]){
-            _token.safeTransfer(address(staker), currentBalance);
-            staker.queueRewards(token, currentBalance);
+            _token.safeTransfer(address(staker), processAmount);
+            staker.queueRewards(token, processAmount);
         } 
         else {
-            swapperAmounts[token] += currentBalance;
+            swapperAmounts[token] += processAmount;
         }
     }
 
@@ -331,9 +343,13 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         uint256 amount = swapperAmounts[token];
         swapperAmounts[token] = 0;
 
-        IERC20(token).safeTransfer(owner(), amount);
+        IERC20(token).safeTransfer(swapper, amount);
 
         emit PullTokens(msg.sender, token, amount);
+    }
+
+    function _sendFees(address token, uint256 amount) internal {
+        IERC20(token).safeTransfer(feeReceiver, amount);
     }
 
 
@@ -377,6 +393,25 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         incentivesClaimer = newIncentivesClaimer;
 
         emit SetIncentivesClaimer(oldIncentivesClaimer, newIncentivesClaimer);
+    }
+
+    function setFeeReceiver(address newFeeReceiver) external onlyOwner {
+        if (newFeeReceiver == address(0)) revert Errors.ZeroAddress();
+        if (newFeeReceiver == feeReceiver) revert Errors.AlreadySet();
+
+        address oldFeeReceiver = feeReceiver;
+        feeReceiver = newFeeReceiver;
+
+        emit SetFeeReceiver(oldFeeReceiver, newFeeReceiver);
+    }
+
+    function setFeeRatio(uint256 newFeeRatio) external onlyOwner {
+        if (newFeeRatio > 1000) revert Errors.InvalidFeeRatio();
+
+        uint256 oldFeeRatio = feeRatio;
+        feeRatio = newFeeRatio;
+
+        emit SetFeeRatio(oldFeeRatio, newFeeRatio);
     }
 
     function setLocker(address token, address locker) external onlyOwner {

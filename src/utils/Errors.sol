@@ -19,6 +19,7 @@ library Errors {
   // Controller
   error ListedLocker();
   error ListedFarmer();
+  error InvalidFeeRatio();
 
   // Locker
   error NoWarLocker(); // _locker[token] == 0x0
