@@ -86,7 +86,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice UserClaimableRewards struct
+   * @notice UserClaimedRewards struct
    *   reward: address of the reward token
    *   amount: amount of rewards claimed by the user
    */
@@ -218,6 +218,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
       // Add the reward token to the list
       rewardAmounts[i].reward = rewards[i];
       // And add the calculated claimable amount of the given reward
+      // Accrued rewards from previous stakes + accrued rewards from current stake
       rewardAmounts[i].claimableAmount = rewardStates[rewards[i]].userStates[user].accruedRewards
         + _getUserEarnedRewards(rewards[i], user, _getNewRewardPerToken(rewards[i]));
 
@@ -425,18 +426,19 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   function _getNewRewardPerToken(address reward) internal view returns (uint256) {
     RewardState storage state = rewardStates[reward];
 
-    // If no fudns are deposited, we don't want to distribute rewards
+    // If no funds are deposited, we don't want to distribute rewards
     uint256 totalStakedAmount = totalSupply();
     if (totalStakedAmount == 0) return state.rewardPerToken;
 
     // Get the last update timestamp
-    uint256 lastRewardTimetamp = lastRewardUpdateTimestamp(reward);
-    if (state.lastUpdate == lastRewardTimetamp) return state.rewardPerToken;
+    uint256 lastRewardTimestamp = lastRewardUpdateTimestamp(reward);
+    if (state.lastUpdate == lastRewardTimestamp) return state.rewardPerToken;
 
     uint256 totalAccruedAmount;
     if (rewardFarmers[reward] == address(0)) {
-      totalAccruedAmount = (lastRewardTimetamp - state.lastUpdate) * state.ratePerSecond;
+      totalAccruedAmount = (lastRewardTimestamp - state.lastUpdate) * state.ratePerSecond;
     } else {
+      // TODO check this case
       uint256 currentFarmerIndex = IFarmer(rewardFarmers[reward]).getCurrentIndex();
       totalAccruedAmount = currentFarmerIndex - farmerLastIndex[reward];
     }
@@ -458,7 +460,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   {
     UserRewardState storage userState = rewardStates[reward].userStates[user];
 
-    // Get the user scaled balance
+    // Get the user scaled balance TODO is it correct to talk about scaled balance or does this come from dullahan?
     uint256 userStakedAmount = balanceOf(user);
 
     if (userStakedAmount == 0) return 0;
@@ -581,7 +583,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     _updateAllUserRewardStates(user);
 
     // For each reward token in the reward list
-    for (uint256 i; i < rewardsLength; ++i) {
+    for (uint256 i; i < rewardsLength;) {
       UserRewardState storage userState = rewardStates[rewards[i]].userStates[user];
 
       // Fetch the amount of rewards accrued by the user
@@ -601,6 +603,10 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
       _sendRewards(rewards[i], receiver, rewardAmount);
 
       emit ClaimedRewards(rewards[i], user, receiver, rewardAmounts[i].amount);
+
+      unchecked {
+        ++i;
+      }
     }
 
     return rewardAmounts;
