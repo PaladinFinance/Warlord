@@ -29,9 +29,34 @@ contract StakerTest is MainnetTest {
   address controller = makeAddr("controller");
   address yieldDumper = makeAddr("yieldDumper");
 
+  address[] queueableRewards;
+
+  function _queue(address rewards, uint256 amount) public {
+    deal(rewards, yieldDumper, amount);
+
+    vm.startPrank(yieldDumper);
+    IERC20(rewards).transfer(address(staker), amount);
+    staker.queueRewards(rewards, amount);
+    vm.stopPrank();
+  }
+
+  function _stake(address _staker, uint256 amount) public {
+    deal(address(war), _staker, amount);
+
+    vm.startPrank(_staker);
+    war.approve(address(staker), amount);
+    staker.stake(amount, _staker);
+    vm.stopPrank();
+  }
+
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
+
+    queueableRewards.push(address(war));
+    queueableRewards.push(address(pal));
+    queueableRewards.push(address(weth));
+    queueableRewards.push(address(cvxFxs));
 
     // Deploying base contracts
     vm.startPrank(admin);
@@ -42,17 +67,9 @@ contract StakerTest is MainnetTest {
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
 
-    // Dealing depositors their respective tokens
-    deal(address(weth), yieldDumper, 1e35);
-
-    deal(address(pal), controller, 1e28);
-    deal(address(war), controller, 1000e18);
-    deal(address(cvxFxs), controller, 1e28);
-
     // Linking farmers
     staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
     staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
-
 
     // Linking depositors
     staker.addRewardDepositor(controller);

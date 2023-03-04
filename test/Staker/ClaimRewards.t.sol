@@ -4,37 +4,44 @@ pragma solidity 0.8.16;
 import "./StakerTest.sol";
 
 contract ClaimRewards is StakerTest {
-  function setUp() public override {
-    StakerTest.setUp();
+  function testClaimWithSingleStaker(address receiver, uint256 time, uint256[] calldata rewardsAmount) public {
+    vm.assume(time < 1000 days);
+    vm.assume(rewardsAmount.length >= queueableRewards.length);
+    vm.assume(receiver != zero && receiver != address(staker));
 
-    deal(address(war), alice, 10_000e18);
+    // Queues some random rewards from the queueable ones
+    for (uint256 i; i < queueableRewards.length; ++i) {
+      uint256 amount = rewardsAmount[i];
+      if (amount == 0) continue;
+      if (amount > 1e60) amount = amount % 1e60;
+      _queue(queueableRewards[i], amount);
+    }
 
-    vm.startPrank(alice);
-    war.approve(address(staker), type(uint256).max);
-    staker.stake(10_000e18, alice);
-    vm.stopPrank();
+    // TODO Queues some random rewards from the farmable ones
+
+    _stake(alice, 1000e18);
+
+    vm.warp(block.timestamp + time);
+
+    WarStaker.UserClaimableRewards[] memory rewards = staker.getUserTotalClaimableRewards(alice);
+
+    for (uint256 i; i < rewards.length; ++i) {
+      IERC20 reward = IERC20(rewards[i].reward);
+
+      vm.prank(alice);
+      staker.claimRewards(address(reward), receiver);
+
+      assertEqDecimal(
+        reward.balanceOf(receiver), rewards[i].claimableAmount, 18, "receiver should have received the claimable amount"
+      );
+    }
   }
 
-  function testDefaultBehavior(/*address receiver*/) public {
-    // Queue some rewards
-    // TODO generalize this with random address and random tokens
-    // TODO fuzz rewardsAmount
-    uint256 rewardsAmount = 1e18;
-    vm.prank(yieldDumper);
-    staker.queueRewards(address(pal), rewardsAmount);
-
-    /* 
-    vm.prank(alice);
-    staker.claimRewards(address(weth), alice);
-    console.log(weth.balanceOf(alice));
-    */ 
-
-    vm.warp(block.timestamp + 7 days);
-
-    console.log(pal.balanceOf(address(staker)));
-    vm.prank(alice);
-    staker.claimRewards(address(pal), alice);
-    console.log(pal.balanceOf(alice));
+  function testWithMultipleStakers() public {
+    // TODO
+  }
+  function testClaimAfterUnstake() public {
+    // TODO
   }
 
   function testClaimNoRewards(address reward, address receiver) public {
@@ -51,6 +58,7 @@ contract ClaimRewards is StakerTest {
 
     staker.claimRewards(reward, zero);
   }
+
   function testZeroReward(address receiver) public {
     vm.assume(receiver != zero);
 
@@ -62,6 +70,7 @@ contract ClaimRewards is StakerTest {
   function testNonReentrant() public {
     // TODO
   }
+
   function testWhenNotPaused(address reward, address receiver) public {
     vm.assume(receiver != zero);
     vm.assume(reward != zero);
