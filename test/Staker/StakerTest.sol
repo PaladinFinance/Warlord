@@ -53,15 +53,16 @@ contract StakerTest is MainnetTest {
     MainnetTest.setUp();
     fork();
 
-    queueableRewards.push(address(war));
-    queueableRewards.push(address(pal));
-    queueableRewards.push(address(weth));
-    queueableRewards.push(address(cvxFxs));
-
     // Deploying base contracts
     vm.startPrank(admin);
     war = new WarToken();
     staker = new WarStaker(address(war));
+
+    // Rewards list for testing
+    queueableRewards.push(address(war));
+    queueableRewards.push(address(pal));
+    queueableRewards.push(address(weth));
+    queueableRewards.push(address(cvxFxs));
 
     // Deploying farmers
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));

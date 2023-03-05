@@ -9,17 +9,20 @@ contract ClaimRewards is StakerTest {
     vm.assume(rewardsAmount.length >= queueableRewards.length);
     vm.assume(receiver != zero && receiver != address(staker));
 
+    uint256 rewardUpperBound = 1e55;
+
     // Queues some random rewards from the queueable ones
     for (uint256 i; i < queueableRewards.length; ++i) {
+      vm.assume(IERC20(queueableRewards[i]).balanceOf(receiver) == 0);
       uint256 amount = rewardsAmount[i];
-      if (amount == 0) continue;
-      if (amount > 1e60) amount = amount % 1e60;
+      if (amount < 1e7) continue;
+      if (amount > rewardUpperBound) amount = amount % rewardUpperBound;
       _queue(queueableRewards[i], amount);
     }
 
     // TODO Queues some random rewards from the farmable ones
 
-    _stake(alice, 1000e18);
+    _stake(alice, (time % uint160(receiver)) + 1);
 
     vm.warp(block.timestamp + time);
 
@@ -31,8 +34,9 @@ contract ClaimRewards is StakerTest {
       vm.prank(alice);
       staker.claimRewards(address(reward), receiver);
 
+      uint256 amount = rewards[i].claimableAmount;
       assertEqDecimal(
-        reward.balanceOf(receiver), rewards[i].claimableAmount, 18, "receiver should have received the claimable amount"
+        reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount"
       );
     }
   }
