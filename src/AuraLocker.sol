@@ -98,7 +98,8 @@ contract WarAuraLocker is IncentivizedLocker {
     _harvest();
   }
 
-  function rewardTokens() external view returns(address[] memory) { // TODO check for a better way to do this
+  function rewardTokens() external view returns (address[] memory) {
+    // TODO check for a better way to do this
     AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(this));
     uint256 rewardsLength = rewards.length;
     address[] memory _tokens = new address[](rewardsLength);

@@ -22,7 +22,7 @@ contract DummyLocker is IWarLocker {
   function lock(uint256 amount) external {}
   function harvest() external {}
 
-  function rewardTokens() external view returns(address[] memory){
+  function rewardTokens() external view returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
   }

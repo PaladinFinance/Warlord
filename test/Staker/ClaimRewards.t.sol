@@ -35,15 +35,33 @@ contract ClaimRewards is StakerTest {
       staker.claimRewards(address(reward), receiver);
 
       uint256 amount = rewards[i].claimableAmount;
-      assertEqDecimal(
-        reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount"
-      );
+      assertEqDecimal(reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount");
     }
   }
 
-  function testWithMultipleStakers() public {
+  struct PersonWithStake {
+    address person;
+    uint256 amount;
+  }
+
+  function testWithMultipleStakers(PersonWithStake[] calldata stakes) public {
+    uint256 numberOfStakes = stakes.length;
+    vm.assume(numberOfStakes > 0);
+    uint256 totalStakedAmount;
+    for (uint256 i; i < numberOfStakes; ++i) {
+      PersonWithStake memory stake = stakes[i];
+      stake.amount = stake.amount % 10_000e18;
+      totalStakedAmount += stake.amount;
+    }
+    vm.assume(totalStakedAmount > 0);
+    for (uint256 i; i < numberOfStakes; ++i) {
+      PersonWithStake memory stake = stakes[i];
+      _stake(stake.person, stake.amount);
+    }
+
     // TODO
   }
+
   function testClaimAfterUnstake() public {
     // TODO
   }

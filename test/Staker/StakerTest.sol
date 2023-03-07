@@ -115,7 +115,7 @@ contract WarDummyFarmerWithToken is WarBaseFarmer {
     return token_;
   }
 
-  function rewardTokens() external view returns(address[] memory){
+  function rewardTokens() external view returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
   }
