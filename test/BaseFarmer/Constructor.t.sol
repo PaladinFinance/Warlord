@@ -9,14 +9,14 @@ contract Constructor is BaseFarmerTest {
     assertEq(dummyFarmer.warStaker(), address(warStaker));
   }
 
-  function testZeroControllerReverts() public {
+  function testZeroControllerReverts(address staker) public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarDummyFarmer(zero, alice);
+    new WarDummyFarmer(zero, staker);
   }
 
-  function testZeroWarStakerReverts() public {
+  function testZeroWarStakerReverts(address controller) public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarDummyFarmer(bob, zero);
+    new WarDummyFarmer(controller, zero);
   }
 
   function testZeroAddresses() public {
