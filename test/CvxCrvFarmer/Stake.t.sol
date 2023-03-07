@@ -46,26 +46,4 @@ contract Stake is CvxCrvFarmerTest {
   function testDefaultBehaviorCvxCrv(uint256 amount) public {
     _stake(address(cvxCrv), amount);
   }
-
-  function testWrongSource(address source) public {
-    vm.assume(source != address(cvxCrv) && source != address(crv));
-    vm.prank(controller);
-    vm.expectRevert(Errors.IncorrectToken.selector);
-    warCvxCrvFarmer.stake(source, 500);
-  }
-
-  function testZeroValue() public {
-    vm.startPrank(controller);
-    vm.expectRevert(Errors.ZeroValue.selector);
-    warCvxCrvFarmer.stake(address(crv), 0);
-    vm.expectRevert(Errors.ZeroValue.selector);
-    warCvxCrvFarmer.stake(address(cvxCrv), 0);
-    vm.stopPrank();
-  }
-
-  function testOnlyController() public {
-    vm.prank(alice);
-    vm.expectRevert(Errors.CallerNotAllowed.selector);
-    warCvxCrvFarmer.stake(address(cvx), 0);
-  }
 }

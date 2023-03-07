@@ -61,26 +61,4 @@ contract Stake is AuraBalFarmerTest {
 
     _stake(address(auraBal), amount);
   }
-
-  function testWrongSource(address source) public {
-    vm.assume(source != address(auraBal) && source != address(bal));
-    vm.prank(controller);
-    vm.expectRevert(Errors.IncorrectToken.selector);
-    auraBalFarmer.stake(source, 500);
-  }
-
-  function testZeroValue() public {
-    vm.startPrank(controller);
-    vm.expectRevert(Errors.ZeroValue.selector);
-    auraBalFarmer.stake(address(bal), 0);
-    vm.expectRevert(Errors.ZeroValue.selector);
-    auraBalFarmer.stake(address(auraBal), 0);
-    vm.stopPrank();
-  }
-
-  function testOnlyController() public {
-    vm.prank(alice);
-    vm.expectRevert(Errors.CallerNotAllowed.selector);
-    auraBalFarmer.stake(address(bal), 0);
-  }
 }

@@ -12,6 +12,10 @@ contract BaseFarmerTest is MainnetTest {
   WarStaker warStaker;
   WarBaseFarmer dummyFarmer;
 
+  event SetController(address controller);
+  event SetWarStaker(address warStaker);
+  event Staked(uint256 amount);
+
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
