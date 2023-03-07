@@ -4,8 +4,8 @@ pragma solidity 0.8.16;
 import "./CvxCrvFarmerTest.sol";
 
 contract Stake is CvxCrvFarmerTest {
-  function _stake(address source, uint256 amount) internal {
-    uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
+  function _stake(address token, uint256 amount) internal {
+    uint256 initialTokenBalance = IERC20(token).balanceOf(address(controller));
     //TODO test emits and compare with auraBal
 
     // Balance amount is non-zero and can't be more than balance
@@ -22,7 +22,7 @@ contract Stake is CvxCrvFarmerTest {
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
 
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(source, amount);
+    warCvxCrvFarmer.stake(token, amount);
     vm.stopPrank();
 
     // Balance gets updated to staked amount
@@ -32,7 +32,7 @@ contract Stake is CvxCrvFarmerTest {
     assertEq(warCvxCrvFarmer.getCurrentIndex(), amount);
 
     // Amount is deducted accordingly from balance
-    assertEq(IERC20(source).balanceOf(address(controller)), initialTokenBalance - amount);
+    assertEq(IERC20(token).balanceOf(address(controller)), initialTokenBalance - amount);
 
     // Check that everything is staked in the correct rewards group
     assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), amount);

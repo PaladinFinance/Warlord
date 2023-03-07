@@ -4,8 +4,8 @@ pragma solidity 0.8.16;
 import "./AuraBalFarmerTest.sol";
 
 contract Stake is AuraBalFarmerTest {
-  function _stake(address source, uint256 amount) internal {
-    uint256 initialTokenBalance = IERC20(source).balanceOf(address(controller));
+  function _stake(address token, uint256 amount) internal {
+    uint256 initialTokenBalance = IERC20(token).balanceOf(address(controller));
 
     // Can't deposit more than actual balance
     vm.assume(amount <= initialTokenBalance);
@@ -21,7 +21,7 @@ contract Stake is AuraBalFarmerTest {
     emit Staked(auraBalStaker.balanceOf(address(auraBalFarmer)), auraBalFarmer.getCurrentIndex());
 
     vm.startPrank(controller);
-    auraBalFarmer.stake(source, amount);
+    auraBalFarmer.stake(token, amount);
     vm.stopPrank();
 
     // Make sure the minimum amount was respected
@@ -29,11 +29,11 @@ contract Stake is AuraBalFarmerTest {
     assertGe(auraBalFarmer.getCurrentIndex(), minOut);
 
     // If auraBal is already minted no zap needed so we can expect exact amounts
-    if (source == address(auraBal)) {
+    if (token == address(auraBal)) {
       assertEq(auraBalStaker.balanceOf(address(auraBalFarmer)), amount);
     }
     // If bal is minted we just expected the balance to have increase from zero
-    if (source == address(bal)) {
+    if (token == address(bal)) {
       assertGt(auraBalStaker.balanceOf(address(auraBalFarmer)), 0);
     }
 
@@ -41,7 +41,7 @@ contract Stake is AuraBalFarmerTest {
     assertEq(auraBalFarmer.getCurrentIndex(), auraBalStaker.balanceOf(address(auraBalFarmer)));
 
     // Check balance was deducted correctly
-    assertEq(IERC20(source).balanceOf(address(controller)), initialTokenBalance - amount);
+    assertEq(IERC20(token).balanceOf(address(controller)), initialTokenBalance - amount);
   }
 
   function testDefaultBehaviorBal(uint256 amount) public {
