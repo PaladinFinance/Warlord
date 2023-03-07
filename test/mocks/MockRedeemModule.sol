@@ -13,7 +13,6 @@ contract MockRedeem is IWarRedeemModule, Owner {
   }
 
   function notifyUnlock(address token, uint256 amount) external {
-    // TODO restrict call by processUnlock
     if (token != address(0)) {
       queued -= amount;
     }

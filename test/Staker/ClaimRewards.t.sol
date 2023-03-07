@@ -59,7 +59,7 @@ contract ClaimRewards is StakerTest {
       PersonWithStake memory stake = stakes[i];
       _stake(stake.person, stake.amount);
     }
-    */ 
+    */
     // TODO
   }
 

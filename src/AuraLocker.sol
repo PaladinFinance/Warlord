@@ -37,7 +37,7 @@ contract WarAuraLocker is IncentivizedLocker {
     AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(this));
     uint256 rewardsLength = rewards.length;
 
-    vlAura.getReward(address(this), false);
+    vlAura.getReward(address(this), false); // TODO check for extras
 
     for (uint256 i; i < rewardsLength;) {
       IERC20 rewardToken = IERC20(rewards[i].token);

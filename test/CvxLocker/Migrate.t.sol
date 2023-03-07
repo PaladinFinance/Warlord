@@ -16,7 +16,6 @@ contract Migrate is CvxLockerTest {
     vm.stopPrank();
   }
 
-  // TODO test this with multiple locks in different point in time
   function testDefaultBehavior() public {
     vm.warp(block.timestamp + 1000 days);
     (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();

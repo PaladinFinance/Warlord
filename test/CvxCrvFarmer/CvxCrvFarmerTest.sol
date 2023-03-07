@@ -10,7 +10,7 @@ contract CvxCrvFarmerTest is MainnetTest {
   address controller = makeAddr("controller");
   WarToken war;
   WarStaker warStaker;
-  WarCvxCrvFarmer warCvxCrvFarmer; // TODO change old nomenclature
+  WarCvxCrvFarmer warCvxCrvFarmer;
 
   function setUp() public virtual override {
     MainnetTest.setUp();
@@ -22,7 +22,6 @@ contract CvxCrvFarmerTest is MainnetTest {
     warCvxCrvFarmer = new WarCvxCrvFarmer(controller, address(warStaker));
     vm.stopPrank();
 
-    // TODO deal bigger amounts
     deal(address(crv), controller, 100e18);
     deal(address(cvxCrv), controller, 100e18);
 
