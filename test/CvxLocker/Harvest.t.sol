@@ -19,8 +19,8 @@ contract Harvest is CvxLockerTest {
     locker.harvest();
 
     // check accrued rewards harvest to controller
-    assertEq(cvxCrvRewards, cvxCrv.balanceOf(controller), "expecting pending rewards for cvxCrv");
-    assertEq(cvxFxsRewards, cvxFxs.balanceOf(controller), "expecting pending rewards for cvxFxs");
+    assertEqDecimal(cvxCrv.balanceOf(controller), cvxCrvRewards, 18, "expecting pending rewards for cvxCrv");
+    assertEqDecimal(cvxFxs.balanceOf(controller), cvxFxsRewards, 18, "expecting pending rewards for cvxFxs");
 
     // check there's no rewards lefts after harvesting
     _assertNoPendingRewards();
