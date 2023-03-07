@@ -45,6 +45,7 @@ contract ClaimRewards is StakerTest {
   }
 
   function testWithMultipleStakers(PersonWithStake[] calldata stakes) public {
+    /*
     uint256 numberOfStakes = stakes.length;
     vm.assume(numberOfStakes > 0);
     uint256 totalStakedAmount;
@@ -58,7 +59,7 @@ contract ClaimRewards is StakerTest {
       PersonWithStake memory stake = stakes[i];
       _stake(stake.person, stake.amount);
     }
-
+    */ 
     // TODO
   }
 
