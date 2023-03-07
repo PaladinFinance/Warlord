@@ -16,7 +16,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
   event SetController(address controller);
   event SetWarStaker(address warStaker);
-  event Staked(uint256 amount, uint256 index);
+  event Staked(uint256 amount);
 
   constructor(address _controller, address _warStaker) {
     if (_controller == address(0) || _warStaker == address(0)) revert Errors.ZeroAddress();
@@ -44,7 +44,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
     uint256 amountStaked = _stake(_token, _amount);
 
-    emit Staked(amountStaked, _index);
+    emit Staked(amountStaked);
   }
 
   function _harvest() internal virtual;
