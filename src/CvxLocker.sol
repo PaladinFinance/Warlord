@@ -29,7 +29,7 @@ contract WarCvxLocker is IncentivizedLocker {
     if (cvx.allowance(address(this), address(vlCvx)) != 0) cvx.safeApprove(address(vlCvx), 0);
     cvx.safeIncreaseAllowance(address(vlCvx), amount);
 
-    vlCvx.lock(address(this), amount, 0); // TODO what is _spendRatio
+    vlCvx.lock(address(this), amount, 0);
   }
 
   function _harvest() internal override {
