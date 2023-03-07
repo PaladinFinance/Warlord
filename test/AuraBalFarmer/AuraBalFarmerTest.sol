@@ -43,7 +43,7 @@ contract AuraBalFarmerTest is MainnetTest {
     vm.startPrank(admin);
     war = new WarToken();
     warStaker = new WarStaker(address(war));
-    auraBalFarmer = new WarAuraBalFarmer(controller, address(warStaker));
+    auraBalFarmer = new Exposed_WarAuraBalFarmer(controller, address(warStaker));
     vm.stopPrank();
 
     // dealing around 1.5m dollars in bal
@@ -89,5 +89,37 @@ contract AuraBalFarmerTest is MainnetTest {
     assertEq(balRewards, 0);
     assertEq(auraRewards, 0);
     assertEq(bbAUsdRewards, 0);
+  }
+
+  function expose(WarAuraBalFarmer farmer) public pure returns (Exposed_WarAuraBalFarmer) {
+    return Exposed_WarAuraBalFarmer(address(farmer));
+  }
+}
+
+contract Exposed_WarAuraBalFarmer is WarAuraBalFarmer {
+  constructor(address _controller, address _warStaker) WarAuraBalFarmer(_controller, _warStaker) {}
+
+  function e_isTokenSupported(address _token) public pure returns (bool) {
+    return _isTokenSupported(_token);
+  }
+
+  function e_stake(address _token, uint256 _amount) public returns (uint256) {
+    return _stake(_token, _amount);
+  }
+
+  function e_harvest() public {
+    _harvest();
+  }
+
+  function e_stakedBalance() public view returns (uint256) {
+    return _stakedBalance();
+  }
+
+  function e_sendTokens(address receiver, uint256 amount) public {
+    _sendTokens(receiver, amount);
+  }
+
+  function e_migrate(address receiver) public {
+    _migrate(receiver);
   }
 }
