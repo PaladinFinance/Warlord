@@ -29,6 +29,7 @@ contract MainnetTest is BaseTest {
   IERC20 constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
   CvxCrvStaking constant convexCvxCrvStaker = CvxCrvStaking(0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434);
   // - cvxFXS
+  IERC20 constant fxs = IERC20(0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0);
   IERC20 constant cvxFxs = IERC20(0xFEEf77d3f69374f66429C91d732A244f074bdf74);
 
   // Aura
