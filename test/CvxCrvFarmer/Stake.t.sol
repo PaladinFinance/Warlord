@@ -12,31 +12,31 @@ contract Stake is CvxCrvFarmerTest {
     vm.assume(amount > 0 && amount <= initialTokenBalance);
 
     // Initial staked amount is 0 in all groups
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), 0);
+    assertEq(convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)), 0);
 
     // Initial index is 0
-    assertEq(warCvxCrvFarmer.getCurrentIndex(), 0);
+    assertEq(cvxCrvFarmer.getCurrentIndex(), 0);
 
     // Initial balance is zero in all reward groups
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), 0);
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(cvxCrvFarmer), 0), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(cvxCrvFarmer), 1), 0);
 
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(token, amount);
+    cvxCrvFarmer.stake(token, amount);
     vm.stopPrank();
 
     // Balance gets updated to staked amount
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), amount);
+    assertEq(convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)), amount);
 
     // Index increases accordingly
-    assertEq(warCvxCrvFarmer.getCurrentIndex(), amount);
+    assertEq(cvxCrvFarmer.getCurrentIndex(), amount);
 
     // Amount is deducted accordingly from balance
     assertEq(IERC20(token).balanceOf(address(controller)), initialTokenBalance - amount);
 
     // Check that everything is staked in the correct rewards group
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 0), amount);
-    assertEq(convexCvxCrvStaker.userRewardBalance(address(warCvxCrvFarmer), 1), 0);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(cvxCrvFarmer), 0), amount);
+    assertEq(convexCvxCrvStaker.userRewardBalance(address(cvxCrvFarmer), 1), 0);
   }
 
   function testDefaultBehaviorCrv(uint256 amount) public {

@@ -7,18 +7,18 @@ contract SendTokens is CvxCrvFarmerTest {
   function setUp() public override {
     CvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
     vm.warp(block.timestamp + 100 days);
   }
 
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 0 && amount <= convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)));
+    vm.assume(amount > 0 && amount <= convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)));
     assertEq(cvxCrv.balanceOf(alice), 0);
-    assertEq(convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)), 200e18);
+    assertEq(convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)), 200e18);
     vm.prank(address(warStaker));
-    warCvxCrvFarmer.sendTokens(alice, amount);
+    cvxCrvFarmer.sendTokens(alice, amount);
     assertEq(cvxCrv.balanceOf(alice), amount);
   }
 
@@ -26,18 +26,18 @@ contract SendTokens is CvxCrvFarmerTest {
     vm.assume(randomAddress != zero);
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(address(warStaker));
-    warCvxCrvFarmer.sendTokens(randomAddress, 0);
+    cvxCrvFarmer.sendTokens(randomAddress, 0);
   }
 
   function testZeroAddress(uint256 randomValue) public {
-    vm.assume(randomValue > 0 && randomValue <= convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer)));
+    vm.assume(randomValue > 0 && randomValue <= convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)));
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(address(warStaker));
-    warCvxCrvFarmer.sendTokens(zero, randomValue);
+    cvxCrvFarmer.sendTokens(zero, randomValue);
   }
 
   function testOnlyWarStaker() public {
     vm.expectRevert(Errors.CallerNotAllowed.selector);
-    warCvxCrvFarmer.sendTokens(alice, 500);
+    cvxCrvFarmer.sendTokens(alice, 500);
   }
 }

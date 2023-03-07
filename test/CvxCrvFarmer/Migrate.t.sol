@@ -9,22 +9,22 @@ contract Migrate is CvxCrvFarmerTest {
   function setUp() public override {
     CvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
     vm.warp(block.timestamp + 100 days);
     vm.prank(admin);
-    warCvxCrvFarmer.pause();
+    cvxCrvFarmer.pause();
   }
 
   function testDefaultBehavior() public {
     (uint256 crvRewards, uint256 cvxRewards, uint256 threeCrvRewards) = _getRewards();
 
-    uint256 stakedBalance = convexCvxCrvStaker.balanceOf(address(warCvxCrvFarmer));
+    uint256 stakedBalance = convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer));
     assertEq(cvxCrv.balanceOf(migration), 0);
 
     vm.prank(admin);
-    warCvxCrvFarmer.migrate(migration);
+    cvxCrvFarmer.migrate(migration);
 
     assertEq(cvxCrv.balanceOf(migration), stakedBalance);
 
@@ -37,21 +37,21 @@ contract Migrate is CvxCrvFarmerTest {
 
   function testWhenIsPaused() public {
     vm.startPrank(admin);
-    warCvxCrvFarmer.unpause();
+    cvxCrvFarmer.unpause();
     vm.expectRevert("Pausable: not paused");
-    warCvxCrvFarmer.migrate(migration);
+    cvxCrvFarmer.migrate(migration);
     vm.stopPrank();
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
     vm.prank(alice);
-    warCvxCrvFarmer.migrate(alice);
+    cvxCrvFarmer.migrate(alice);
   }
 
   function testZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(admin);
-    warCvxCrvFarmer.migrate(zero);
+    cvxCrvFarmer.migrate(zero);
   }
 }

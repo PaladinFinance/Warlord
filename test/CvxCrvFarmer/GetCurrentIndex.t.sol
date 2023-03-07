@@ -16,10 +16,10 @@ contract GetCurrentIndex is CvxCrvFarmerTest {
     for (uint256 i; i < 3; ++i) {
       uint256 currentAmount = amount[i];
       if (currentAmount > 0) {
-        warCvxCrvFarmer.stake(address(crv), currentAmount);
+        cvxCrvFarmer.stake(address(crv), currentAmount);
         totalStakedAmount += currentAmount;
       }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
+      assertEq(cvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
     }
     vm.stopPrank();
 
@@ -28,9 +28,9 @@ contract GetCurrentIndex is CvxCrvFarmerTest {
     for (uint256 i; i < 3; ++i) {
       uint256 currentAmount = amount[i];
       if (currentAmount > 0) {
-        warCvxCrvFarmer.sendTokens(alice, currentAmount);
+        cvxCrvFarmer.sendTokens(alice, currentAmount);
       }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
+      assertEq(cvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
     }
     vm.stopPrank();
 
@@ -38,10 +38,10 @@ contract GetCurrentIndex is CvxCrvFarmerTest {
     for (uint256 i; i < 3; ++i) {
       uint256 currentAmount = amount[i];
       if (currentAmount > 0) {
-        warCvxCrvFarmer.stake(address(crv), currentAmount);
+        cvxCrvFarmer.stake(address(crv), currentAmount);
         totalStakedAmount += currentAmount;
       }
-      assertEq(warCvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
+      assertEq(cvxCrvFarmer.getCurrentIndex(), totalStakedAmount);
     }
     vm.stopPrank();
   }
