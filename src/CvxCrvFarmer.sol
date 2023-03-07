@@ -26,7 +26,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     cvxCrvStaker.setRewardWeight(weight);
   }
 
-  function _isTokenSupported(address _token) internal override returns (bool) {
+  function _isTokenSupported(address _token) internal pure override returns (bool) {
     return _token == address(crv) || _token == address(cvxCrv);
   }
 
@@ -51,15 +51,15 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     return _amount;
   }
 
-  function _harvest() override internal {
+  function _harvest() internal override {
     cvxCrvStaker.getReward(address(this), controller);
   }
 
-  function _stakedBalance() internal override returns (uint256) {
+  function _stakedBalance() internal view override returns (uint256) {
     return cvxCrvStaker.balanceOf(address(this));
   }
 
-  function _sendTokens(address receiver, uint256 amount) external {
+  function _sendTokens(address receiver, uint256 amount) internal override {
     cvxCrvStaker.withdraw(amount);
     cvxCrv.safeTransfer(receiver, amount);
   }

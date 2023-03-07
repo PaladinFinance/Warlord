@@ -34,10 +34,9 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     slippageBps = 10_000 - _slippageBps;
   }
 
-  function _isTokenSupported(address _token) override internal returns (bool) {
+  function _isTokenSupported(address _token) internal pure override returns (bool) {
     return _token == address(bal) || _token == address(auraBal);
   }
-  
 
   function _stake(address _token, uint256 _amount) internal override returns (uint256) {
     // TODO test if it works when a bonus is available
@@ -88,11 +87,11 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     }
   }
 
-  function _stakedBalance() internal override returns (uint256) {
+  function _stakedBalance() internal view override returns (uint256) {
     return auraBalStaker.balanceOf(address(this));
   }
 
-  function _sendTokens(address receiver, uint256 amount) internal {
+  function _sendTokens(address receiver, uint256 amount) internal override {
     auraBalStaker.withdraw(amount, false);
     auraBal.safeTransfer(receiver, amount);
   }
