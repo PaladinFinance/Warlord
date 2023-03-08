@@ -35,6 +35,4 @@ contract Migrate is AuraBalFarmerTest {
 
     _assertNoPendingRewards();
   }
-
-  
 }
