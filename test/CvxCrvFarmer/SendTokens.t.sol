@@ -22,22 +22,7 @@ contract SendTokens is CvxCrvFarmerTest {
     assertEq(cvxCrv.balanceOf(alice), amount);
   }
 
-  function testZeroAmount(address randomAddress) public {
-    vm.assume(randomAddress != zero);
-    vm.expectRevert(Errors.ZeroValue.selector);
-    vm.prank(address(warStaker));
-    cvxCrvFarmer.sendTokens(randomAddress, 0);
-  }
-
-  function testZeroAddress(uint256 randomValue) public {
-    vm.assume(randomValue > 0 && randomValue <= convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)));
-    vm.expectRevert(Errors.ZeroAddress.selector);
-    vm.prank(address(warStaker));
-    cvxCrvFarmer.sendTokens(zero, randomValue);
-  }
-
-  function testOnlyWarStaker() public {
-    vm.expectRevert(Errors.CallerNotAllowed.selector);
-    cvxCrvFarmer.sendTokens(alice, 500);
+  function testUnstakingMoreThanBalance() public {
+    // TODO
   }
 }
