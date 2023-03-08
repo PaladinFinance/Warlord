@@ -12,6 +12,10 @@ contract BaseFarmerTest is MainnetTest {
   WarStaker warStaker;
   WarBaseFarmer dummyFarmer;
 
+  event SetController(address controller);
+  event SetWarStaker(address warStaker);
+  event Staked(uint256 amount);
+
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
@@ -26,14 +30,24 @@ contract BaseFarmerTest is MainnetTest {
 
 contract WarDummyFarmer is WarBaseFarmer {
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
-  function stake(address _token, uint256 _amount) external {}
-  function harvest() external {}
-  function sendTokens(address receiver, uint256 amount) external {}
-  function migrate(address receiver) external override {}
+
+  function _stake(address, /* _token*/ uint256 /*_amount*/ ) internal pure override returns (uint256) {
+    return 0;
+  }
+
+  function _harvest() internal pure override {}
+  function _sendTokens(address receiver, uint256 amount) internal pure override {}
+  function _migrate(address receiver) internal pure override {}
   function token() external view returns (address) {}
 
-  function rewardTokens() external view returns (address[] memory) {
+  function rewardTokens() external pure returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
   }
+
+  function _isTokenSupported(address /*_token*/ ) internal pure override returns (bool) {
+    return true;
+  }
+
+  function _stakedBalance() internal override returns (uint256) {}
 }

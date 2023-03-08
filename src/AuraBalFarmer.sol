@@ -34,10 +34,11 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     slippageBps = 10_000 - _slippageBps;
   }
 
-  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
-    if (_token != address(auraBal) && _token != address(bal)) revert Errors.IncorrectToken();
-    if (_amount == 0) revert Errors.ZeroValue();
+  function _isTokenSupported(address _token) internal pure override returns (bool) {
+    return _token == address(bal) || _token == address(auraBal);
+  }
 
+  function _stake(address _token, uint256 _amount) internal override returns (uint256) {
     // TODO test if it works when a bonus is available
 
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
@@ -47,6 +48,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     if (_token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
+      // TODO avoid repeating safe approves
       bal.safeApprove(address(balDepositor), 0); // TODO should I check here as well for zero approval
       bal.safeIncreaseAllowance(address(balDepositor), _amount);
       uint256 minOut = balDepositor.getMinOut(_amount, slippageBps);
@@ -62,15 +64,10 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     auraBal.safeApprove(address(auraBalStaker), 0);
     auraBal.safeIncreaseAllowance(address(auraBalStaker), stakableAmount);
     auraBalStaker.stake(stakableAmount);
-
-    emit Staked(stakableAmount, _index);
+    return stakableAmount;
   }
 
-  function harvest() external whenNotPaused nonReentrant {
-    _harvest();
-  }
-
-  function _harvest() internal {
+  function _harvest() internal override {
     auraBalStaker.getReward(address(this), true);
 
     bal.safeTransfer(controller, bal.balanceOf(address(this)));
@@ -90,26 +87,21 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     }
   }
 
-  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-    if (amount == 0) revert Errors.ZeroValue();
-    if (auraBalStaker.balanceOf(address(this)) < amount) revert Errors.UnstakingMoreThanBalance();
+  function _stakedBalance() internal view override returns (uint256) {
+    return auraBalStaker.balanceOf(address(this));
+  }
 
+  function _sendTokens(address receiver, uint256 amount) internal override {
     auraBalStaker.withdraw(amount, false);
     auraBal.safeTransfer(receiver, amount);
   }
 
-  function migrate(address receiver) external override onlyOwner whenPaused {
-    if (receiver == address(0)) revert Errors.ZeroAddress();
-
+  function _migrate(address receiver) internal override {
     // Unstake and send cvxCrv
     uint256 auraBalStakedBalance = auraBalStaker.balanceOf(address(this));
     // TODO check that claim does NOT send to the controller
     auraBalStaker.withdraw(auraBalStakedBalance, false);
     auraBal.safeTransfer(receiver, auraBalStakedBalance);
-
-    // Harvest and send rewards to the controller
-    _harvest();
   }
 
   function rewardTokens() external view returns (address[] memory) {

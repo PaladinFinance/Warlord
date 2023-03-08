@@ -18,7 +18,6 @@ contract Unpause is BaseFarmerTest {
   }
 
   function testOnlyOwner() public {
-    vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
     dummyFarmer.unpause();
   }

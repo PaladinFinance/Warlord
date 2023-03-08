@@ -106,17 +106,26 @@ contract WarDummyFarmerWithToken is WarBaseFarmer {
     token_ = _token;
   }
 
-  function stake(address _token, uint256 _amount) external {}
-  function harvest() external {}
-  function sendTokens(address receiver, uint256 amount) external {}
-  function migrate(address receiver) external override {}
-
   function token() external view returns (address) {
     return token_;
   }
 
-  function rewardTokens() external view returns (address[] memory) {
+  function rewardTokens() external pure returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
   }
+
+  function _isTokenSupported(address /*_token*/ ) internal pure override returns (bool) {
+    return true;
+  }
+
+  function _stakedBalance() internal override returns (uint256) {}
+
+  function _stake(address, /* _token*/ uint256 /*_amount*/ ) internal pure override returns (uint256) {
+    return 0;
+  }
+
+  function _harvest() internal override {}
+  function _sendTokens(address receiver, uint256 amount) internal override {}
+  function _migrate(address receiver) internal override {}
 }

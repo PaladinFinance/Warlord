@@ -7,8 +7,8 @@ contract SetRewardWeight is CvxCrvFarmerTest {
   function setUp() public override {
     CvxCrvFarmerTest.setUp();
     vm.startPrank(controller);
-    warCvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
-    warCvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(cvxCrv), cvxCrv.balanceOf(controller));
+    cvxCrvFarmer.stake(address(crv), crv.balanceOf(controller));
     vm.stopPrank();
   }
 
@@ -16,7 +16,7 @@ contract SetRewardWeight is CvxCrvFarmerTest {
     _assertNoPendingRewards();
 
     vm.startPrank(admin);
-    warCvxCrvFarmer.setRewardWeight(0);
+    cvxCrvFarmer.setRewardWeight(0);
     vm.warp(block.timestamp + 1);
 
     (uint256 crvRewards, uint256 cvxRewards, uint256 threeCrvRewards) = _getRewards();
@@ -26,11 +26,11 @@ contract SetRewardWeight is CvxCrvFarmerTest {
     (uint256 oldCrvRewards, uint256 oldCvxRewards, uint256 oldThreeCrvRewards) =
       (crvRewards, cvxRewards, threeCrvRewards);
 
-    warCvxCrvFarmer.harvest();
+    cvxCrvFarmer.harvest();
 
     for (uint256 i = 1; i < 10_000; i += 25) {
       // Lower the increase for a more precise test
-      warCvxCrvFarmer.setRewardWeight(i);
+      cvxCrvFarmer.setRewardWeight(i);
       vm.warp(block.timestamp + 1);
       (crvRewards, cvxRewards, threeCrvRewards) = _getRewards();
       assertLt(crvRewards, oldCrvRewards);
@@ -38,11 +38,11 @@ contract SetRewardWeight is CvxCrvFarmerTest {
       assertGt(threeCrvRewards, oldThreeCrvRewards);
 
       // Setup for next cycle
-      warCvxCrvFarmer.harvest();
+      cvxCrvFarmer.harvest();
       (oldCrvRewards, oldCvxRewards, oldThreeCrvRewards) = (crvRewards, cvxRewards, threeCrvRewards);
     }
 
-    warCvxCrvFarmer.setRewardWeight(10_000);
+    cvxCrvFarmer.setRewardWeight(10_000);
     vm.warp(block.timestamp + 1);
 
     (crvRewards, cvxRewards, threeCrvRewards) = _getRewards();
