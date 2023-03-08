@@ -29,13 +29,10 @@ contract BaseFarmerTest is MainnetTest {
 }
 
 contract WarDummyFarmer is WarBaseFarmer {
-  uint256 stakedBalance;
-
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
 
-  function _stake(address, /* _token*/ uint256 _amount) internal override returns (uint256) {
-    stakedBalance += _amount; // TODO do I even need this?
-    return _amount;
+  function _stake(address, /* _token*/ uint256 /*_amount*/ ) internal pure override returns (uint256) {
+    return 0;
   }
 
   function _harvest() internal override {}
