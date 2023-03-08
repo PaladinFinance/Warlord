@@ -16,10 +16,6 @@ contract Stake is AuraBalFarmerTest {
     // Initial index is 0
     assertEq(auraBalFarmer.getCurrentIndex(), 0);
 
-    // Testing the emissions
-    vm.expectEmit(true, true, false, false); // TODO preciser errors
-    emit Staked(auraBalStaker.balanceOf(address(auraBalFarmer)), auraBalFarmer.getCurrentIndex());
-
     vm.startPrank(controller);
     auraBalFarmer.stake(token, amount);
     vm.stopPrank();

@@ -32,10 +32,6 @@ contract AuraBalFarmerTest is MainnetTest {
   uint256 constant setUpBalBalance = 150_000e18;
   uint256 constant setUpAuraBalBalance = 150_000e18;
 
-  event SetController(address controller);
-  event SetWarStaker(address warStaker);
-  event Staked(uint256 amount, uint256 index);
-
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();
