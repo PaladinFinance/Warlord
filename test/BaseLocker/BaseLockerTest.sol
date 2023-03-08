@@ -51,7 +51,7 @@ contract WarDummyLocker is WarBaseLocker, Test {
     return address(0x1234123412341234);
   }
 
-  function rewardTokens() external view returns (address[] memory) {
+  function rewardTokens() external pure returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
   }
