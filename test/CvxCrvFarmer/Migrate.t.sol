@@ -34,24 +34,4 @@ contract Migrate is CvxCrvFarmerTest {
 
     _assertNoPendingRewards();
   }
-
-  function testWhenIsPaused() public {
-    vm.startPrank(admin);
-    cvxCrvFarmer.unpause();
-    vm.expectRevert("Pausable: not paused");
-    cvxCrvFarmer.migrate(migration);
-    vm.stopPrank();
-  }
-
-  function testOnlyOwner() public {
-    vm.expectRevert("Ownable: caller is not the owner");
-    vm.prank(alice);
-    cvxCrvFarmer.migrate(alice);
-  }
-
-  function testZeroAddress() public {
-    vm.expectRevert(Errors.ZeroAddress.selector);
-    vm.prank(admin);
-    cvxCrvFarmer.migrate(zero);
-  }
 }

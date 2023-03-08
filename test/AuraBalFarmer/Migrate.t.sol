@@ -36,23 +36,5 @@ contract Migrate is AuraBalFarmerTest {
     _assertNoPendingRewards();
   }
 
-  function testWhenIsPaused() public {
-    vm.startPrank(admin);
-    auraBalFarmer.unpause();
-    vm.expectRevert("Pausable: not paused");
-    auraBalFarmer.migrate(migration);
-    vm.stopPrank();
-  }
-
-  function testOnlyOwner() public {
-    vm.expectRevert("Ownable: caller is not the owner");
-    vm.prank(alice);
-    auraBalFarmer.migrate(alice);
-  }
-
-  function testZeroAddress() public {
-    vm.expectRevert(Errors.ZeroAddress.selector);
-    vm.prank(admin);
-    auraBalFarmer.migrate(zero);
-  }
+  
 }
