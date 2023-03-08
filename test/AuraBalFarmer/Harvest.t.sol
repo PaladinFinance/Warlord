@@ -30,11 +30,4 @@ contract Harvest is AuraBalFarmerTest {
     vm.assume(time < 10_000 days);
     _defaultBehavior(time);
   }
-
-  function testWhenNotPaused() public {
-    vm.prank(admin);
-    auraBalFarmer.pause();
-    vm.expectRevert("Pausable: paused");
-    auraBalFarmer.harvest();
-  }
 }

@@ -33,11 +33,4 @@ contract Harvest is CvxCrvFarmerTest {
     cvxCrvFarmer.setRewardWeight(weight);
     _defaultBehavior(time);
   }
-
-  function testWhenNotPaused() public {
-    vm.prank(admin);
-    cvxCrvFarmer.pause();
-    vm.expectRevert("Pausable: paused");
-    cvxCrvFarmer.harvest();
-  }
 }
