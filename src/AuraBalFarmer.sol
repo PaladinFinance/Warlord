@@ -29,7 +29,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     return address(auraBal);
   }
 
-  function setSlippage(uint256 _slippageBps) public onlyOwner {
+  function setSlippage(uint256 _slippageBps) external onlyOwner {
     if (_slippageBps > 500) revert Errors.SlippageTooHigh();
     slippageBps = 10_000 - _slippageBps;
   }
