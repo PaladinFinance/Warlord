@@ -37,7 +37,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
   function _stake(address _token, uint256 _amount) internal virtual returns (uint256);
 
-  function stake(address _token, uint256 _amount) external onlyController whenNotPaused nonReentrant {
+  function stake(address _token, uint256 _amount) external nonReentrant onlyController whenNotPaused {
     if (!_isTokenSupported(_token)) revert Errors.IncorrectToken();
     if (_amount == 0) revert Errors.ZeroValue();
 

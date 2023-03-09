@@ -36,7 +36,12 @@ contract Stake is BaseFarmerTest {
     dummyFarmer.stake(token, 0);
   }
 
-  function testNonReentrant() public {
-    // TODO #4
+  function testNonReentrant(address token, uint256 amount) public enableReentrancy {
+    vm.assume(amount != 0);
+
+    vm.expectRevert("REENTRANCY");
+
+    vm.prank(controller);
+    dummyFarmer.stake(token, amount);
   }
 }

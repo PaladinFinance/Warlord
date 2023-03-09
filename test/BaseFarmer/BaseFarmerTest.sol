@@ -26,16 +26,30 @@ contract BaseFarmerTest is MainnetTest {
     dummyFarmer = new WarDummyFarmer(controller, address(warStaker));
     vm.stopPrank();
   }
+
+  modifier enableReentrancy() {
+    WarDummyFarmer(address(dummyFarmer))._enableReentrancy();
+    _;
+  }
 }
 
 contract WarDummyFarmer is WarBaseFarmer {
-  constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
+  StakerReentrance reentrancy;
 
-  function _stake(address, /* _token*/ uint256 _amount) internal pure override returns (uint256) {
+  constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {
+    console.log(address(this));
+    reentrancy = new StakerReentrance();
+  }
+
+  function _stake(address, /* _token*/ uint256 _amount) internal override returns (uint256) {
+    reentrancy.trigger();
     return _amount;
   }
 
-  function _harvest() internal pure override {}
+  function _harvest() internal override {
+    reentrancy.trigger();
+  }
+
   function _sendTokens(address receiver, uint256 amount) internal pure override {}
   function _migrate(address receiver) internal pure override {}
   function token() external view returns (address) {}
@@ -50,4 +64,29 @@ contract WarDummyFarmer is WarBaseFarmer {
   }
 
   function _stakedBalance() internal override returns (uint256) {}
+
+  function _enableReentrancy() external {
+    reentrancy.enable();
+  }
+}
+
+contract StakerReentrance {
+  WarDummyFarmer staker;
+  bool enabled;
+
+  constructor() {
+    staker = WarDummyFarmer(msg.sender);
+    console.log(msg.sender);
+  }
+
+  function enable() external {
+    enabled = true;
+  }
+
+  function trigger() external {
+    if (enabled) {
+      console.log();
+      staker.stake(address(0x1234), 1);
+    }
+  }
 }
