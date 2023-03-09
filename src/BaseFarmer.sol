@@ -41,6 +41,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
     if (!_isTokenSupported(_token)) revert Errors.IncorrectToken();
     if (_amount == 0) revert Errors.ZeroValue();
 
+    // Staked amount may change from iniital argument when wrapping BAL into auraBAL
     uint256 amountStaked = _stake(_token, _amount);
 
     emit Staked(amountStaked);
