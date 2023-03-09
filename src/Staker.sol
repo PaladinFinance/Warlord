@@ -178,7 +178,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @notice Get the list of all reward tokens
    * @return address[] : List of reward tokens
    */
-  function getRewardTokens() public view returns (address[] memory) {
+  function getRewardTokens() external view returns (address[] memory) {
     return rewardTokens;
   }
 

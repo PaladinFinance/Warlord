@@ -19,7 +19,7 @@ contract WarToken is ERC20, AccessControl {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, keccak256("NO_ROLE"));
   }
 
-  function transferOwnership(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
+  function transferOwnership(address newOwner) external onlyRole(DEFAULT_ADMIN_ROLE) {
     if (newOwner == address(0)) revert Errors.ZeroAddress();
     if (newOwner == owner) revert Errors.CannotBeOwner();
 
@@ -30,7 +30,7 @@ contract WarToken is ERC20, AccessControl {
     emit NewPendingOwner(oldPendingOwner, newOwner);
   }
 
-  function acceptOwnership() public {
+  function acceptOwnership() external {
     if (msg.sender != pendingOwner) revert Errors.CallerNotPendingOwner();
     address newOwner = pendingOwner;
 
@@ -43,11 +43,11 @@ contract WarToken is ERC20, AccessControl {
     emit NewPendingOwner(newOwner, address(0));
   }
 
-  function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+  function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
     _mint(to, amount);
   }
 
-  function burn(address from, uint256 amount) public onlyRole(BURNER_ROLE) {
+  function burn(address from, uint256 amount) external onlyRole(BURNER_ROLE) {
     _burn(from, amount);
   }
 }

@@ -32,12 +32,12 @@ contract WarMinter is Owner {
     return address(_mintRatio);
   }
 
-  function setMintRatio(address mintRatio_) public onlyOwner {
     if (mintRatio_ == address(0)) revert Errors.ZeroAddress();
     _mintRatio = IMintRatio(mintRatio_);
+  function setMintRatio(address _mintRatio) external onlyOwner {
   }
 
-  function setLocker(address vlToken, address warLocker) public onlyOwner {
+  function setLocker(address vlToken, address warLocker) external onlyOwner {
     if (vlToken == address(0) || warLocker == address(0)) revert Errors.ZeroAddress();
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != vlToken) revert Errors.MismatchingLocker(expectedToken, vlToken);
@@ -45,7 +45,7 @@ contract WarMinter is Owner {
   }
 
   // TODO handle reentrancy
-  function mint(address vlToken, uint256 amount) public {
+  function mint(address vlToken, uint256 amount) external {
     mint(vlToken, amount, msg.sender);
   }
 
@@ -80,7 +80,7 @@ contract WarMinter is Owner {
     }
   }
 
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) public {
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) external {
     mintMultiple(vlTokens, amounts, msg.sender);
   }
 }
