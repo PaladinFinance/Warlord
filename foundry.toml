@@ -7,7 +7,7 @@ libs = ['lib']
 [fmt]
 tab_width = 2
 number_underscore = 'thousands'
-ignore = ['src/HolyPaladinDistributor.sol', 'src/Redeemer.sol']
+ignore = ['src/Distributor.sol', 'src/Redeemer.sol']
 
 [rpc_endpoints]
 mainnet = 'https://rpc.ankr.com/eth'
