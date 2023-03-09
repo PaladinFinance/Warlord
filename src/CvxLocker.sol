@@ -81,6 +81,7 @@ contract WarCvxLocker is IncentivizedLocker {
   }
 
   function _migrate(address receiver) internal override {
+    // TODO #19
     // withdraws unlockable balance to receiver
     vlCvx.withdrawExpiredLocksTo(receiver);
 

@@ -37,6 +37,6 @@ contract Stake is BaseFarmerTest {
   }
 
   function testNonReentrant() public {
-    // TODO
+    // TODO #4
   }
 }

@@ -13,6 +13,6 @@ contract Harvest is BaseFarmerTest {
   }
 
   function testNonReentrant() public {
-    // TODO
+    // TODO #4
   }
 }

@@ -76,6 +76,6 @@ contract Unstake is StakerTest {
   }
 
   function testNonReentrant() public {
-    // TODO
+    // TODO #4
   }
 }

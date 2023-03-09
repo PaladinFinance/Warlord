@@ -31,7 +31,7 @@ contract Stake is StakerTest {
   }
 
   function testNonReentrant() public {
-    // TODO
+    // TODO #4
   }
 
   function testWhenNotPaused(uint256 amount, address receiver) public {

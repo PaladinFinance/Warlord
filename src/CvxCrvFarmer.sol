@@ -7,7 +7,6 @@ import {CvxCrvStaking} from "interfaces/external/convex/CvxCrvStaking.sol";
 import {CrvDepositor} from "interfaces/external/convex/CrvDepositor.sol";
 import "./BaseFarmer.sol";
 
-// TODO test for event emission
 contract WarCvxCrvFarmer is WarBaseFarmer {
   IERC20 private constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 private constant cvxCrv = IERC20(0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7);
@@ -31,7 +30,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   }
 
   function _stake(address _token, uint256 _amount) internal override returns (uint256) {
-    // TODO test if it works when a bonus is available
+    // TODO #17
 
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
 
@@ -65,6 +64,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   }
 
   function _migrate(address receiver) internal override {
+    // TODO #19
     // Unstake and send cvxCrv
     uint256 cvxCrvStakedBalance = cvxCrvStaker.balanceOf(address(this));
     cvxCrvStaker.withdraw(cvxCrvStakedBalance);

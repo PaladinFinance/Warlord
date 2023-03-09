@@ -26,7 +26,7 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
 
     // Struct 
 
-    struct Distribution { // TODO see to pack better for gas opti
+    struct Distribution { // TODO #18
         uint256 blockNumber;
         uint256 timestamp;
         uint256 amount;

@@ -89,6 +89,7 @@ contract WarAuraLocker is IncentivizedLocker {
   }
 
   function _migrate(address receiver) internal override {
+    // TODO #19
     // withdraws unlockable balance to receiver
     vlAura.processExpiredLocks(false);
     uint256 unlockedBalance = aura.balanceOf(address(this));

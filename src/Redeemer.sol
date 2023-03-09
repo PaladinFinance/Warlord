@@ -35,10 +35,10 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
         uint256 redeemIndex;
     }
 
-    struct RedeemTicket { // find better name
+    struct RedeemTicket { // TODO find better name
         uint256 amount;
         uint256 redeemIndex;
-        address token; // TODO see to pack better for gas opti
+        address token; // TODO #18
         bool redeemed;
     }
 

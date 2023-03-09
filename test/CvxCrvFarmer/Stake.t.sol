@@ -6,7 +6,6 @@ import "./CvxCrvFarmerTest.sol";
 contract Stake is CvxCrvFarmerTest {
   function _stake(address token, uint256 amount) internal {
     uint256 initialTokenBalance = IERC20(token).balanceOf(address(controller));
-    //TODO test emits and compare with auraBal
 
     // Balance amount is non-zero and can't be more than balance
     vm.assume(amount > 0 && amount <= initialTokenBalance);

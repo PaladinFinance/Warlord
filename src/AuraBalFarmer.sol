@@ -8,7 +8,6 @@ import {CrvDepositorWrapper} from "interfaces/external/aura/AuraDepositor.sol";
 import {IRewards} from "interfaces/external/aura/IRewards.sol";
 import "./BaseFarmer.sol";
 
-// TODO test for event emission
 contract WarAuraBalFarmer is WarBaseFarmer {
   IERC20 private constant bal = IERC20(0xba100000625a3754423978a60c9317c58a424e3D);
   IERC20 private constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
@@ -39,8 +38,6 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   }
 
   function _stake(address _token, uint256 _amount) internal override returns (uint256) {
-    // TODO test if it works when a bonus is available
-
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
 
     // Variable used to store the amount of BPT created if token is bal
@@ -48,14 +45,13 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
     if (_token == address(bal)) {
       uint256 initialBalance = auraBal.balanceOf(address(this));
-      // TODO avoid repeating safe approves
-      bal.safeApprove(address(balDepositor), 0); // TODO should I check here as well for zero approval
+      // TODO #1
+      bal.safeApprove(address(balDepositor), 0);
       bal.safeIncreaseAllowance(address(balDepositor), _amount);
       uint256 minOut = balDepositor.getMinOut(_amount, slippageBps);
       balDepositor.deposit(_amount, minOut, true, address(0));
 
-      // TODO check if locking bonus is available as in convex
-      // Take into account possible bonus for locking crv
+      // TODO #17 check if this is the case for auraBal
       stakableAmount = auraBal.balanceOf(address(this)) - initialBalance;
     }
 
@@ -97,9 +93,11 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   }
 
   function _migrate(address receiver) internal override {
-    // Unstake and send cvxCrv
+    // TODO #19
+    // Unstake and send auraBal
     uint256 auraBalStakedBalance = auraBalStaker.balanceOf(address(this));
     // TODO check that claim does NOT send to the controller
+    // No clue of what this TODO means anymore but probably something related to the additional argument in withdraw
     auraBalStaker.withdraw(auraBalStakedBalance, false);
     auraBal.safeTransfer(receiver, auraBalStakedBalance);
   }

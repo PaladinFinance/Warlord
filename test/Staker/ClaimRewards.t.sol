@@ -60,11 +60,11 @@ contract ClaimRewards is StakerTest {
       _stake(stake.person, stake.amount);
     }
     */
-    // TODO
+    // TODO implementation
   }
 
   function testClaimAfterUnstake() public {
-    // TODO
+    // TODO implementation
   }
 
   function testClaimNoRewards(address reward, address receiver) public {
@@ -91,7 +91,7 @@ contract ClaimRewards is StakerTest {
   }
 
   function testNonReentrant() public {
-    // TODO
+    // TODO #4
   }
 
   function testWhenNotPaused(address reward, address receiver) public {
