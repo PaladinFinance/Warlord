@@ -418,6 +418,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
   function setLocker(address token, address locker) external onlyOwner {
     if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
+    if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
 
     if (tokenLockers[token] == address(0)) {
       lockers.push(token);
