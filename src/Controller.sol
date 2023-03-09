@@ -418,7 +418,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
 
         if(tokenLockers[token] == address(0)) {
-            lockers.push(token);
+            lockers.push(locker);
         } else {
             address oldLocker = tokenLockers[token];
             address[] memory _lockers = lockers;
@@ -450,7 +450,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
         if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
 
         if(tokenFarmers[token] == address(0)) {
-            farmers.push(token);
+            farmers.push(farmer);
         } else {
             address oldFarmer = tokenFarmers[token];
             address[] memory _farmers = farmers;
