@@ -49,6 +49,7 @@ contract MainnetTest is BaseTest {
     vm.label(address(cvx), "cvx");
     vm.label(address(cvxCrv), "cvxCrv");
     vm.label(address(cvxFxs), "cvxFxs");
+    vm.label(address(fxs), "fxs");
 
     vm.label(address(bal), "bal");
     vm.label(address(aura), "aura");
@@ -69,7 +70,7 @@ contract MainnetTest is BaseTest {
   }
 
   function fork() public {
-    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 16_519_119);
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 16_791_458);
   }
 
   function randomVlToken(uint256 seed) public pure returns (address token) {

@@ -15,12 +15,17 @@ contract Harvest is CvxLockerTest {
 
     vm.warp(block.timestamp + time);
 
-    (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();
+    (uint256 cvxCrvRewards, uint256 cvxFxsRewards, uint256 fxsRewards) = _getRewards();
     locker.harvest();
 
     // check accrued rewards harvest to controller
-    assertEqDecimal(cvxCrv.balanceOf(controller), cvxCrvRewards, 18, "expecting pending rewards for cvxCrv");
-    assertEqDecimal(cvxFxs.balanceOf(controller), cvxFxsRewards, 18, "expecting pending rewards for cvxFxs");
+    assertEqDecimal(
+      cvxCrv.balanceOf(controller), cvxCrvRewards, 18, "cvxCrv pending rewards should be transfered to controller "
+    );
+    assertEqDecimal(
+      cvxFxs.balanceOf(controller), cvxFxsRewards, 18, "cvxFxs pending rewards should be transfered to controller"
+    );
+    assertEqDecimal(fxs.balanceOf(controller), fxsRewards, 18, "fxs pending rewards should be transfered to controller");
 
     // check there's no rewards lefts after harvesting
     _assertNoPendingRewards();

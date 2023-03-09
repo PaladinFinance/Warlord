@@ -40,16 +40,20 @@ contract CvxLockerTest is MainnetTest {
     vm.stopPrank();
   }
 
-  function _getRewards() internal view returns (uint256 cvxCrvRewards, uint256 cvxFxsRewards) {
+  function _getRewards() internal returns (uint256 cvxCrvRewards, uint256 cvxFxsRewards, uint256 fxsRewards) {
     CvxLockerV2.EarnedData[] memory rewards = vlCvx.claimableRewards(address(locker));
+    assertEq(rewards.length, 3, "there should be only 3 claimable rewards");
+
     cvxCrvRewards = rewards[0].amount;
     cvxFxsRewards = rewards[1].amount;
+    fxsRewards = rewards[2].amount;
   }
 
   function _assertNoPendingRewards() internal {
-    (uint256 cvxCrvRewards, uint256 cvxFxsRewards) = _getRewards();
-    assertEq(cvxCrvRewards, 0);
-    assertEq(cvxFxsRewards, 0);
+    (uint256 cvxCrvRewards, uint256 cvxFxsRewards, uint256 fxsRewards) = _getRewards();
+    assertEq(cvxCrvRewards, 0, "there should be no cvxCrv pending rewards");
+    assertEq(cvxFxsRewards, 0, "there should be no cvxFxs pending rewards");
+    assertEq(fxsRewards, 0, "there should be no fxs pending rewards");
   }
 
   function _mockMultipleLocks(uint256 locksUpperBound) public {
