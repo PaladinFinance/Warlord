@@ -10,31 +10,25 @@ import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 contract WarMinter is Owner {
+  // 10_000 tokens (with 18 decimals)
   uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
-  WarToken _war; // TODO replace this with public modifiers
-  IMintRatio _mintRatio;
+
+  WarToken public war;
+  IMintRatio public mintRatio;
   mapping(address => address) public lockers;
   mapping(address => uint256) public mintedSupplyPerToken;
 
   using SafeERC20 for IERC20;
 
-  constructor(address war_, address mintRatio_) {
-    if (war_ == address(0) || mintRatio_ == address(0)) revert Errors.ZeroAddress();
-    _war = WarToken(war_);
-    _mintRatio = IMintRatio(mintRatio_);
+  constructor(address _war, address _mintRatio) {
+    if (_war == address(0) || _mintRatio == address(0)) revert Errors.ZeroAddress();
+    war = WarToken(_war);
+    mintRatio = IMintRatio(_mintRatio);
   }
 
-  function warToken() external view returns (address) {
-    return address(_war);
-  }
-
-  function mintRatio() external view returns (address) {
-    return address(_mintRatio);
-  }
-
-    if (mintRatio_ == address(0)) revert Errors.ZeroAddress();
-    _mintRatio = IMintRatio(mintRatio_);
   function setMintRatio(address _mintRatio) external onlyOwner {
+    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
+    mintRatio = IMintRatio(_mintRatio);
   }
 
   function setLocker(address vlToken, address warLocker) external onlyOwner {
@@ -44,7 +38,6 @@ contract WarMinter is Owner {
     lockers[vlToken] = warLocker;
   }
 
-  // TODO handle reentrancy
   function mint(address vlToken, uint256 amount) external {
     mint(vlToken, amount, msg.sender);
   }
@@ -61,11 +54,11 @@ contract WarMinter is Owner {
     IERC20(vlToken).safeIncreaseAllowance(address(locker), amount);
     locker.lock(amount);
 
-    uint256 mintAmount = IMintRatio(_mintRatio).getMintAmount(vlToken, amount);
+    uint256 mintAmount = mintRatio.getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
     mintedSupplyPerToken[vlToken] += mintAmount;
     if (mintedSupplyPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
-    _war.mint(receiver, mintAmount);
+    war.mint(receiver, mintAmount);
   }
 
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {

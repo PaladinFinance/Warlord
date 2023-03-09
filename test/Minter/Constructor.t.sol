@@ -5,19 +5,21 @@ import "./MinterTest.sol";
 
 contract Constructor is MinterTest {
   function testDefaultBehavior() public {
-    assertEq(minter.warToken(), address(war));
-    assertEq(minter.mintRatio(), address(mintRatio));
+    assertEq(address(minter.war()), address(war));
+    assertEq(address(minter.mintRatio()), address(mintRatio));
   }
 
-  function testCantConstructWithZeroAddressWar(address mintRatio) public {
-    vm.assume(mintRatio != zero);
+  function testZeroAddressWar(address randomMintRatio) public {
+    vm.assume(randomMintRatio != zero);
+
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(zero, mintRatio);
+    new WarMinter(zero, randomMintRatio);
   }
 
-  function testCantConstructWithZeroAddressRatio(address mintRatio) public {
-    vm.assume(mintRatio != zero);
+  function testZeroAddressRatio(address randomWarToken) public {
+    vm.assume(randomWarToken != zero);
+
     vm.expectRevert(Errors.ZeroAddress.selector);
-    new WarMinter(mintRatio, zero);
+    new WarMinter(randomWarToken, zero);
   }
 }
