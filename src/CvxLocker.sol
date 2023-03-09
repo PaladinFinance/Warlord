@@ -89,7 +89,6 @@ contract WarCvxLocker is IncentivizedLocker {
   }
 
   function rewardTokens() external view returns (address[] memory) {
-    // TODO check for a better way to do this
     CvxLockerV2.EarnedData[] memory rewards = vlCvx.claimableRewards(address(this));
     uint256 rewardsLength = rewards.length;
     address[] memory _tokens = new address[](rewardsLength);

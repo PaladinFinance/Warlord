@@ -105,7 +105,6 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   }
 
   function rewardTokens() external view returns (address[] memory) {
-    // TODO check for a better way to do this
     uint256 rewardsLength = auraBalStaker.extraRewardsLength();
     address[] memory _tokens = new address[](rewardsLength);
 

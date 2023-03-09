@@ -72,7 +72,6 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   }
 
   function rewardTokens() external view returns (address[] memory) {
-    // TODO check for a better way to do this
     uint256 rewardsLength = cvxCrvStaker.rewardLength();
     address[] memory _tokens = new address[](rewardsLength);
 
