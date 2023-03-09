@@ -31,8 +31,8 @@ contract BaseFarmerTest is MainnetTest {
 contract WarDummyFarmer is WarBaseFarmer {
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
 
-  function _stake(address, /* _token*/ uint256 /*_amount*/ ) internal pure override returns (uint256) {
-    return 0;
+  function _stake(address, /* _token*/ uint256 _amount) internal pure override returns (uint256) {
+    return _amount;
   }
 
   function _harvest() internal pure override {}
