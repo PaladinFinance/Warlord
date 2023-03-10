@@ -29,4 +29,14 @@ contract SendTokens is BaseFarmerTest {
     vm.expectRevert(Errors.CallerNotAllowed.selector);
     dummyFarmer.sendTokens(receiver, amount);
   }
+
+  function testNonReentrant(address receiver, uint256 amount) public enableReentrancy {
+    vm.assume(receiver != zero);
+    vm.assume(amount != 0);
+
+    vm.expectRevert("REENTRANCY");
+
+    vm.prank(address(warStaker));
+    dummyFarmer.sendTokens(receiver, amount);
+  }
 }

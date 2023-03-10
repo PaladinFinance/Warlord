@@ -49,7 +49,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
   function _harvest() internal virtual;
 
-  function harvest() external whenNotPaused nonReentrant {
+  function harvest() external nonReentrant whenNotPaused {
     _harvest();
   }
 
@@ -61,7 +61,7 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
 
   function _sendTokens(address receiver, uint256 amount) internal virtual;
 
-  function sendTokens(address receiver, uint256 amount) external onlyWarStaker whenNotPaused nonReentrant {
+  function sendTokens(address receiver, uint256 amount) external nonReentrant onlyWarStaker whenNotPaused {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     if (amount == 0) revert Errors.ZeroValue();
     if (_stakedBalance() < amount) revert Errors.UnstakingMoreThanBalance();

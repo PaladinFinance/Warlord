@@ -12,7 +12,9 @@ contract Harvest is BaseFarmerTest {
     dummyFarmer.harvest();
   }
 
-  function testNonReentrant() public {
-    // TODO #4
+  function testNonReentrant() public enableReentrancy {
+    vm.expectRevert("REENTRANCY");
+
+    dummyFarmer.harvest();
   }
 }
