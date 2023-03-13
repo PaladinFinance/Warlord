@@ -58,13 +58,17 @@ contract GetMintAmount is MintRatioTest {
     _precisionLoss(address(aura), amount);
   }
 
-  function tesZeroAddress() public {
+  function testZeroAddress(uint256 amount) public {
+    vm.assume(amount != 0);
+
     vm.expectRevert(Errors.ZeroAddress.selector);
-    mintRatio.getMintAmount(zero, 1e10);
+    mintRatio.getMintAmount(zero, amount);
   }
 
-  function testZeroAmount() public {
+  function testZeroAmount(address token) public {
+    vm.assume(token != zero);
+
     vm.expectRevert(Errors.ZeroValue.selector);
-    mintRatio.getMintAmount(address(aura), 0);
+    mintRatio.getMintAmount(token, 0);
   }
 }

@@ -9,6 +9,7 @@ contract MintRatioTest is MainnetTest {
 
   uint256 constant UNIT = 1e18;
   uint256 constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
+  uint256 constant MINT_PRECISION_LOSS = 1e6;
 
   uint256 constant cvxMaxSupply = 100_000_000e18;
   uint256 constant auraMaxSupply = 100_000_000e18;
