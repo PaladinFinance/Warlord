@@ -34,3 +34,7 @@ function randomBinaryAddress(address option1, address option2, uint256 seed) pur
   options[1] = option2;
   return randomAddress(options, seed);
 }
+
+function randomBoolean(uint256 seed) pure returns (bool) {
+  return seed % 2 == 0;
+}
