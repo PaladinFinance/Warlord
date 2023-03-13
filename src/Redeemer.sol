@@ -118,6 +118,7 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 tokensLength = tokens.length;
     if (tokensLength == 0) revert Errors.EmptyArray();
     if (weights.length != tokensLength) revert Errors.DifferentSizeArrays(tokensLength, weights.length);
+    // TODO check percentage sum is 100 ?
 
     uint256 totalWeight;
 
