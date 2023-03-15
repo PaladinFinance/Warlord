@@ -8,6 +8,9 @@ contract SetDistributionToken is ControllerTest {
     vm.assume(token != zero);
     bool distribution = randomBoolean(uint256(uint160(token)));
 
+    vm.expectEmit(true, false, false, true);
+    emit SetDistributionToken(token, distribution);
+
     vm.prank(admin);
     controller.setDistributionToken(token, distribution);
     assertEq(controller.distributionTokens(token), distribution, "distribution should be set accordingly");
