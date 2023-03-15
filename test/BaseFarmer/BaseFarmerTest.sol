@@ -56,11 +56,6 @@ contract WarDummyFarmer is WarBaseFarmer {
   function _migrate(address receiver) internal pure override {}
   function token() external view returns (address) {}
 
-  function rewardTokens() external pure returns (address[] memory) {
-    address[] memory tokens = new address[](1);
-    return tokens;
-  }
-
   function _isTokenSupported(address /*_token*/ ) internal pure override returns (bool) {
     return true;
   }

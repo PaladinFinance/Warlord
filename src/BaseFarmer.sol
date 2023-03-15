@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
+import {Harvestable} from "./Harvestable.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {IFarmer} from "interfaces/IFarmer.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
-abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard {
+abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard, Harvestable {
   address public controller;
   address public warStaker;
 

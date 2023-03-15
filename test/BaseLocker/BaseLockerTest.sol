@@ -50,9 +50,4 @@ contract WarDummyLocker is WarBaseLocker, Test {
   function token() external pure returns (address) {
     return address(0x1234123412341234);
   }
-
-  function rewardTokens() external pure returns (address[] memory) {
-    address[] memory tokens = new address[](1);
-    return tokens;
-  }
 }

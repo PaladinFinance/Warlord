@@ -70,20 +70,4 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     cvxCrvStaker.withdraw(cvxCrvStakedBalance);
     cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
   }
-
-  function rewardTokens() external view returns (address[] memory) {
-    uint256 rewardsLength = cvxCrvStaker.rewardLength();
-    address[] memory _tokens = new address[](rewardsLength);
-
-    for (uint256 i; i < rewardsLength;) {
-      (address _token,,,) = cvxCrvStaker.rewards(i);
-      _tokens[i] = _token;
-
-      unchecked {
-        ++i;
-      }
-    }
-
-    return _tokens;
-  }
 }

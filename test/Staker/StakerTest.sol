@@ -8,6 +8,7 @@ import "../../src/Token.sol";
 import "../../src/MintRatio.sol";
 import {WarCvxCrvFarmer} from "../../src/CvxCrvFarmer.sol";
 import {WarAuraBalFarmer} from "../../src/AuraBalFarmer.sol";
+import {Harvestable} from "../../src/Harvestable.sol";
 
 contract StakerTest is MainnetTest {
   event Staked(address indexed caller, address indexed receiver, uint256 amount);
@@ -108,11 +109,6 @@ contract WarDummyFarmerWithToken is WarBaseFarmer {
 
   function token() external view returns (address) {
     return token_;
-  }
-
-  function rewardTokens() external pure returns (address[] memory) {
-    address[] memory tokens = new address[](1);
-    return tokens;
   }
 
   function _isTokenSupported(address /*_token*/ ) internal pure override returns (bool) {

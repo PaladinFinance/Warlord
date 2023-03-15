@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
+import {Harvestable} from "./Harvestable.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
@@ -11,7 +12,7 @@ import {Errors} from "utils/Errors.sol";
 import {IWarRedeemModule} from "interfaces/IWarRedeemModule.sol";
 import {WarMinter} from "src/Minter.sol";
 
-abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard {
+abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard, Harvestable {
   address public delegatee;
   address public redeemModule;
   address public controller;
