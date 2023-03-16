@@ -31,10 +31,6 @@ contract SetFeeReceiver is ControllerTest {
   }
 
   function testAlreadySet() public {
-    // TODO should this be initialised elsewhere?
-    vm.prank(admin);
-    controller.setFeeReceiver(address(1));
-
     address oldFeeReceiver = controller.feeReceiver();
 
     vm.expectRevert(Errors.AlreadySet.selector);
