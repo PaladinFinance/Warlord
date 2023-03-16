@@ -40,6 +40,7 @@ function randomBoolean(uint256 seed) pure returns (bool) {
 }
 
 function generateAddressArray(uint256 size) pure returns (address[] memory addrArray) {
+  // TODO generate with keccak
   if (size == 0) return new address[](0);
   uint256[] memory numArray = linspace(uint256(0), uint256(uint160(0x9999999999999999999999999999999999999999)), size);
   addrArray = new address[](size);

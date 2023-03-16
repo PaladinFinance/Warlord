@@ -60,6 +60,8 @@ contract SetFarmer is ControllerTest {
     assertEq(
       controller.tokenFarmers(tokenWithNewFarmer), newFarmer, "new farmer for that token should be the assigned one"
     );
+
+    // TODO with fuzzing this test reverts with AlreadySet
   }
 
   function testOnlyOwner(address token, address farmer) public {
