@@ -406,6 +406,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
   function setFeeRatio(uint256 newFeeRatio) external onlyOwner {
     if (newFeeRatio > 1000) revert Errors.InvalidFeeRatio();
+    if (newFeeRatio == feeRatio) revert Errors.AlreadySet();
 
     uint256 oldFeeRatio = feeRatio;
     feeRatio = newFeeRatio;
