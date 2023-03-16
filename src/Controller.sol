@@ -81,10 +81,17 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
   // Constructor
 
-  constructor(address _war, address _minter, address _staker, address _swapper, address _incentivesClaimer) {
+  constructor(
+    address _war,
+    address _minter,
+    address _staker,
+    address _swapper,
+    address _incentivesClaimer,
+    address _feeReceiver
+  ) {
     if (
       _war == address(0) || _minter == address(0) || _staker == address(0) || _swapper == address(0)
-        || _incentivesClaimer == address(0)
+        || _incentivesClaimer == address(0) || _feeReceiver == address(0)
     ) revert Errors.ZeroAddress();
 
     war = _war;
@@ -92,6 +99,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     minter = IMinter(_minter);
     staker = IStaker(_staker);
     incentivesClaimer = _incentivesClaimer;
+    feeReceiver = _feeReceiver;
   }
 
   // State changing functions
