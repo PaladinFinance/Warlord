@@ -12,30 +12,36 @@ contract Constructor is ControllerTest {
     assertEq(
       controller.incentivesClaimer(), address(incentivesClaimer), "incentives claimer should be assigned correctly"
     );
+    assertEq(controller.feeReceiver(), address(feeReceiver), "fee receiver should be assigned correctly");
   }
 
   function testZeroAddressWarToken() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(zero, address(minter), address(staker), swapper, incentivesClaimer);
+    controller = new Controller(zero, address(minter), address(staker), swapper, incentivesClaimer, feeReceiver);
   }
 
   function testZeroAddressMinter() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), zero, address(staker), swapper, incentivesClaimer);
+    controller = new Controller(address(war), zero, address(staker), swapper, incentivesClaimer, feeReceiver);
   }
 
   function testZeroAddressStaker() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), zero, swapper, incentivesClaimer);
+    controller = new Controller(address(war), address(minter), zero, swapper, incentivesClaimer, feeReceiver);
   }
 
   function testZeroAddressSwapper() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer);
+    controller = new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, feeReceiver);
   }
 
   function testZeroAddressIncentivesClaimer() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), swapper, zero);
+    controller = new Controller(address(war), address(minter), address(staker), swapper, zero, feeReceiver);
+  }
+
+  function testZeroAddressFeeReceiver() public {
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    controller = new Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, zero);
   }
 }

@@ -22,6 +22,7 @@ contract ControllerTest is MainnetTest {
 
   address swapper = makeAddr("swapper");
   address incentivesClaimer = makeAddr("incentivesClaimer");
+  address feeReceiver = makeAddr("feeReceiver");
 
   WarToken war;
   WarMintRatio mintRatio;
@@ -36,16 +37,22 @@ contract ControllerTest is MainnetTest {
     mintRatio = new WarMintRatio();
     minter = new WarMinter(address(war), address(mintRatio));
     staker = new WarStaker(address(war));
-    controller = new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer);
+    controller =
+      new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, feeReceiver);
 
     vm.stopPrank();
   }
 }
 
 contract Exposed_Controller is Controller {
-  constructor(address _war, address _minter, address _staker, address _swapper, address _incentivesClaimer)
-    Controller(_war, _minter, _staker, _swapper, _incentivesClaimer)
-  {}
+  constructor(
+    address _war,
+    address _minter,
+    address _staker,
+    address _swapper,
+    address _incentivesClaimer,
+    address _feeReceiver
+  ) Controller(_war, _minter, _staker, _swapper, _incentivesClaimer, _feeReceiver) {}
 
   function getFarmersLength() public view returns (uint256) {
     return farmers.length;
