@@ -418,9 +418,9 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
 
     if (tokenLockers[token] == address(0)) {
-      lockers.push(token);
       // if the token didn't have a previous locker
       // append the new locker to the list
+      lockers.push(locker);
     } else {
       // if the token has already been assigned to another locker
       // remove the old locker without leaving holes in the array
@@ -457,9 +457,9 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
     if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
 
     if (tokenFarmers[token] == address(0)) {
-      farmers.push(token);
       // if the token didn't have a previous farmer
       // append the new farmer to the list
+      farmers.push(farmer);
     } else {
       // if the token has already been assigned to another farmer
       // remove the old farmer without leaving holes in the array
