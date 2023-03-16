@@ -45,6 +45,9 @@ library Errors {
   error ZeroMintAmount();
   error SupplyAlreadySet();
 
+  // Harvestable
+  error NotRewardToken();
+
   // IFarmer
   error IncorrectToken();
   error UnstakingMoreThanBalance();

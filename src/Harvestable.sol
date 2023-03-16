@@ -6,7 +6,8 @@ import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
 abstract contract Harvestable is IHarvestable, Owner {
-  address[] internal _rewardTokens;
+  address[] private _rewardTokens;
+  mapping(address => bool) private _rewardAssigned;
 
   function rewardTokens() external view returns (address[] memory) {
     return _rewardTokens;
@@ -14,13 +15,17 @@ abstract contract Harvestable is IHarvestable, Owner {
 
   function addReward(address reward) external onlyOwner {
     if (reward == address(0)) revert Errors.ZeroAddress();
+    if (_rewardAssigned[reward]) revert Errors.AlreadySet();
 
     _rewardTokens.push(reward);
+    _rewardAssigned[reward] = true;
   }
 
   function removeReward(address reward) external onlyOwner {
     if (reward == address(0)) revert Errors.ZeroAddress();
+    if (!_rewardAssigned[reward]) revert Errors.NotRewardToken();
 
+    // remove the reward without leaving holes in the array
     address[] memory rewardTokens_ = _rewardTokens;
     uint256 length = rewardTokens_.length;
     uint256 lastIndex = length - 1;
@@ -39,5 +44,8 @@ abstract contract Harvestable is IHarvestable, Owner {
         ++i;
       }
     }
+
+    // rewardToken is no longer part of the list
+    _rewardAssigned[reward] = false;
   }
 }
