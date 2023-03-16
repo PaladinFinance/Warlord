@@ -57,15 +57,12 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
   // Events
 
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);
-
   event SetMinter(address oldMinter, address newMinter);
   event SetStaker(address oldStaker, address newStaker);
   event SetSwapper(address oldSwapper, address newSwapper);
   event SetFeeReceiver(address oldFeeReceiver, address newFeeReceiver);
   event SetIncentivesClaimer(address oldIncentivesClaimer, address newIncentivesClaimer);
-
   event SetFeeRatio(uint256 oldFeeRatio, uint256 newFeeRatio);
-
   event SetLocker(address indexed token, address locker);
   event SetFarmer(address indexed token, address famer);
   event SetDistributionToken(address indexed token, bool distribution);
@@ -422,7 +419,11 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     if (tokenLockers[token] == address(0)) {
       lockers.push(token);
+      // if the token didn't have a previous locker
+      // append the new locker to the list
     } else {
+      // if the token has already been assigned to another locker
+      // remove the old locker without leaving holes in the array
       address oldLocker = tokenLockers[token];
       address[] memory _lockers = lockers;
       uint256 length = _lockers.length;
@@ -442,6 +443,7 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
+      // append the new locker to the list
       lockers.push(locker);
     }
 
@@ -456,7 +458,11 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
 
     if (tokenFarmers[token] == address(0)) {
       farmers.push(token);
+      // if the token didn't have a previous farmer
+      // append the new farmer to the list
     } else {
+      // if the token has already been assigned to another farmer
+      // remove the old farmer without leaving holes in the array
       address oldFarmer = tokenFarmers[token];
       address[] memory _farmers = farmers;
       uint256 length = _farmers.length;
@@ -476,6 +482,8 @@ contract Controller is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
+
+      // append the new farmer to the list
       farmers.push(farmer);
     }
 
