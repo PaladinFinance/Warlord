@@ -2,10 +2,10 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "src/MintRatio.sol";
+import "src/Ratios.sol";
 
 contract MintRatioTest is MainnetTest {
-  WarMintRatio mintRatio;
+  WarRatios ratios;
 
   uint256 constant UNIT = 1e18;
   uint256 constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
@@ -19,8 +19,8 @@ contract MintRatioTest is MainnetTest {
     fork();
 
     vm.startPrank(admin);
-    mintRatio = new WarMintRatio();
-    mintRatio.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    mintRatio.addTokenWithSupply(address(aura), auraMaxSupply);
+    ratios = new WarRatios();
+    ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
+    ratios.addTokenWithSupply(address(aura), auraMaxSupply);
   }
 }

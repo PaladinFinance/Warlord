@@ -8,7 +8,7 @@ import "openzeppelin/security/Pausable.sol";
 import "openzeppelin/security/ReentrancyGuard.sol";
 import {Errors} from "utils/Errors.sol";
 import {WarToken} from "./Token.sol";
-import {IMintRatio} from "interfaces/IMintRatio.sol";
+import {IRatios} from "interfaces/IRatios.sol";
 import {IWarRedeemModule} from "interfaces/IWarRedeemModule.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
 
@@ -50,7 +50,7 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   address public immutable war;
 
-  IMintRatio public mintRatio;
+  IRatios public ratios;
 
   address public feeReceiver;
 
@@ -87,12 +87,12 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   // Constructor
 
-  constructor(address _war, address _mintRatio, address _feeReceiver, uint256 _redeemFee) {
-    if (_war == address(0) || _mintRatio == address(0) || _feeReceiver == address(0)) revert Errors.ZeroAddress();
+  constructor(address _war, address _ratios, address _feeReceiver, uint256 _redeemFee) {
+    if (_war == address(0) || _ratios == address(0) || _feeReceiver == address(0)) revert Errors.ZeroAddress();
     if (_redeemFee == 0 || _redeemFee > 1000) revert Errors.InvalidParameter();
 
     war = _war;
-    mintRatio = IMintRatio(_mintRatio);
+    ratios = IRatios(_ratios);
     feeReceiver = _feeReceiver;
 
     redeemFee = _redeemFee; // TODO typo? maybe redemption fee is better?
@@ -135,7 +135,7 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
       if (totalWeight > MAX_BPS) revert Errors.WeightOverflow();
 
       uint256 warAmount = (burnAmount * weights[i]) / MAX_BPS;
-      uint256 redeemAmount = mintRatio.getRedeemAmount(tokens[i], warAmount);
+      uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
 
       _joinQueue(tokens[i], msg.sender, redeemAmount);
 
@@ -205,8 +205,8 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   function setMintRatio(address newMintRatio) external onlyOwner {
     if (newMintRatio == address(0)) revert Errors.ZeroAddress();
 
-    address oldMintRatio = address(mintRatio);
-    mintRatio = IMintRatio(newMintRatio);
+    address oldMintRatio = address(ratios);
+    ratios = IRatios(newMintRatio);
 
     emit MintRatioUpdated(oldMintRatio, newMintRatio);
   }

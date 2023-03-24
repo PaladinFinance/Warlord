@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import {IMintRatio} from "interfaces/IMintRatio.sol";
+import {IRatios} from "interfaces/IRatios.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {Errors} from "utils/Errors.sol";
 import {Owner} from "utils/Owner.sol";
 
-contract WarMintRatio is IMintRatio, Owner {
+contract WarRatios is IRatios, Owner {
   uint256 private constant UNIT = 1e18;
   uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
 
@@ -27,7 +27,7 @@ contract WarMintRatio is IMintRatio, Owner {
     mintAmount = amount * warPerToken[token] / UNIT;
   }
 
-  function getRedeemAmount(address token, uint256 burnAmount) external view returns (uint256 redeemAmount) {
+  function getBurnAmount(address token, uint256 burnAmount) external view returns (uint256 redeemAmount) {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (burnAmount == 0) revert Errors.ZeroValue();
 

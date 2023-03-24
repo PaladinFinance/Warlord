@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "../MainnetTest.sol";
 import "src/Token.sol";
 import {WarStaker} from "src/Staker.sol";
-import {WarMintRatio} from "src/MintRatio.sol";
+import {WarRatios} from "src/Ratios.sol";
 import {WarMinter} from "src/Minter.sol";
 import "src/Controller.sol";
 
@@ -25,7 +25,7 @@ contract ControllerTest is MainnetTest {
   address feeReceiver = makeAddr("feeReceiver");
 
   WarToken war;
-  WarMintRatio mintRatio;
+  WarRatios ratios;
   WarMinter minter;
   WarStaker staker;
   Controller controller;
@@ -34,8 +34,8 @@ contract ControllerTest is MainnetTest {
     vm.startPrank(admin);
 
     war = new WarToken();
-    mintRatio = new WarMintRatio();
-    minter = new WarMinter(address(war), address(mintRatio));
+    ratios = new WarRatios();
+    minter = new WarMinter(address(war), address(ratios));
     staker = new WarStaker(address(war));
     controller =
       new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, feeReceiver);

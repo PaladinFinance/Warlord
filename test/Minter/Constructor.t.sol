@@ -6,7 +6,7 @@ import "./MinterTest.sol";
 contract Constructor is MinterTest {
   function testDefaultBehavior() public {
     assertEq(address(minter.war()), address(war));
-    assertEq(address(minter.mintRatio()), address(mintRatio));
+    assertEq(address(minter.ratios()), address(ratios));
   }
 
   function testZeroAddressWar(address randomMintRatio) public {

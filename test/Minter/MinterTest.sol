@@ -5,7 +5,7 @@ import "src/Token.sol";
 import "src/Minter.sol";
 import "../MainnetTest.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {WarMintRatio} from "src/MintRatio.sol";
+import {WarRatios} from "src/Ratios.sol";
 import {WarCvxLocker} from "src/CvxLocker.sol";
 
 contract DummyLocker is IWarLocker {
@@ -36,7 +36,7 @@ contract MinterTest is MainnetTest {
   WarMinter minter;
   IWarLocker auraLocker;
   IWarLocker cvxLocker;
-  IMintRatio mintRatio;
+  IRatios ratios;
 
   function setUp() public override {
     MainnetTest.setUp();
@@ -48,11 +48,11 @@ contract MinterTest is MainnetTest {
     cvxLocker = new DummyLocker(address(cvx));
 
     // Mint ratio set up
-    mintRatio = new WarMintRatio();
-    mintRatio.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    mintRatio.addTokenWithSupply(address(aura), auraMaxSupply);
+    ratios = new WarRatios();
+    ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
+    ratios.addTokenWithSupply(address(aura), auraMaxSupply);
 
-    minter = new WarMinter(address(war), address(mintRatio));
+    minter = new WarMinter(address(war), address(ratios));
     minter.transferOwnership(admin);
     vm.prank(admin);
     minter.acceptOwnership();

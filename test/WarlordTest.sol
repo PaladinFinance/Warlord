@@ -21,7 +21,7 @@ import {Redeemer} from "src/Redeemer.sol";
 // Infrastructure
 import {Controller} from "src/Controller.sol";
 import {HolyPaladinDistributor} from "src/Distributor.sol";
-import {WarMintRatio} from "src/MintRatio.sol";
+import {WarRatios} from "src/Ratios.sol";
 import {WarStaker} from "src/Staker.sol";
 
 contract WarlordTest is MainnetTest {
@@ -59,7 +59,7 @@ contract WarlordTest is MainnetTest {
   // Infrastracture
   Controller controller;
   HolyPaladinDistributor distributor;
-  WarMintRatio mintRatio;
+  WarRatios ratios;
   WarStaker staker;
 
   function setUp() public virtual override {
@@ -69,9 +69,9 @@ contract WarlordTest is MainnetTest {
     // Deploy the whole protocol
     vm.startPrank(admin);
     war = new WarToken();
-    mintRatio = new WarMintRatio();
-    minter = new WarMinter(address(war), address(mintRatio));
-    redeemer = new Redeemer(address(war), address(mintRatio), redemptionFeeReceiver, REDEMPTION_FEE);
+    ratios = new WarRatios();
+    minter = new WarMinter(address(war), address(ratios));
+    redeemer = new Redeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
     staker = new WarStaker(address(war));
     controller =
       new Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
@@ -80,11 +80,11 @@ contract WarlordTest is MainnetTest {
 
     // CVX mint config
     minter.setLocker(address(cvx), address(cvxLocker));
-    mintRatio.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
+    ratios.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
 
     // AURA mint config
     minter.setLocker(address(aura), address(auraLocker));
-    mintRatio.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
+    ratios.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
 
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));

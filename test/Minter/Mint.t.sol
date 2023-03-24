@@ -13,7 +13,7 @@ contract Mint is MinterTest {
     assertEq(war.balanceOf(receiver), 0);
     vm.prank(alice);
     minter.mint(source, amount, receiver);
-    uint256 expectedMintAmount = mintRatio.getMintAmount(source, amount);
+    uint256 expectedMintAmount = ratios.getMintAmount(source, amount);
     assertEq(war.totalSupply(), expectedMintAmount);
     // TODO assertEq(IERC20(source).balanceOf(alice), 0);
     assertEq(war.balanceOf(alice), 0);
@@ -27,7 +27,7 @@ contract Mint is MinterTest {
     assertEq(war.balanceOf(alice), 0);
     vm.prank(alice);
     minter.mint(source, amount);
-    uint256 expectedMintAmount = mintRatio.getMintAmount(source, amount);
+    uint256 expectedMintAmount = ratios.getMintAmount(source, amount);
     assertEq(war.balanceOf(alice), expectedMintAmount);
     assertEq(minter.mintedSupplyPerToken(source), expectedMintAmount);
   }

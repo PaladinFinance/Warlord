@@ -5,7 +5,7 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {WarToken} from "./Token.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {IMintRatio} from "interfaces/IMintRatio.sol";
+import {IRatios} from "interfaces/IRatios.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
@@ -14,21 +14,21 @@ contract WarMinter is Owner {
   uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
 
   WarToken public war;
-  IMintRatio public mintRatio;
+  IRatios public ratios;
   mapping(address => address) public lockers;
   mapping(address => uint256) public mintedSupplyPerToken;
 
   using SafeERC20 for IERC20;
 
-  constructor(address _war, address _mintRatio) {
-    if (_war == address(0) || _mintRatio == address(0)) revert Errors.ZeroAddress();
+  constructor(address _war, address _ratios) {
+    if (_war == address(0) || _ratios == address(0)) revert Errors.ZeroAddress();
     war = WarToken(_war);
-    mintRatio = IMintRatio(_mintRatio);
+    ratios = IRatios(_ratios);
   }
 
-  function setMintRatio(address _mintRatio) external onlyOwner {
-    if (_mintRatio == address(0)) revert Errors.ZeroAddress();
-    mintRatio = IMintRatio(_mintRatio);
+  function setMintRatio(address _ratios) external onlyOwner {
+    if (_ratios == address(0)) revert Errors.ZeroAddress();
+    ratios = IRatios(_ratios);
   }
 
   function setLocker(address vlToken, address warLocker) external onlyOwner {
@@ -54,7 +54,7 @@ contract WarMinter is Owner {
     IERC20(vlToken).safeIncreaseAllowance(address(locker), amount);
     locker.lock(amount);
 
-    uint256 mintAmount = mintRatio.getMintAmount(vlToken, amount);
+    uint256 mintAmount = ratios.getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
     mintedSupplyPerToken[vlToken] += mintAmount;
     if (mintedSupplyPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();

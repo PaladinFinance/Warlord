@@ -13,7 +13,7 @@ contract GetMintAmount is MintRatioTest {
   }
 
   function _maxWarSupplyPerToken(address token, uint256 maxSupply) internal {
-    uint256 mintAmount = mintRatio.getMintAmount(token, maxSupply);
+    uint256 mintAmount = ratios.getMintAmount(token, maxSupply);
     assertEq(mintAmount, MAX_WAR_SUPPLY_PER_TOKEN);
   }
 
@@ -26,13 +26,13 @@ contract GetMintAmount is MintRatioTest {
   }
 
   function _halfWarSupplyPerToken(address token, uint256 maxSupply) public {
-    uint256 mintAmount = mintRatio.getMintAmount(token, maxSupply / 2);
+    uint256 mintAmount = ratios.getMintAmount(token, maxSupply / 2);
     assertEq(mintAmount, MAX_WAR_SUPPLY_PER_TOKEN / 2);
   }
 
   function _defaultBehavior(address token, uint256 maxSupply, uint256 amount) internal {
     vm.assume(amount >= 1e4 && amount <= maxSupply);
-    uint256 mintAmount = mintRatio.getMintAmount(address(token), amount);
+    uint256 mintAmount = ratios.getMintAmount(address(token), amount);
     assertGt(mintAmount, 0);
   }
 
@@ -45,7 +45,7 @@ contract GetMintAmount is MintRatioTest {
   }
 
   function _precisionLoss(address token, uint256 amount) internal {
-    assertEq(mintRatio.getMintAmount(token, amount), 0);
+    assertEq(ratios.getMintAmount(token, amount), 0);
   }
 
   function testCvxPrecisionLoss(uint256 amount) public {
@@ -62,13 +62,13 @@ contract GetMintAmount is MintRatioTest {
     vm.assume(amount != 0);
 
     vm.expectRevert(Errors.ZeroAddress.selector);
-    mintRatio.getMintAmount(zero, amount);
+    ratios.getMintAmount(zero, amount);
   }
 
   function testZeroAmount(address token) public {
     vm.assume(token != zero);
 
     vm.expectRevert(Errors.ZeroValue.selector);
-    mintRatio.getMintAmount(token, 0);
+    ratios.getMintAmount(token, 0);
   }
 }

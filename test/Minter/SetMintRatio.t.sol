@@ -4,16 +4,16 @@ pragma solidity 0.8.16;
 import "./MinterTest.sol";
 
 contract SetMintRatio is MinterTest {
-  function testDefaultBehavior(address _mintRatio) public {
-    vm.assume(_mintRatio != zero);
+  function testDefaultBehavior(address _ratios) public {
+    vm.assume(_ratios != zero);
     vm.prank(admin);
-    minter.setMintRatio(_mintRatio);
+    minter.setMintRatio(_ratios);
   }
 
-  function testOnlyOwner(address _mintRatio) public {
+  function testOnlyOwner(address _ratios) public {
     vm.prank(bob);
     vm.expectRevert("Ownable: caller is not the owner");
-    minter.setMintRatio(_mintRatio);
+    minter.setMintRatio(_ratios);
   }
 
   function testZeroAddress() public {

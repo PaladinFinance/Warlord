@@ -5,14 +5,14 @@ import "../MainnetTest.sol";
 import "src/BaseLocker.sol";
 import {WarStaker} from "src/Staker.sol";
 import "src/Token.sol";
-import "src/MintRatio.sol";
+import "src/Ratios.sol";
 import "mocks/MockRedeemModule.sol";
 
 contract BaseLockerTest is MainnetTest {
   address controller = makeAddr("controller");
   address delegate = makeAddr("delegate");
   WarToken war;
-  WarMintRatio mintRatio;
+  WarRatios ratios;
   WarMinter minter;
   MockRedeem redeemModule;
   WarDummyLocker dummyLocker;
@@ -28,8 +28,8 @@ contract BaseLockerTest is MainnetTest {
 
     vm.startPrank(admin);
     war = new WarToken();
-    mintRatio = new WarMintRatio();
-    minter = new WarMinter(address(war), address(mintRatio));
+    ratios = new WarRatios();
+    minter = new WarMinter(address(war), address(ratios));
     redeemModule = new MockRedeem();
     dummyLocker = new WarDummyLocker(controller, address(redeemModule), address(minter), delegate);
     vm.stopPrank();
