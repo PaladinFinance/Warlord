@@ -20,8 +20,6 @@ contract ClaimRewards is StakerTest {
       _queue(queueableRewards[i], amount);
     }
 
-    // TODO Queues some random rewards from the farmable ones
-
     _stake(alice, (time % uint160(receiver)) + 1);
 
     vm.warp(block.timestamp + time);
@@ -37,6 +35,31 @@ contract ClaimRewards is StakerTest {
       uint256 amount = rewards[i].claimableAmount;
       assertEqDecimal(reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount");
     }
+  }
+
+  function testClaimRewardsFromFarmers() public {
+    // TODO Queues some random rewards from the farmable ones
+
+    // Gives to the address the amount and stakes it
+    _stake(address(this), 12_033_408_509_324_809_858_901_345);
+
+    // gives the controller some auraBal to add as rewards
+    uint256 amount = 100e18;
+    deal(address(auraBal), address(controller), 10 * amount);
+
+    // adds the auraBal rewards (yes it increases the index)
+    vm.startPrank(address(controller));
+    auraBal.approve(address(auraBalFarmer), amount);
+    auraBalFarmer.stake(address(auraBal), amount);
+    vm.stopPrank();
+
+    staker.updateRewardState(address(auraBal));
+
+    // address(this) claims the rewards to alice's address
+    staker.claimRewards(address(auraBal), alice);
+
+    // assertFalse(true);
+    // TODO stake with both bal and auraBal
   }
 
   struct PersonWithStake {
