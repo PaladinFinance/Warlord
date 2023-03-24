@@ -46,6 +46,7 @@ contract MainnetTest is BaseTest {
 
   // Paladin
   IERC20 constant pal = IERC20(0xAB846Fb6C81370327e784Ae7CbB6d6a6af6Ff4BF);
+  IERC20 constant hPal = IERC20(0x624D822934e87D3534E435b83ff5C19769Efd9f6);
 
   function setUp() public virtual {
     vm.label(address(crv), "crv");
