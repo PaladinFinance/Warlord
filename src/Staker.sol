@@ -429,12 +429,11 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     uint256 totalStakedAmount = totalSupply();
     if (totalStakedAmount == 0) return state.rewardPerToken;
 
-    // Get the last update timestamp
-    uint256 lastRewardTimestamp = lastRewardUpdateTimestamp(reward);
-    if (state.lastUpdate == lastRewardTimestamp) return state.rewardPerToken;
-
     uint256 totalAccruedAmount;
     if (rewardFarmers[reward] == address(0)) {
+      // Get the last update timestamp
+      uint256 lastRewardTimestamp = lastRewardUpdateTimestamp(reward);
+      if (state.lastUpdate == lastRewardTimestamp) return state.rewardPerToken;
       totalAccruedAmount = (lastRewardTimestamp - state.lastUpdate) * state.ratePerSecond;
     } else {
       // TODO check this case
