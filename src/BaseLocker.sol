@@ -5,7 +5,7 @@ import {Harvestable} from "./Harvestable.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
-import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "openzeppelin/security/ReentrancyGuard.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
