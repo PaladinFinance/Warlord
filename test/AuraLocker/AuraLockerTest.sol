@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../../src/AuraLocker.sol";
-import "../../src/Token.sol";
-import "../../src/Minter.sol";
-import "../../src/MintRatio.sol";
+import "src/AuraLocker.sol";
+import "src/Token.sol";
+import "src/Minter.sol";
+import "src/MintRatio.sol";
 import "../mocks/MockRedeemModule.sol";
 import "../MainnetTest.sol";
 import "interfaces/external/IDelegateRegistry.sol";

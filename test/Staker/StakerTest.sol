@@ -2,9 +2,10 @@
 pragma solidity 0.8.16;
 
 import "../WarlordTest.sol";
-import {WarStaker} from "../../src/Staker.sol";
-import {WarBaseFarmer} from "../../src/BaseFarmer.sol";
-import {Harvestable} from "../../src/Harvestable.sol";
+import {WarStaker} from "src/Staker.sol";
+import {WarBaseFarmer} from "src/BaseFarmer.sol";
+import {Harvestable} from "src/Harvestable.sol";
+import {ERC20} from "solmate/tokens/ERC20.sol";
 
 contract StakerTest is WarlordTest {
   event Staked(address indexed caller, address indexed receiver, uint256 amount);

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../../src/Token.sol";
-import "../../src/Minter.sol";
+import "src/Token.sol";
+import "src/Minter.sol";
 import "../MainnetTest.sol";
 import {IWarLocker} from "interfaces/IWarLocker.sol";
-import {WarMintRatio} from "../../src/MintRatio.sol";
-import {WarCvxLocker} from "../../src/CvxLocker.sol";
+import {WarMintRatio} from "src/MintRatio.sol";
+import {WarCvxLocker} from "src/CvxLocker.sol";
 
 contract DummyLocker is IWarLocker {
   address _token;

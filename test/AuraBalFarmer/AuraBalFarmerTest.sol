@@ -2,9 +2,9 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/AuraBalFarmer.sol";
-import {WarStaker} from "../../src/Staker.sol";
-import "../../src/Token.sol";
+import "src/AuraBalFarmer.sol";
+import {WarStaker} from "src/Staker.sol";
+import "src/Token.sol";
 
 // Useful to precompute the amount of aura that will be minted when harvesting rewards
 interface IDeposit {

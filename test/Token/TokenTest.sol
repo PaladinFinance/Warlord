@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../../src/Token.sol";
+import "src/Token.sol";
 import "../BaseTest.sol";
 
 contract TokenTest is BaseTest {

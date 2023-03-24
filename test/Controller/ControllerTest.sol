@@ -2,11 +2,11 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/Token.sol";
-import {WarStaker} from "../../src/Staker.sol";
-import {WarMintRatio} from "../../src/MintRatio.sol";
-import {WarMinter} from "../../src/Minter.sol";
-import "../../src/Controller.sol";
+import "src/Token.sol";
+import {WarStaker} from "src/Staker.sol";
+import {WarMintRatio} from "src/MintRatio.sol";
+import {WarMinter} from "src/Minter.sol";
+import "src/Controller.sol";
 
 contract ControllerTest is MainnetTest {
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);

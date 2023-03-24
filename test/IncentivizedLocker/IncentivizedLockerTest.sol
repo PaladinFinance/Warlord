@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/IncentivizedLocker.sol";
+import "src/IncentivizedLocker.sol";
 
 contract IncentivizedLockerTest is MainnetTest {
   IncentivizedLocker dummyLocker;

@@ -4,25 +4,25 @@ pragma solidity 0.8.16;
 import "./MainnetTest.sol";
 
 // Token
-import {WarToken} from "../src/Token.sol";
+import {WarToken} from "src/Token.sol";
 
 // Lockers
-import {WarAuraLocker} from "../src/AuraLocker.sol";
-import {WarCvxLocker} from "../src/CvxLocker.sol";
+import {WarAuraLocker} from "src/AuraLocker.sol";
+import {WarCvxLocker} from "src/CvxLocker.sol";
 
 // Farmers
-import {WarAuraBalFarmer} from "../src/AuraBalFarmer.sol";
-import {WarCvxCrvFarmer} from "../src/CvxCrvFarmer.sol";
+import {WarAuraBalFarmer} from "src/AuraBalFarmer.sol";
+import {WarCvxCrvFarmer} from "src/CvxCrvFarmer.sol";
 
 // Enter/Exit
-import {WarMinter} from "../src/Minter.sol";
-import {Redeemer} from "../src/Redeemer.sol";
+import {WarMinter} from "src/Minter.sol";
+import {Redeemer} from "src/Redeemer.sol";
 
 // Infrastructure
-import {Controller} from "../src/Controller.sol";
-import {HolyPaladinDistributor} from "../src/Distributor.sol";
-import {WarMintRatio} from "../src/MintRatio.sol";
-import {WarStaker} from "../src/Staker.sol";
+import {Controller} from "src/Controller.sol";
+import {HolyPaladinDistributor} from "src/Distributor.sol";
+import {WarMintRatio} from "src/MintRatio.sol";
+import {WarStaker} from "src/Staker.sol";
 
 contract WarlordTest is MainnetTest {
   // Delegation

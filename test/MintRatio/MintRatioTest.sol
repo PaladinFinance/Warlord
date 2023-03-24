@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/MintRatio.sol";
+import "src/MintRatio.sol";
 
 contract MintRatioTest is MainnetTest {
   WarMintRatio mintRatio;

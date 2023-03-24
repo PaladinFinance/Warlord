@@ -2,10 +2,10 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import "../../src/BaseLocker.sol";
-import {WarStaker} from "../../src/Staker.sol";
-import "../../src/Token.sol";
-import "../../src/MintRatio.sol";
+import "src/BaseLocker.sol";
+import {WarStaker} from "src/Staker.sol";
+import "src/Token.sol";
+import "src/MintRatio.sol";
 import "mocks/MockRedeemModule.sol";
 
 contract BaseLockerTest is MainnetTest {

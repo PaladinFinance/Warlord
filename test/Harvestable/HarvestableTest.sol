@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import "../MainnetTest.sol";
-import {Harvestable} from "../../src/Harvestable.sol";
+import {Harvestable} from "src/Harvestable.sol";
 
 contract HarvestableTest is MainnetTest {
   Harvestable dummyHarvestable;
