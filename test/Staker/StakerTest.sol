@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../MainnetTest.sol";
+import "../WarlordTest.sol";
 import {WarStaker} from "../../src/Staker.sol";
-import "../../src/BaseFarmer.sol";
-import "../../src/Token.sol";
-import "../../src/MintRatio.sol";
-import {WarCvxCrvFarmer} from "../../src/CvxCrvFarmer.sol";
-import {WarAuraBalFarmer} from "../../src/AuraBalFarmer.sol";
+import {WarBaseFarmer} from "../../src/BaseFarmer.sol";
 import {Harvestable} from "../../src/Harvestable.sol";
 
-contract StakerTest is MainnetTest {
+contract StakerTest is WarlordTest {
   event Staked(address indexed caller, address indexed receiver, uint256 amount);
   event Unstaked(address indexed owner, address indexed receiver, uint256 amount);
   event Transfer(address indexed from, address indexed to, uint256 amount);
@@ -21,21 +17,12 @@ contract StakerTest is MainnetTest {
   event RemovedRewardDepositor(address indexed depositor);
   event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
-  WarStaker staker;
-  WarToken war;
-  WarMintRatio mintRatio;
-  WarCvxCrvFarmer cvxCrvFarmer;
-  WarAuraBalFarmer auraBalFarmer;
-
-  address controller = makeAddr("controller");
-  address yieldDumper = makeAddr("yieldDumper");
-
   address[] queueableRewards;
 
   function _queue(address rewards, uint256 amount) public {
-    deal(rewards, yieldDumper, amount);
+    deal(rewards, swapper, amount);
 
-    vm.startPrank(yieldDumper);
+    vm.startPrank(swapper);
     IERC20(rewards).transfer(address(staker), amount);
     staker.queueRewards(rewards, amount);
     vm.stopPrank();
@@ -51,36 +38,17 @@ contract StakerTest is MainnetTest {
   }
 
   function setUp() public virtual override {
-    MainnetTest.setUp();
-    fork();
-
-    // Deploying base contracts
-    vm.startPrank(admin);
-    war = new WarToken();
-    staker = new WarStaker(address(war));
+    WarlordTest.setUp();
 
     // Rewards list for testing
     queueableRewards.push(address(war));
     queueableRewards.push(address(pal));
     queueableRewards.push(address(weth));
     queueableRewards.push(address(cvxFxs));
-
-    // Deploying farmers
-    cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
-    auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
-
-    // Linking farmers
-    staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
-    staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
-
-    // Linking depositors
-    staker.addRewardDepositor(controller);
-    staker.addRewardDepositor(yieldDumper);
-    vm.stopPrank();
   }
 
   function randomRewardDepositor(uint256 seed) public view returns (address) {
-    return randomBinaryAddress(controller, yieldDumper, seed);
+    return randomBinaryAddress(address(controller), swapper, seed);
   }
 
   function randomQueueableReward(uint256 seed) public returns (address sender, address reward) {
@@ -88,10 +56,10 @@ contract StakerTest is MainnetTest {
     controllerRewards[0] = address(pal);
     controllerRewards[1] = address(war);
     if (seed % 2 == 0) {
-      sender = controller;
+      sender = address(controller);
       reward = randomAddress(controllerRewards, seed);
     } else {
-      sender = yieldDumper;
+      sender = swapper;
       reward = address(weth);
     }
     deal(reward, sender, 1e35);

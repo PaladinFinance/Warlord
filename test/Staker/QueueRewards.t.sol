@@ -32,7 +32,7 @@ contract QueueRewards is StakerTest {
 
     vm.expectRevert(Errors.ZeroAddress.selector);
 
-    vm.prank(yieldDumper);
+    vm.prank(swapper);
     staker.queueRewards(zero, amount);
   }
 
@@ -47,7 +47,7 @@ contract QueueRewards is StakerTest {
 
     vm.expectRevert("Pausable: paused");
 
-    vm.prank(yieldDumper);
+    vm.prank(swapper);
     staker.queueRewards(address(weth), 1e18);
   }
 
