@@ -48,3 +48,11 @@ function generateAddressArray(uint256 size) pure returns (address[] memory addrA
     addrArray[i] = address(uint160(numArray[i]));
   }
 }
+
+function generateAddressArrayFromHash(uint256 seed, uint256 len) pure returns (address[] memory addrArray) {
+  if (len == 0) return new address[](0);
+  addrArray = new address[](len);
+  for (uint256 i; i < len; ++i) {
+    addrArray[i] = address(uint160(bytes20((keccak256(abi.encode(seed + i))))));
+  }
+}
