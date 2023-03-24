@@ -89,13 +89,19 @@ contract WarlordTest is MainnetTest {
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
 
-    // Config lockers
+    // Controller config
     controller.setLocker(address(aura), address(auraLocker));
     controller.setLocker(address(cvx), address(cvxLocker));
 
-    // Config farmers
     controller.setFarmer(address(auraBal), address(auraLocker));
     controller.setFarmer(address(cvxCrv), address(cvxLocker));
+
+    // Staker config
+    staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
+    staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
+
+    staker.addRewardDepositor(address(controller));
+    staker.addRewardDepositor(swapper);
 
     distributor = new HolyPaladinDistributor(address(hPal), address(war), distributionManager);
 
