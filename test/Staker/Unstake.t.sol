@@ -74,8 +74,4 @@ contract Unstake is StakerTest {
     vm.prank(alice);
     staker.unstake(amount, zero);
   }
-
-  function testNonReentrant() public {
-    // TODO #4
-  }
 }

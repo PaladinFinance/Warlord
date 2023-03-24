@@ -30,10 +30,6 @@ contract Stake is StakerTest {
     staker.stake(1e18, zero);
   }
 
-  function testNonReentrant() public {
-    // TODO #4
-  }
-
   function testWhenNotPaused(uint256 amount, address receiver) public {
     vm.prank(admin);
     staker.pause();

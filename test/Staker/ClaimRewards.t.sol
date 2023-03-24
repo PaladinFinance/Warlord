@@ -90,10 +90,6 @@ contract ClaimRewards is StakerTest {
     staker.claimRewards(zero, receiver);
   }
 
-  function testNonReentrant() public {
-    // TODO #4
-  }
-
   function testWhenNotPaused(address reward, address receiver) public {
     vm.assume(receiver != zero);
     vm.assume(reward != zero);

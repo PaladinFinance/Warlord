@@ -57,8 +57,4 @@ contract ClaimQuestRewards is IncentivizedLockerTest {
     vm.expectRevert(Errors.CallerNotAllowed.selector);
     dummyLocker.claimQuestRewards(distributor, questID, period, index, account, amount, merkleProof);
   }
-
-  function testNonReentrant() public {
-    // TODO #4
-  }
 }

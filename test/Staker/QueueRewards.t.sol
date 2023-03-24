@@ -50,8 +50,4 @@ contract QueueRewards is StakerTest {
     vm.prank(swapper);
     staker.queueRewards(address(weth), 1e18);
   }
-
-  function testNonReentrant() public {
-    // TODO #4
-  }
 }
