@@ -50,6 +50,7 @@ function generateAddressArray(uint256 size) pure returns (address[] memory addrA
 }
 
 function generateAddressArrayFromHash(uint256 seed, uint256 len) pure returns (address[] memory addrArray) {
+  seed = seed % 1e77;
   if (len == 0) return new address[](0);
   addrArray = new address[](len);
   for (uint256 i; i < len; ++i) {
