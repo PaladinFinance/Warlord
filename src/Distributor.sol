@@ -33,8 +33,8 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
   struct Distribution {
     // TODO #18
     uint256 blockNumber;
-    uint256 timestamp;
-    uint256 amount;
+    uint256 timestamp; // uint48/64
+    uint256 amount; // uint96
     uint256 totalLocked;
   }
 
