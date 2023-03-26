@@ -25,6 +25,10 @@ import {WarRatios} from "src/Ratios.sol";
 import {WarStaker} from "src/Staker.sol";
 
 contract WarlordTest is MainnetTest {
+  // Testing constants
+  // Fuzzing upperbound (assuming war wraps 50 governance tokens);
+  uint256 constant WAR_SUPPLY_UPPER_BOUND = 10_000e18 * 50;
+
   // Delegation
   address auraDelegate = makeAddr("auraDelegate");
   address cvxDelegate = makeAddr("cvxDelegate");

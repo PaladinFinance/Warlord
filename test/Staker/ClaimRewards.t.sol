@@ -4,32 +4,45 @@ pragma solidity 0.8.16;
 import "./StakerTest.sol";
 
 contract ClaimRewards is StakerTest {
-  function testClaimWithSingleStaker(address receiver, uint256 time, uint256[] calldata rewardsAmount) public {
+  address receiver = makeAddr("receiver");
+  address[] stakers;
+
+  modifier withRewards() {
+    uint256 rewardsAmount = 1e50;
+    for (uint256 i; i < queueableRewards.length; ++i) {
+      _queue(queueableRewards[i], rewardsAmount);
+    }
+    _;
+  }
+
+  modifier withStakers(uint256 seed, uint256 numberOfStakers) {
+    vm.assume(numberOfStakers > 0);
+    numberOfStakers = numberOfStakers % 100 + 1;
+    // Using fixed seed for addresses to speedup fuzzing
+    stakers = generateAddressArrayFromHash(12_345, numberOfStakers);
+    uint256[] memory amounts = generateNumberArrayFromHash(seed, numberOfStakers, WAR_SUPPLY_UPPER_BOUND / numberOfStakers);
+    for (uint256 i; i < numberOfStakers; ++i) {
+      _stake(stakers[i], amounts[i]);
+    }
+    _;
+  }
+
+  function testClaimFromQueuedSingleStaker(uint256 time, uint256[] calldata rewardsAmount) withRewards public {
     vm.assume(time < 1000 days);
     vm.assume(rewardsAmount.length >= queueableRewards.length);
-    vm.assume(receiver != zero && receiver != address(staker));
 
-    uint256 rewardUpperBound = 1e55;
+    address user = makeAddr("user");
 
-    // Queues some random rewards from the queueable ones
-    for (uint256 i; i < queueableRewards.length; ++i) {
-      vm.assume(IERC20(queueableRewards[i]).balanceOf(receiver) == 0);
-      uint256 amount = rewardsAmount[i];
-      if (amount < 1e7) continue;
-      if (amount > rewardUpperBound) amount = amount % rewardUpperBound;
-      _queue(queueableRewards[i], amount);
-    }
-
-    _stake(alice, (time % uint160(receiver)) + 1);
+    _stake(user, (time % uint160(receiver)) + 1);
 
     vm.warp(block.timestamp + time);
 
-    WarStaker.UserClaimableRewards[] memory rewards = staker.getUserTotalClaimableRewards(alice);
+    WarStaker.UserClaimableRewards[] memory rewards = staker.getUserTotalClaimableRewards(user);
 
     for (uint256 i; i < rewards.length; ++i) {
       IERC20 reward = IERC20(rewards[i].reward);
 
-      vm.prank(alice);
+      vm.prank(user);
       staker.claimRewards(address(reward), receiver);
 
       uint256 amount = rewards[i].claimableAmount;
@@ -37,52 +50,80 @@ contract ClaimRewards is StakerTest {
     }
   }
 
-  function testClaimRewardsFromFarmers() public {
-    // TODO Queues some random rewards from the farmable ones
+  function testClaimRewardsFromFarmersSingleStaker(uint256 stakedWarAmount, uint256 rewardsAmount) public {
+    vm.assume(stakedWarAmount > 0);
+    vm.assume(rewardsAmount > 1e18 && rewardsAmount < AURA_MAX_SUPPLY);
+
+    stakedWarAmount = stakedWarAmount % WAR_SUPPLY_UPPER_BOUND;
 
     // Gives to the address the amount and stakes it
-    _stake(address(this), 12_033_408_509_324_809_858_901_345);
+    _stake(address(this), stakedWarAmount);
 
-    // gives the controller some auraBal to add as rewards
-    uint256 amount = 100e18;
-    deal(address(auraBal), address(controller), 10 * amount);
+    // Adds farmable rewards to staker
+    _increaseIndex(address(auraBal), rewardsAmount);
+    _increaseIndex(address(cvxCrv), rewardsAmount);
 
-    // adds the auraBal rewards (yes it increases the index)
-    vm.startPrank(address(controller));
-    auraBal.approve(address(auraBalFarmer), amount);
-    auraBalFarmer.stake(address(auraBal), amount);
+    // Check that delcared claim amount corresponds to actual one
+    assertEqDecimal(
+      staker.claimRewards(address(auraBal), receiver),
+      auraBal.balanceOf(receiver),
+      18,
+      "auraBal Rewards should be claimed correctly"
+    );
+    assertEqDecimal(
+      staker.claimRewards(address(cvxCrv), receiver),
+      cvxCrv.balanceOf(receiver),
+      18,
+      "cvxCrv Rewards should be claimed correctly"
+    );
+
+    assertApproxEqAbs(
+      auraBal.balanceOf(receiver),
+      rewardsAmount,
+      CLAIM_REWARDS_PRECISION_LOSS,
+      "auraBal rewards claimed should be aproximatevly be the same as the ones added"
+    );
+    assertApproxEqAbs(
+      cvxCrv.balanceOf(receiver),
+      rewardsAmount,
+      CLAIM_REWARDS_PRECISION_LOSS,
+      "cvxCrv rewards claimed should be aproximatevly be the same as the ones added"
+    );
+  }
+
+  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards withStakers(seed, numberOfStakers) {
+    address notStaker = makeAddr("notStaker");
+
+    vm.startPrank(notStaker);
+    assertEqDecimal(
+      staker.claimRewards(address(auraBal), receiver),
+      0,
+      18,
+      "Someone not should claim 0 auraBal rewards"
+    );
+    assertEqDecimal(
+      staker.claimRewards(address(cvxCrv), receiver),
+      0,
+      18,
+      "Someone not should claim 0 cvxCrv rewards"
+    );
     vm.stopPrank();
 
-    staker.updateRewardState(address(auraBal));
-
-    // address(this) claims the rewards to alice's address
-    staker.claimRewards(address(auraBal), alice);
-
-    // assertFalse(true);
-    // TODO stake with both bal and auraBal
+    assertEqDecimal(
+      auraBal.balanceOf(receiver),
+      0,
+      18,
+      "Someone not staking should have 0 auraBal rewards after claiming"
+    );
+    assertEqDecimal(
+      cvxCrv.balanceOf(receiver),
+      0,
+      18,
+      "Someone not staking should have 0 cvxCrv rewards after claiming"
+    );
   }
 
-  struct PersonWithStake {
-    address person;
-    uint256 amount;
-  }
-
-  function testWithMultipleStakers(PersonWithStake[] calldata stakes) public {
-    /*
-    uint256 numberOfStakes = stakes.length;
-    vm.assume(numberOfStakes > 0);
-    uint256 totalStakedAmount;
-    for (uint256 i; i < numberOfStakes; ++i) {
-      PersonWithStake memory stake = stakes[i];
-      stake.amount = stake.amount % 10_000e18;
-      totalStakedAmount += stake.amount;
-    }
-    vm.assume(totalStakedAmount > 0);
-    for (uint256 i; i < numberOfStakes; ++i) {
-      PersonWithStake memory stake = stakes[i];
-      _stake(stake.person, stake.amount);
-    }
-    */
+  function testWithMultipleStakers(uint256 seed, uint256 stakersAmount) withRewards withStakers(seed, stakersAmount) public {
     // TODO implementation
   }
 
@@ -90,11 +131,16 @@ contract ClaimRewards is StakerTest {
     // TODO implementation
   }
 
-  function testClaimNoRewards(address reward, address receiver) public {
-    vm.assume(receiver != zero && reward != zero);
+  function testMultipleClaims() public {
+    // TODO implementation
+  }
 
-    vm.prank(alice);
-    assertEq(staker.claimRewards(reward, receiver), 0, "should return 0 when no rewards available");
+  function testClaimNoRewards(address reward) public {
+    vm.assume(reward != zero);
+
+    // TODO caller should be a staker
+
+    assertEqDecimal(staker.claimRewards(reward, receiver), 0, 18, "should return 0 when no rewards available");
   }
 
   function testZeroReceiver(address reward) public {
@@ -105,16 +151,13 @@ contract ClaimRewards is StakerTest {
     staker.claimRewards(reward, zero);
   }
 
-  function testZeroReward(address receiver) public {
-    vm.assume(receiver != zero);
-
+  function testZeroReward() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
     staker.claimRewards(zero, receiver);
   }
 
-  function testWhenNotPaused(address reward, address receiver) public {
-    vm.assume(receiver != zero);
+  function testWhenNotPaused(address reward) public {
     vm.assume(reward != zero);
 
     vm.prank(admin);

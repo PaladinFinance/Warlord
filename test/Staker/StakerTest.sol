@@ -18,6 +18,7 @@ contract StakerTest is WarlordTest {
   event RemovedRewardDepositor(address indexed depositor);
   event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
+  uint256 constant CLAIM_REWARDS_PRECISION_LOSS = 1e6;
   address[] queueableRewards;
 
   function _queue(address rewards, uint256 amount) public {
@@ -35,6 +36,17 @@ contract StakerTest is WarlordTest {
     vm.startPrank(_staker);
     war.approve(address(staker), amount);
     staker.stake(amount, _staker);
+    vm.stopPrank();
+  }
+
+  function _increaseIndex(address token, uint256 amount) public {
+    WarBaseFarmer farmer = token == address(cvxCrv) ? WarBaseFarmer(cvxCrvFarmer) : WarBaseFarmer(auraBalFarmer);
+
+    deal(address(token), address(controller), amount);
+
+    vm.startPrank(address(controller));
+    IERC20(token).approve(address(farmer), amount);
+    farmer.stake(token, amount);
     vm.stopPrank();
   }
 
