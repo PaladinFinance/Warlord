@@ -57,3 +57,16 @@ function generateAddressArrayFromHash(uint256 seed, uint256 len) pure returns (a
     addrArray[i] = address(uint160(bytes20((keccak256(abi.encode(seed + i))))));
   }
 }
+
+function generateNumberArrayFromHash(uint256 seed, uint256 len, uint256 upperBound)
+  pure
+  returns (uint256[] memory numArray)
+{
+  seed = seed % 1e77;
+  if (len == 0) return new uint256[](0);
+  numArray = new uint256[](len);
+  for (uint256 i; i < len; ++i) {
+    // numArray[i] = uint160(bytes20((keccak256(abi.encode(seed + i)))));
+    numArray[i] = uint256((keccak256(abi.encode(seed + i)))) % upperBound + 1;
+  }
+}
