@@ -20,14 +20,15 @@ contract ClaimRewards is StakerTest {
     numberOfStakers = numberOfStakers % 100 + 1;
     // Using fixed seed for addresses to speedup fuzzing
     stakers = generateAddressArrayFromHash(12_345, numberOfStakers);
-    uint256[] memory amounts = generateNumberArrayFromHash(seed, numberOfStakers, WAR_SUPPLY_UPPER_BOUND / numberOfStakers);
+    uint256[] memory amounts =
+      generateNumberArrayFromHash(seed, numberOfStakers, WAR_SUPPLY_UPPER_BOUND / numberOfStakers);
     for (uint256 i; i < numberOfStakers; ++i) {
       _stake(stakers[i], amounts[i]);
     }
     _;
   }
 
-  function testClaimFromQueuedSingleStaker(uint256 time, uint256[] calldata rewardsAmount) withRewards public {
+  function testClaimFromQueuedSingleStaker(uint256 time, uint256[] calldata rewardsAmount) public withRewards {
     vm.assume(time < 1000 days);
     vm.assume(rewardsAmount.length >= queueableRewards.length);
 
@@ -91,39 +92,33 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards withStakers(seed, numberOfStakers) {
+  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers)
+    public
+    withRewards
+    withStakers(seed, numberOfStakers)
+  {
     address notStaker = makeAddr("notStaker");
 
     vm.startPrank(notStaker);
     assertEqDecimal(
-      staker.claimRewards(address(auraBal), receiver),
-      0,
-      18,
-      "Someone not should claim 0 auraBal rewards"
+      staker.claimRewards(address(auraBal), receiver), 0, 18, "Someone not should claim 0 auraBal rewards"
     );
-    assertEqDecimal(
-      staker.claimRewards(address(cvxCrv), receiver),
-      0,
-      18,
-      "Someone not should claim 0 cvxCrv rewards"
-    );
+    assertEqDecimal(staker.claimRewards(address(cvxCrv), receiver), 0, 18, "Someone not should claim 0 cvxCrv rewards");
     vm.stopPrank();
 
     assertEqDecimal(
-      auraBal.balanceOf(receiver),
-      0,
-      18,
-      "Someone not staking should have 0 auraBal rewards after claiming"
+      auraBal.balanceOf(receiver), 0, 18, "Someone not staking should have 0 auraBal rewards after claiming"
     );
     assertEqDecimal(
-      cvxCrv.balanceOf(receiver),
-      0,
-      18,
-      "Someone not staking should have 0 cvxCrv rewards after claiming"
+      cvxCrv.balanceOf(receiver), 0, 18, "Someone not staking should have 0 cvxCrv rewards after claiming"
     );
   }
 
-  function testWithMultipleStakers(uint256 seed, uint256 stakersAmount) withRewards withStakers(seed, stakersAmount) public {
+  function testWithMultipleStakers(uint256 seed, uint256 stakersAmount)
+    public
+    withRewards
+    withStakers(seed, stakersAmount)
+  {
     // TODO implementation
   }
 
