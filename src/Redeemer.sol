@@ -104,6 +104,35 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     return tokenIndexes[token].queueIndex - tokenIndexes[token].redeemIndex;
   }
 
+  function getUserRedeemTickets(address user) external view returns (RedeemTicket[] memory) {
+    return userRedeems[user];
+  }
+
+  function getUserActiveRedeemTickets(address user) external view returns (RedeemTicket[] memory) {
+    RedeemTicket[] memory _userTickets = userRedeems[user];
+    uint256 length = _userTickets.length;
+    uint256 activeTickets;
+
+    for (uint256 i; i < length;) {
+      if (!_userTickets[i].redeemed) {
+        unchecked { ++activeTickets; }
+      }
+      unchecked { ++i; }
+    }
+
+    RedeemTicket[] memory activeRedeemTickets = new RedeemTicket[](activeTickets);
+    uint256 j;
+    for (uint256 i; i < length;) {
+      if (!_userTickets[i].redeemed) {
+        activeRedeemTickets[j] = _userTickets[i];
+        unchecked { ++j; }
+      }
+      unchecked { ++i; }
+    }
+
+    return activeRedeemTickets;
+  }
+
   // State Changing Functions
 
   function notifyUnlock(address token, uint256 amount) external nonReentrant whenNotPaused onlyLocker {
