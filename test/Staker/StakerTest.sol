@@ -21,6 +21,29 @@ contract StakerTest is WarlordTest {
   uint256 constant CLAIM_REWARDS_PRECISION_LOSS = 1e6;
   address[] queueableRewards;
 
+  modifier withRewards() {
+    // TODO fuzz rewards amount
+    uint256 rewardsAmount = 1e50;
+    for (uint256 i; i < queueableRewards.length; ++i) {
+      _queue(queueableRewards[i], rewardsAmount);
+    }
+    _increaseIndex(address(auraBal), rewardsAmount);
+    _increaseIndex(address(cvxCrv), rewardsAmount);
+    _;
+  }
+
+  function fuzzStakers(uint256 seed, uint256 numberOfStakers) public returns (address[] memory stakers) {
+    vm.assume(numberOfStakers > 0);
+    numberOfStakers = numberOfStakers % 100 + 1;
+    // Using fixed seed for addresses to speedup fuzzing
+    stakers = generateAddressArrayFromHash(12_345, numberOfStakers);
+    uint256[] memory amounts =
+      generateNumberArrayFromHash(seed, numberOfStakers, WAR_SUPPLY_UPPER_BOUND / numberOfStakers);
+    for (uint256 i; i < numberOfStakers; ++i) {
+      _stake(stakers[i], amounts[i]);
+    }
+  }
+
   function _queue(address rewards, uint256 amount) public {
     deal(rewards, swapper, amount);
 
