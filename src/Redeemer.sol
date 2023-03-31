@@ -87,7 +87,6 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     war = _war;
     ratios = IRatios(_ratios);
     feeReceiver = _feeReceiver;
-
     redeemFee = _redeemFee;
   }
 
@@ -232,15 +231,6 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     lockerTokens[warLocker] = token;
 
     emit SetWarLocker(token, warLocker);
-  }
-
-  function setMintRatio(address newMintRatio) external onlyOwner {
-    if (newMintRatio == address(0)) revert Errors.ZeroAddress();
-
-    address oldMintRatio = address(ratios);
-    ratios = IRatios(newMintRatio);
-
-    emit MintRatioUpdated(oldMintRatio, newMintRatio);
   }
 
   function setFeeReceiver(address newFeeReceiver) external onlyOwner {
