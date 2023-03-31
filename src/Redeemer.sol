@@ -95,7 +95,7 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     ratios = IRatios(_ratios);
     feeReceiver = _feeReceiver;
 
-    redeemFee = _redeemFee; // TODO typo? maybe redemption fee is better?
+    redeemFee = _redeemFee;
   }
 
   // View Functions
