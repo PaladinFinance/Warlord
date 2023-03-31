@@ -2,6 +2,7 @@
 pragma solidity 0.8.16;
 
 import "../WarlordTest.sol";
+import {DummyLocker} from "../Minter/MinterTest.sol";
 
 contract RedeemerTest is WarlordTest {
   function setUp() public virtual override {
