@@ -5,32 +5,9 @@ import "./StakerTest.sol";
 
 contract ClaimRewards is StakerTest {
   address receiver = makeAddr("receiver");
-  address[] stakers;
 
-  modifier withRewards() {
-    uint256 rewardsAmount = 1e50;
-    for (uint256 i; i < queueableRewards.length; ++i) {
-      _queue(queueableRewards[i], rewardsAmount);
-    }
-    _;
-  }
-
-  modifier withStakers(uint256 seed, uint256 numberOfStakers) {
-    vm.assume(numberOfStakers > 0);
-    numberOfStakers = numberOfStakers % 100 + 1;
-    // Using fixed seed for addresses to speedup fuzzing
-    stakers = generateAddressArrayFromHash(12_345, numberOfStakers);
-    uint256[] memory amounts =
-      generateNumberArrayFromHash(seed, numberOfStakers, WAR_SUPPLY_UPPER_BOUND / numberOfStakers);
-    for (uint256 i; i < numberOfStakers; ++i) {
-      _stake(stakers[i], amounts[i]);
-    }
-    _;
-  }
-
-  function testClaimFromQueuedSingleStaker(uint256 time, uint256[] calldata rewardsAmount) public withRewards {
+  function testClaimSingleStaker(uint256 time) public withRewards {
     vm.assume(time < 1000 days);
-    vm.assume(rewardsAmount.length >= queueableRewards.length);
 
     address user = makeAddr("user");
 
@@ -45,6 +22,7 @@ contract ClaimRewards is StakerTest {
 
       vm.prank(user);
       staker.claimRewards(address(reward), receiver);
+      // TODO check amount on claimRewards
 
       uint256 amount = rewards[i].claimableAmount;
       assertEqDecimal(reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount");
@@ -92,11 +70,8 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers)
-    public
-    withRewards
-    withStakers(seed, numberOfStakers)
-  {
+  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards {
+    fuzzStakers(seed, numberOfStakers);
     address notStaker = makeAddr("notStaker");
 
     vm.startPrank(notStaker);
@@ -114,11 +89,8 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testWithMultipleStakers(uint256 seed, uint256 stakersAmount)
-    public
-    withRewards
-    withStakers(seed, stakersAmount)
-  {
+  function testWithMultipleStakers(uint256 seed, uint256 numberOfStakers) public withRewards {
+    address[] memory stakers = fuzzStakers(seed, numberOfStakers);
     // TODO implementation
   }
 
