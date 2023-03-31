@@ -14,12 +14,14 @@ contract GetRewardTokens is StakerTest {
 
     address[] memory rewardsAdded = staker.getRewardTokens();
     assertEq(
-      rewardsAdded.length,
+      rewardsAdded.length - 2,
       rewardTokens.length,
       "The added rewards array's length should be the same as the amount of queued tokens"
     );
-    for (uint256 i; i < rewardsAdded.length; ++i) {
-      assertEq(rewardsAdded[i], rewardTokens[i], "The added rewards should correspond to the queued ones");
+    assertEq(rewardsAdded[0], address(cvxCrv), "The first reward should be cvxCrv");
+    assertEq(rewardsAdded[1], address(auraBal), "The first reward should be auraBal");
+    for (uint256 i; i < rewardTokens.length; ++i) {
+      assertEq(rewardsAdded[i + 2], rewardTokens[i], "The added rewards should correspond to the queued ones");
     }
   }
 }
