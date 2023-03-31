@@ -100,6 +100,10 @@ contract WarlordTest is MainnetTest {
     controller.setFarmer(address(auraBal), address(auraLocker));
     controller.setFarmer(address(cvxCrv), address(cvxLocker));
 
+    // Redeemer config
+    redeemer.setLocker(address(aura), address(auraLocker));
+    redeemer.setLocker(address(cvx), address(cvxLocker));
+
     // Staker config
     staker.setRewardFarmer(address(cvxCrv), address(cvxCrvFarmer));
     staker.setRewardFarmer(address(auraBal), address(auraBalFarmer));
