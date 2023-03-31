@@ -11,14 +11,13 @@ contract Unpause is StakerTest {
   }
 
   function testDefaultBehavior() public {
-    assertEq(staker.paused(), true);
+    assertTrue(staker.paused());
     vm.prank(admin);
     staker.unpause();
-    assertEq(staker.paused(), false);
+    assertFalse(staker.paused());
   }
 
   function testOnlyOwner() public {
-    vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
     staker.unpause();
   }

@@ -5,14 +5,13 @@ import "./StakerTest.sol";
 
 contract Pause is StakerTest {
   function testDefaultBehavior() public {
-    assertEq(staker.paused(), false);
+    assertFalse(staker.paused());
     vm.prank(admin);
     staker.pause();
-    assertEq(staker.paused(), true);
+    assertTrue(staker.paused());
   }
 
   function testOnlyOwner() public {
-    vm.prank(alice);
     vm.expectRevert("Ownable: caller is not the owner");
     staker.pause();
   }
