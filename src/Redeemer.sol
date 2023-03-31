@@ -108,9 +108,13 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
     for (uint256 i; i < length;) {
       if (!_userTickets[i].redeemed) {
-        unchecked { ++activeTickets; }
+        unchecked {
+          ++activeTickets;
+        }
       }
-      unchecked { ++i; }
+      unchecked {
+        ++i;
+      }
     }
 
     RedeemTicket[] memory activeRedeemTickets = new RedeemTicket[](activeTickets);
@@ -118,9 +122,13 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     for (uint256 i; i < length;) {
       if (!_userTickets[i].redeemed) {
         activeRedeemTickets[j] = _userTickets[i];
-        unchecked { ++j; }
+        unchecked {
+          ++j;
+        }
       }
-      unchecked { ++i; }
+      unchecked {
+        ++i;
+      }
     }
 
     return activeRedeemTickets;
