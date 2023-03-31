@@ -78,13 +78,6 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   event MintRatioUpdated(address oldMintRatio, address newMintRatio);
   event FeeReceiverUpdated(address oldFeeReceiver, address newFeeReceiver);
 
-  // Modifiers
-
-  modifier onlyLocker() {
-    if (lockerTokens[msg.sender] == address(0)) revert Errors.NotListedLocker();
-    _;
-  }
-
   // Constructor
 
   constructor(address _war, address _ratios, address _feeReceiver, uint256 _redeemFee) {
@@ -106,7 +99,9 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   // State Changing Functions
 
-  function notifyUnlock(address token, uint256 amount) external nonReentrant whenNotPaused onlyLocker {
+  function notifyUnlock(address token, uint256 amount) external nonReentrant whenNotPaused {
+    if (lockerTokens[msg.sender] == address(0)) revert Errors.NotListedLocker();
+
     tokenIndexes[token].redeemIndex += amount;
   }
 
