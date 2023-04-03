@@ -5,6 +5,7 @@ import "./MainnetTest.sol";
 
 // Token
 import {WarToken} from "src/Token.sol";
+import {EscrowedWarToken} from "src/EscrowedToken.sol";
 
 // Lockers
 import {WarAuraLocker} from "src/AuraLocker.sol";
@@ -47,6 +48,7 @@ contract WarlordTest is MainnetTest {
 
   // Token
   WarToken war;
+  EscrowedWarToken esWar;
 
   // Lockers
   WarAuraLocker auraLocker;
@@ -77,6 +79,7 @@ contract WarlordTest is MainnetTest {
     minter = new WarMinter(address(war), address(ratios));
     redeemer = new Redeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
     staker = new WarStaker(address(war));
+    esWar = new EscrowedWarToken(address(war), address(staker));
     controller =
       new Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
     auraLocker = new WarAuraLocker(address(controller), address(redeemer), address(minter), auraDelegate);
@@ -107,7 +110,7 @@ contract WarlordTest is MainnetTest {
     staker.addRewardDepositor(address(controller));
     staker.addRewardDepositor(swapper);
 
-    distributor = new HolyPaladinDistributor(address(hPal), address(war), distributionManager);
+    distributor = new HolyPaladinDistributor(address(hPal), address(war), address(esWar), distributionManager);
 
     vm.stopPrank();
   }

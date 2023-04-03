@@ -8,6 +8,7 @@ import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {Pausable} from "openzeppelin/security/Pausable.sol";
 import {ReentrancyGuard} from "openzeppelin/security/ReentrancyGuard.sol";
 import {Errors} from "utils/Errors.sol";
+import {EscrowedWarToken} from "./EscrowedToken.sol";
 
 /**
  * @title Warlord contract distributing WAR to hPAL lockers
@@ -42,6 +43,7 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
 
   IHolyPaladinToken public immutable hPAL;
   IERC20 public immutable war;
+  EscrowedWarToken public immutable esWAR;
 
   address public distributionManager;
 
@@ -72,12 +74,20 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
 
   // Constructor
 
-  constructor(address _hPAL, address _war, address _distributionManager) {
-    if (_hPAL == address(0) || _war == address(0) || _distributionManager == address(0)) revert Errors.ZeroAddress();
+  constructor(address _hPAL, address _war, address _esWar, address _distributionManager) {
+    if (
+      _hPAL == address(0)
+      || _war == address(0)
+      || _esWar == address(0)
+      || _distributionManager == address(0)
+    ) revert Errors.ZeroAddress();
 
     hPAL = IHolyPaladinToken(_hPAL);
     war = IERC20(_war);
+    esWAR = EscrowedWarToken(_esWar);
     distributionManager = _distributionManager;
+
+    IERC20(_war).safeApprove(_esWar, type(uint256).max);
   }
 
   // View functions
@@ -134,7 +144,7 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
     if (claimedAmount == 0) return 0;
 
     userAccruedAmount[user] = 0;
-    war.safeTransfer(receiver, claimedAmount);
+    esWAR.wrap(claimedAmount, receiver);
 
     emit Claim(user, receiver, claimedAmount);
   }

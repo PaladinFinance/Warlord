@@ -73,7 +73,7 @@ contract CreateDistribution is DistributorTest {
     vm.assume(amount > 0);
 
     // Setting up zero locked hPAL trigger
-    distributor = new HolyPaladinDistributor(address(dummyHolyPaladin), address(war), distributionManager);
+    distributor = new HolyPaladinDistributor(address(dummyHolyPaladin), address(war), address(esWar), distributionManager);
 
     vm.expectRevert(Errors.ZeroValue.selector);
 

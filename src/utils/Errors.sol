@@ -54,10 +54,17 @@ library Errors {
 
   // Maths
   error NumberExceed128Bits();
+  error NumberExceed48Bits();
 
   // AuraBalFarmer
   error SlippageTooHigh();
 
   // Admin
   error RecoverForbidden();
+
+  // EscrowedToken
+  error CannotTransfer();
+  error VestingNotAllowed();
+  error VestingNotFinished();
+  error VestingAlreadyClaimed();
 }
