@@ -71,15 +71,21 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public {
-    fuzzRewards(seed);
-    fuzzStakers(seed, numberOfStakers);
+  function testClaimFromNotStaker(uint256 numberOfStakers) public {
+    fuzzRewardsAndStakers(numberOfStakers, numberOfStakers);
 
     address notStaker = makeAddr("notStaker");
 
-    // TOOD check all rewards not only indexed
-
     vm.startPrank(notStaker);
+    for (uint256 i; i < queueableRewards.length; ++i) {
+      assertEqDecimal(
+        staker.claimRewards(queueableRewards[i], receiver),
+        0,
+        18,
+        "Someone not staking should claim 0 queueable rewards"
+      );
+    }
+
     assertEqDecimal(
       staker.claimRewards(address(auraBal), receiver), 0, 18, "Someone not staking should claim 0 auraBal rewards"
     );
@@ -96,14 +102,14 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testWithMultipleStakers(uint256 seed) public {
+  function testWithMultipleStakers(uint256 time) public {
+    vm.assume(time > 0 && time < 1000 days);
     uint256 STAKERS_UPPERBOUND = 10_000;
-    uint256 numberOfStakers = seed % STAKERS_UPPERBOUND + 1;
+    uint256 numberOfStakers = time % STAKERS_UPPERBOUND + 1;
 
-    address[] memory stakers = fuzzStakers(seed, numberOfStakers);
-    RewardAndAmount[] memory rewards = fuzzRewards(seed);
+    (address[] memory stakers, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
 
-    vm.warp(block.timestamp + 100 days);
+    vm.warp(block.timestamp + time);
 
     for (uint256 i; i < rewards.length; ++i) {
       uint256 claimedAmount;
@@ -121,7 +127,37 @@ contract ClaimRewards is StakerTest {
     }
   }
 
-  function testClaimAfterUnstake() public {
+  function testClaimAfterUnstake(uint256 time) public {
+    /*
+    uint256 STAKERS_UPPERBOUND = 3;
+    uint256 numberOfStakers = time % STAKERS_UPPERBOUND + 1;
+
+    vm.assume(time > 0 && time < 1000 days);
+    (address[] memory stakers,RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
+
+    vm.warp(block.timestamp + time);
+
+    WarStaker.UserClaimableRewards[][] memory rewardsPerUser = new WarStaker.UserClaimableRewards[][](stakers.length);
+
+    for (uint256 i; i < stakers.length; ++i) {
+      vm.prank(stakers[i]);
+      staker.unstake(type(uint256).max, receiver);
+      rewardsPerUser[i] = staker.getUserTotalClaimableRewards(stakers[i]);
+    }
+
+    vm.warp(block.timestamp + time);
+
+    for (uint256 i; i < rewards.length; ++i) {
+      for (uint256 j; j < stakers.length; ++j) {
+        vm.prank(stakers[i]);
+        uint256 claimedAmount = staker.claimRewards(rewards[i].reward, receiver);
+        assertGt(claimedAmount, 0, "even after withdrawal accrued awards can be withdrawn");
+      }
+    }
+    */
+  }
+
+  function testClaimAfterPartialUnstake() public {
     // TODO implementation
   }
 

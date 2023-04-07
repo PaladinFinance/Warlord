@@ -26,6 +26,14 @@ contract StakerTest is WarlordTest {
     uint256 amount;
   }
 
+  function fuzzRewardsAndStakers(uint256 seed, uint256 numberOfStakers)
+    public
+    returns (address[] memory stakers, RewardAndAmount[] memory rewards)
+  {
+    stakers = fuzzStakers(seed, numberOfStakers);
+    rewards = fuzzRewards(seed);
+  }
+
   function fuzzRewards(uint256 seed) public returns (RewardAndAmount[] memory rewards) {
     return fuzzRewards(seed, true, true);
   }
