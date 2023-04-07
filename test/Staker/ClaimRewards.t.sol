@@ -35,7 +35,7 @@ contract ClaimRewards is StakerTest {
 
   function testClaimRewardsFromFarmersSingleStaker(uint256 stakedWarAmount, uint256 rewardsAmount) public {
     vm.assume(stakedWarAmount > 0);
-    vm.assume(rewardsAmount > 1e18 && rewardsAmount < AURA_MAX_SUPPLY);
+    vm.assume(rewardsAmount > 1e18 && rewardsAmount < 1e55);
 
     stakedWarAmount = stakedWarAmount % WAR_SUPPLY_UPPER_BOUND;
 
@@ -100,8 +100,8 @@ contract ClaimRewards is StakerTest {
     uint256 STAKERS_UPPERBOUND = 10_000;
     uint256 numberOfStakers = seed % STAKERS_UPPERBOUND + 1;
 
-    RewardAndAmount[] memory rewards = fuzzRewards(seed);
     address[] memory stakers = fuzzStakers(seed, numberOfStakers);
+    RewardAndAmount[] memory rewards = fuzzRewards(seed);
 
     vm.warp(block.timestamp + 100 days);
 
@@ -110,6 +110,7 @@ contract ClaimRewards is StakerTest {
       for (uint256 j; j < stakers.length; ++j) {
         vm.prank(stakers[j]);
         claimedAmount += staker.claimRewards(rewards[i].reward, receiver);
+        assertGt(claimedAmount, 0, "the amount claimed by a staker should always be > 0");
       }
       assertApproxEqAbs(
         IERC20(rewards[i].reward).balanceOf(receiver),

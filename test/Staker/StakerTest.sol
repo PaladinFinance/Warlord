@@ -54,11 +54,13 @@ contract StakerTest is WarlordTest {
     uint256 auraBalIndex = numberOfRewards - 2;
     _increaseIndex(address(auraBal), rewardsAmount[auraBalIndex]);
     rewards[auraBalIndex].reward = address(auraBal);
+    assertGt(rewardsAmount[auraBalIndex], 0, "the amount of rewards should be bigger than zero");
     rewards[auraBalIndex].amount = rewardsAmount[auraBalIndex];
 
     uint256 cvxCrvIndex = numberOfRewards - 1;
     _increaseIndex(address(cvxCrv), rewardsAmount[cvxCrvIndex]);
     rewards[cvxCrvIndex].reward = address(cvxCrv);
+    assertGt(rewardsAmount[cvxCrvIndex], 0, "the amount of rewards should be bigger than zero");
     rewards[cvxCrvIndex].amount = rewardsAmount[cvxCrvIndex];
   }
 
