@@ -436,7 +436,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
       if (state.lastUpdate == lastRewardTimestamp) return state.rewardPerToken;
       totalAccruedAmount = (lastRewardTimestamp - state.lastUpdate) * state.ratePerSecond;
     } else {
-      // TODO check this case
       uint256 currentFarmerIndex = IFarmer(rewardFarmers[reward]).getCurrentIndex();
       totalAccruedAmount = currentFarmerIndex - farmerLastIndex[reward];
     }
@@ -587,12 +586,17 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
       // Fetch the amount of rewards accrued by the user
       uint256 rewardAmount = userState.accruedRewards;
 
-      // If the user accrued no rewards, skip
-      if (rewardAmount == 0) continue;
-
       // Track the claimed amount for the reward token
       rewardAmounts[i].reward = rewards[i];
       rewardAmounts[i].amount = rewardAmount;
+
+      // If the user accrued no rewards, skip
+      if (rewardAmount == 0) {
+        unchecked {
+          ++i;
+        }
+        continue;
+      }
 
       // Reset user's accrued rewards
       userState.accruedRewards = 0;
@@ -671,6 +675,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     if (rewardToken != expectedToken) revert Errors.MismatchingFarmer();
 
     rewardFarmers[rewardToken] = farmer;
+    rewardTokens.push(rewardToken);
 
     emit SetRewardFarmer(rewardToken, farmer);
   }
