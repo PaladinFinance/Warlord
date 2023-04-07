@@ -4,4 +4,3 @@ pragma solidity 0.8.16;
 import "./RedeemerTest.sol";
 
 contract JoinQueue is RedeemerTest {}
-
