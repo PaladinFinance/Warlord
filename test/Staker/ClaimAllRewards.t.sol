@@ -6,7 +6,7 @@ import "./StakerTest.sol";
 contract ClaimAllRewards is StakerTest {
   address receiver = makeAddr("receiver");
 
-  function testClaimAllSingleStaker(uint256 time) public withRewards {
+  function testClaimAllSingleStaker(uint256 time) public withRewards(time) {
     // uint256 time = 50 days;
     vm.assume(time < 1000 days);
 

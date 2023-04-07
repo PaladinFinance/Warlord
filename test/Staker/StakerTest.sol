@@ -21,14 +21,15 @@ contract StakerTest is WarlordTest {
   uint256 constant CLAIM_REWARDS_PRECISION_LOSS = 1e6;
   address[] queueableRewards;
 
-  modifier withRewards() {
-    // TODO fuzz rewards amount
-    uint256 rewardsAmount = 1e50;
+  modifier withRewards(uint256 seed) {
+    uint256 NUMBER_OF_REWARDS = queueableRewards.length + 2;
+    uint256 REWARDS_UPPERBOUND = 1e50;
+    uint256[] memory rewardsAmount = generateNumberArrayFromHash(seed, NUMBER_OF_REWARDS, REWARDS_UPPERBOUND);
     for (uint256 i; i < queueableRewards.length; ++i) {
-      _queue(queueableRewards[i], rewardsAmount);
+      _queue(queueableRewards[i], rewardsAmount[i]);
     }
-    _increaseIndex(address(auraBal), rewardsAmount);
-    _increaseIndex(address(cvxCrv), rewardsAmount);
+    _increaseIndex(address(auraBal), rewardsAmount[queueableRewards.length]);
+    _increaseIndex(address(cvxCrv), rewardsAmount[queueableRewards.length + 1]);
     _;
   }
 

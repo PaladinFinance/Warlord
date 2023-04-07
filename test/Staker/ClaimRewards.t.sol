@@ -6,7 +6,7 @@ import "./StakerTest.sol";
 contract ClaimRewards is StakerTest {
   address receiver = makeAddr("receiver");
 
-  function testClaimSingleStaker(uint256 time) public withRewards {
+  function testClaimSingleStaker(uint256 time) public withRewards(time) {
     vm.assume(time < 1000 days);
 
     address user = makeAddr("user");
@@ -73,15 +73,19 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards {
+  function testDebug(uint256 seed) public withRewards(seed) {}
+
+  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards(seed) {
     fuzzStakers(seed, numberOfStakers);
     address notStaker = makeAddr("notStaker");
 
     vm.startPrank(notStaker);
     assertEqDecimal(
-      staker.claimRewards(address(auraBal), receiver), 0, 18, "Someone not should claim 0 auraBal rewards"
+      staker.claimRewards(address(auraBal), receiver), 0, 18, "Someone not staking should claim 0 auraBal rewards"
     );
-    assertEqDecimal(staker.claimRewards(address(cvxCrv), receiver), 0, 18, "Someone not should claim 0 cvxCrv rewards");
+    assertEqDecimal(
+      staker.claimRewards(address(cvxCrv), receiver), 0, 18, "Someone not staking should claim 0 cvxCrv rewards"
+    );
     vm.stopPrank();
 
     assertEqDecimal(
@@ -92,7 +96,7 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testWithMultipleStakers(uint256 seed, uint256 numberOfStakers) public withRewards {
+  function testWithMultipleStakers(uint256 seed, uint256 numberOfStakers) public withRewards(seed) {
     address[] memory stakers = fuzzStakers(seed, numberOfStakers);
     // TODO implementation
   }
@@ -111,6 +115,14 @@ contract ClaimRewards is StakerTest {
     // TODO caller should be a staker
 
     assertEqDecimal(staker.claimRewards(reward, receiver), 0, 18, "should return 0 when no rewards available");
+  }
+
+  function testNoRewardsRightAfterClaim() public {
+    // TODO implementation
+  }
+
+  function testNoRewardsRightAfterStake() public {
+    // TODO implementation
   }
 
   function testZeroReceiver(address reward) public {
