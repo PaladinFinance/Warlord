@@ -21,11 +21,14 @@ contract ClaimRewards is StakerTest {
       IERC20 reward = IERC20(rewards[i].reward);
 
       vm.prank(user);
-      staker.claimRewards(address(reward), receiver);
-      // TODO check amount on claimRewards
+      uint256 claimedAmount = staker.claimRewards(address(reward), receiver);
 
-      uint256 amount = rewards[i].claimableAmount;
-      assertEqDecimal(reward.balanceOf(receiver), amount, 18, "receiver should have received the claimable amount");
+      uint256 expectedAmount = rewards[i].claimableAmount;
+
+      assertEqDecimal(claimedAmount, expectedAmount, 18, "the expected amount should correspond to the one claimed");
+      assertEqDecimal(
+        reward.balanceOf(receiver), expectedAmount, 18, "receiver should have received the claimable amount"
+      );
     }
   }
 
