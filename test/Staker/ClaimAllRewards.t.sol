@@ -6,8 +6,9 @@ import "./StakerTest.sol";
 contract ClaimAllRewards is StakerTest {
   address receiver = makeAddr("receiver");
 
-  function testClaimAllSingleStaker(uint256 time) public withRewards(time) {
-    // uint256 time = 50 days;
+  function testClaimAllSingleStaker(uint256 time) public {
+    fuzzRewards(time);
+
     vm.assume(time < 1000 days);
 
     address user = makeAddr("user");
@@ -38,6 +39,5 @@ contract ClaimAllRewards is StakerTest {
       );
       assertEq(returnedRewards[i].reward, expectedRewards[i].reward, "reward token should correspond");
     }
-    // assertFalse(true);
   }
 }

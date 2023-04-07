@@ -6,7 +6,8 @@ import "./StakerTest.sol";
 contract ClaimRewards is StakerTest {
   address receiver = makeAddr("receiver");
 
-  function testClaimSingleStaker(uint256 time) public withRewards(time) {
+  function testClaimSingleStaker(uint256 time) public {
+    fuzzRewards(time);
     vm.assume(time < 1000 days);
 
     address user = makeAddr("user");
@@ -46,18 +47,15 @@ contract ClaimRewards is StakerTest {
     _increaseIndex(address(cvxCrv), rewardsAmount);
 
     // Check that delcared claim amount corresponds to actual one
+    uint256 auraBalClaimedAmount = staker.claimRewards(address(auraBal), receiver);
+    assertGt(auraBalClaimedAmount, 0, "The amount claimed should be bigger than zero");
     assertEqDecimal(
-      staker.claimRewards(address(auraBal), receiver),
-      auraBal.balanceOf(receiver),
-      18,
-      "auraBal Rewards should be claimed correctly"
+      auraBal.balanceOf(receiver), auraBalClaimedAmount, 18, "auraBal Rewards should be claimed correctly"
     );
-    assertEqDecimal(
-      staker.claimRewards(address(cvxCrv), receiver),
-      cvxCrv.balanceOf(receiver),
-      18,
-      "cvxCrv Rewards should be claimed correctly"
-    );
+
+    uint256 cvxCrvClaimedAmount = staker.claimRewards(address(cvxCrv), receiver);
+    assertGt(cvxCrvClaimedAmount, 0, "The amount claimed should be bigger than zero");
+    assertEqDecimal(cvxCrv.balanceOf(receiver), cvxCrvClaimedAmount, 18, "cvxCrv Rewards should be claimed correctly");
 
     assertApproxEqAbs(
       auraBal.balanceOf(receiver),
@@ -73,11 +71,13 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testDebug(uint256 seed) public withRewards(seed) {}
-
-  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public withRewards(seed) {
+  function testClaimFromNotStaker(uint256 seed, uint256 numberOfStakers) public {
+    fuzzRewards(seed);
     fuzzStakers(seed, numberOfStakers);
+
     address notStaker = makeAddr("notStaker");
+
+    // TOOD check all rewards not only indexed
 
     vm.startPrank(notStaker);
     assertEqDecimal(
@@ -96,9 +96,28 @@ contract ClaimRewards is StakerTest {
     );
   }
 
-  function testWithMultipleStakers(uint256 seed, uint256 numberOfStakers) public withRewards(seed) {
+  function testWithMultipleStakers(uint256 seed) public {
+    uint256 STAKERS_UPPERBOUND = 10_000;
+    uint256 numberOfStakers = seed % STAKERS_UPPERBOUND + 1;
+
+    RewardAndAmount[] memory rewards = fuzzRewards(seed);
     address[] memory stakers = fuzzStakers(seed, numberOfStakers);
-    // TODO implementation
+
+    vm.warp(block.timestamp + 100 days);
+
+    for (uint256 i; i < rewards.length; ++i) {
+      uint256 claimedAmount;
+      for (uint256 j; j < stakers.length; ++j) {
+        vm.prank(stakers[j]);
+        claimedAmount += staker.claimRewards(rewards[i].reward, receiver);
+      }
+      assertApproxEqAbs(
+        IERC20(rewards[i].reward).balanceOf(receiver),
+        claimedAmount,
+        CLAIM_REWARDS_PRECISION_LOSS,
+        "the sum of all the rewards claimed should be aproximatevly be the same as the ones added"
+      );
+    }
   }
 
   function testClaimAfterUnstake() public {

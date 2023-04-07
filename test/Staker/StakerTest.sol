@@ -21,16 +21,45 @@ contract StakerTest is WarlordTest {
   uint256 constant CLAIM_REWARDS_PRECISION_LOSS = 1e6;
   address[] queueableRewards;
 
-  modifier withRewards(uint256 seed) {
-    uint256 NUMBER_OF_REWARDS = queueableRewards.length + 2;
-    uint256 REWARDS_UPPERBOUND = 1e50;
-    uint256[] memory rewardsAmount = generateNumberArrayFromHash(seed, NUMBER_OF_REWARDS, REWARDS_UPPERBOUND);
+  struct RewardAndAmount {
+    address reward;
+    uint256 amount;
+  }
+
+  function fuzzRewards(uint256 seed) public returns (RewardAndAmount[] memory rewards) {
+    return fuzzRewards(seed, true, true);
+  }
+
+  function fuzzRewards(uint256 seed, bool queue, bool index) public returns (RewardAndAmount[] memory rewards) {
+    assertTrue(queue && index, "At least one type of reward should be selected");
+
+    uint256 numberOfRewards;
+    if (queue) {
+      numberOfRewards += queueableRewards.length;
+    }
+    if (index) {
+      numberOfRewards += 2;
+    }
+    uint256 REWARDS_UPPERBOUND = 1e55;
+
+    rewards = new RewardAndAmount[](numberOfRewards);
+
+    uint256[] memory rewardsAmount = generateNumberArrayFromHash(seed, numberOfRewards, REWARDS_UPPERBOUND);
     for (uint256 i; i < queueableRewards.length; ++i) {
       _queue(queueableRewards[i], rewardsAmount[i]);
+      rewards[i].reward = queueableRewards[i];
+      rewards[i].amount = rewardsAmount[i];
     }
-    _increaseIndex(address(auraBal), rewardsAmount[queueableRewards.length]);
-    _increaseIndex(address(cvxCrv), rewardsAmount[queueableRewards.length + 1]);
-    _;
+
+    uint256 auraBalIndex = numberOfRewards - 2;
+    _increaseIndex(address(auraBal), rewardsAmount[auraBalIndex]);
+    rewards[auraBalIndex].reward = address(auraBal);
+    rewards[auraBalIndex].amount = rewardsAmount[auraBalIndex];
+
+    uint256 cvxCrvIndex = numberOfRewards - 1;
+    _increaseIndex(address(cvxCrv), rewardsAmount[cvxCrvIndex]);
+    rewards[cvxCrvIndex].reward = address(cvxCrv);
+    rewards[cvxCrvIndex].amount = rewardsAmount[cvxCrvIndex];
   }
 
   function fuzzStakers(uint256 seed, uint256 numberOfStakers) public returns (address[] memory stakers) {
