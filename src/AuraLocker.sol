@@ -11,7 +11,7 @@ contract WarAuraLocker is IncentivizedLocker {
   IERC20 private constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   IDelegateRegistry private constant registry = IDelegateRegistry(0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446);
 
-  address governanceDelegate;
+  address public governanceDelegate;
 
   using SafeERC20 for IERC20;
 
