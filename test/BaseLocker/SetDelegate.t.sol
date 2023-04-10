@@ -12,7 +12,7 @@ contract SetDelegate is BaseLockerTest {
 
     dummyLocker.setDelegate(_delegatee);
 
-    assertEq(dummyLocker.delegatee(), _delegatee, "delegation value in contract has to be changed correctly");
+    assertEq(dummyLocker.delegate(), _delegatee, "delegation value in contract has to be changed correctly");
   }
 
   function testOnlyOwner(address _delegatee) public {

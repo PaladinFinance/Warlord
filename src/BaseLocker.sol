@@ -13,7 +13,7 @@ import {IWarRedeemModule} from "interfaces/IWarRedeemModule.sol";
 import {WarMinter} from "src/Minter.sol";
 
 abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard, Harvestable {
-  address public delegatee;
+  address public delegate;
   address public redeemModule;
   address public controller;
   address public warMinter;
@@ -31,7 +31,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
     warMinter = _warMinter;
     controller = _controller;
     redeemModule = _redeemModule;
-    delegatee = _delegatee;
+    delegate = _delegatee;
   }
 
   function setController(address _controller) external onlyOwner {
@@ -53,7 +53,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
   function _setDelegate(address _delegatee) internal virtual;
 
   function setDelegate(address _delegatee) external onlyOwner {
-    delegatee = _delegatee;
+    delegate = _delegatee;
     _setDelegate(_delegatee);
 
     emit SetDelegate(_delegatee);

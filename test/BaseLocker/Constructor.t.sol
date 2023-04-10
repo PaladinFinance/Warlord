@@ -8,7 +8,7 @@ contract Constructor is BaseLockerTest {
     assertEq(dummyLocker.controller(), controller);
     assertEq(dummyLocker.redeemModule(), address(redeemModule));
     assertEq(dummyLocker.warMinter(), address(minter));
-    assertEq(dummyLocker.delegatee(), delegate);
+    assertEq(dummyLocker.delegate(), delegate);
     assertFalse(dummyLocker.isShutdown());
   }
 

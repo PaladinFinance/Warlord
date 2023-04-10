@@ -5,7 +5,7 @@ import "./CvxLockerTest.sol";
 
 contract SetDelegate is CvxLockerTest {
   function testDefaultBehavior(address _delegatee) public {
-    vm.assume(_delegatee != locker.delegatee() && _delegatee != zero && _delegatee != address(locker));
+    vm.assume(_delegatee != locker.delegate() && _delegatee != zero && _delegatee != address(locker));
     vm.prank(admin);
 
     locker.setDelegate(_delegatee);
