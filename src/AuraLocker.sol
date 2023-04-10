@@ -58,7 +58,7 @@ contract WarAuraLocker is IncentivizedLocker {
     registry.setDelegate("aurafinance.eth", _delegatee);
   }
 
-  function setGovernanceDelegate(address _delegatee) external {
+  function setGovernanceDelegate(address _delegatee) external onlyOwner {
     (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
     if (lockedBalance == 0) revert Errors.DelegationRequiresLock();
 
