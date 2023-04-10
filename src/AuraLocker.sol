@@ -16,7 +16,7 @@ contract WarAuraLocker is IncentivizedLocker {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
   {
-    // delegating only on snapshoht because on chain delegation requires locking first
+    // constructor delegating only on snapshoht because on chain delegation requires locking first
     registry.setDelegate("aurafinance.eth", _delegatee);
   }
 
@@ -51,14 +51,14 @@ contract WarAuraLocker is IncentivizedLocker {
   }
 
   function _setDelegate(address _delegatee) internal override {
-    if (registry.delegation(address(this), "aurafinance.eth") != _delegatee) {
-      registry.setDelegate("aurafinance.eth", _delegatee);
-    }
+    registry.setDelegate("aurafinance.eth", _delegatee);
+  }
 
+  function setGovernanceDelegate(address _delegatee) external {
     (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
-    if (lockedBalance != 0) {
-      vlAura.delegate(_delegatee);
-    }
+
+    if (lockedBalance == 0) revert Errors.DelegationRequiresLock();
+    vlAura.delegate(_delegatee);
   }
 
   function _processUnlock() internal override {

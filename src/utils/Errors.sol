@@ -60,4 +60,7 @@ library Errors {
 
   // Admin
   error RecoverForbidden();
+
+  // AuraLocker
+  error DelegationRequiresLock();
 }
