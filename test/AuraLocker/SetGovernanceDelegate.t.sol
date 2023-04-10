@@ -15,8 +15,13 @@ contract SetGovernanceDelegate is AuraLockerTest {
   function testDefaultBehavior() public withLock {
     assertEq(vlAura.getVotes(newDelegate), 0, "untill a week a passed the delegatee shouldn't have voting power");
 
+    vm.expectEmit(true, false, false, true);
+    emit SetGovernanceDelegate(locker.governanceDelegate(), newDelegate);
+
     vm.prank(admin);
     locker.setGovernanceDelegate(newDelegate);
+
+    assertEq(locker.governanceDelegate(), newDelegate);
 
     assertEq(
       vlAura.delegates(address(locker)), newDelegate, "onchain delegation should be assigned to the right address"
