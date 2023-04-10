@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./AuraLockerTest.sol";
 
-contract SetGovernanceDelegate is AuraLockerTest {
+contract SetGaugeeDelegate is AuraLockerTest {
   address newDelegate = makeAddr("newDelegatee");
 
   modifier withLock() {
@@ -16,10 +16,10 @@ contract SetGovernanceDelegate is AuraLockerTest {
     assertEq(vlAura.getVotes(newDelegate), 0, "untill a week a passed the delegatee shouldn't have voting power");
 
     vm.expectEmit(true, false, false, true);
-    emit SetGovernanceDelegate(locker.governanceDelegate(), newDelegate);
+    emit SetGaugeDelegate(locker.governanceDelegate(), newDelegate);
 
     vm.prank(admin);
-    locker.setGovernanceDelegate(newDelegate);
+    locker.setGaugeDelegate(newDelegate);
 
     assertEq(locker.governanceDelegate(), newDelegate);
 
@@ -42,6 +42,6 @@ contract SetGovernanceDelegate is AuraLockerTest {
     vm.expectRevert(Errors.DelegationRequiresLock.selector);
 
     vm.prank(admin);
-    locker.setGovernanceDelegate(newDelegate);
+    locker.setGaugeDelegate(newDelegate);
   }
 }

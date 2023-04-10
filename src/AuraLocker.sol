@@ -15,7 +15,7 @@ contract WarAuraLocker is IncentivizedLocker {
 
   using SafeERC20 for IERC20;
 
-  event SetGovernanceDelegate(address oldDelegate, address newDelegate);
+  event SetGaugeDelegate(address oldDelegate, address newDelegate);
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
@@ -58,11 +58,11 @@ contract WarAuraLocker is IncentivizedLocker {
     registry.setDelegate("aurafinance.eth", _delegatee);
   }
 
-  function setGovernanceDelegate(address _delegatee) external onlyOwner {
+  function setGaugeDelegate(address _delegatee) external onlyOwner {
     (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
     if (lockedBalance == 0) revert Errors.DelegationRequiresLock();
 
-    emit SetGovernanceDelegate(governanceDelegate, _delegatee);
+    emit SetGaugeDelegate(governanceDelegate, _delegatee);
     governanceDelegate = _delegatee;
 
     vlAura.delegate(_delegatee);

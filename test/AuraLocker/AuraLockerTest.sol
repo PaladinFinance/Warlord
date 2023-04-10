@@ -21,7 +21,7 @@ contract AuraLockerTest is MainnetTest {
 
   using SafeERC20 for IERC20;
 
-  event SetGovernanceDelegate(address oldDelegate, address newDelegate);
+  event SetGaugeDelegate(address oldDelegate, address newDelegate);
 
   function setUp() public virtual override {
     MainnetTest.setUp();
