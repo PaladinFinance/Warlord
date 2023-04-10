@@ -11,12 +11,16 @@ contract WarAuraLocker is IncentivizedLocker {
   IERC20 private constant aura = IERC20(0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF);
   IDelegateRegistry private constant registry = IDelegateRegistry(0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446);
 
+  address public governanceDelegate;
+
   using SafeERC20 for IERC20;
+
+  event SetGaugeDelegate(address oldDelegate, address newDelegate);
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
   {
-    // delegating only on snapshoht because on chain delegation requires locking first
+    // constructor delegating only on snapshoht because on chain delegation requires locking first
     registry.setDelegate("aurafinance.eth", _delegatee);
   }
 
@@ -51,14 +55,17 @@ contract WarAuraLocker is IncentivizedLocker {
   }
 
   function _setDelegate(address _delegatee) internal override {
-    if (registry.delegation(address(this), "aurafinance.eth") != _delegatee) {
-      registry.setDelegate("aurafinance.eth", _delegatee);
-    }
+    registry.setDelegate("aurafinance.eth", _delegatee);
+  }
 
+  function setGaugeDelegate(address _delegatee) external onlyOwner {
     (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
-    if (lockedBalance != 0) {
-      vlAura.delegate(_delegatee);
-    }
+    if (lockedBalance == 0) revert Errors.DelegationRequiresLock();
+
+    emit SetGaugeDelegate(governanceDelegate, _delegatee);
+    governanceDelegate = _delegatee;
+
+    vlAura.delegate(_delegatee);
   }
 
   function _processUnlock() internal override {
