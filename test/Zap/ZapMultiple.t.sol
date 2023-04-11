@@ -5,6 +5,7 @@ import "./ZapTest.sol";
 
 contract ZapMutiple is ZapTest {
   address receiver = makeAddr("receiver");
+
   function testDefaultBehavior(uint256 amountCvx, uint256 amountAura) public {
     vm.assume(amountCvx > 1e4 && amountCvx < cvx.balanceOf(alice));
     vm.assume(amountAura > 1e4 && amountAura < aura.balanceOf(alice));
