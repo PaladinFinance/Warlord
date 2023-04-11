@@ -7,8 +7,9 @@ contract Zap is ZapTest {
   address receiver = makeAddr("receiver");
 
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 1e4 && amount < aura.balanceOf(alice));
+    vm.assume(amount > 1e4);
     IERC20 token = IERC20(randomVlToken(amount));
+    vm.assume(amount < token.balanceOf(alice));
 
     uint256 prevWarSupply = war.totalSupply();
     assertEqDecimal(war.balanceOf(alice), 0, 18, "war balance at the beginning should be zero");
