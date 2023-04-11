@@ -165,4 +165,12 @@ contract ZapMutiple is ZapTest {
     vm.expectRevert(Errors.ZeroAddress.selector);
     zap.zapMultiple(tokens, amounts, zero);
   }
+
+  function testWhenNotPaused(address[] calldata tokens, uint256[] memory amounts) public {
+    vm.prank(admin);
+    zap.pause();
+
+    vm.expectRevert("Pausable: paused");
+    zap.zapMultiple(tokens, amounts, receiver);
+  }
 }
