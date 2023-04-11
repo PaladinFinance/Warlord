@@ -39,7 +39,6 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   struct RedeemTicket {
-    // TODO find better name
     uint256 amount;
     uint256 redeemIndex;
     address token; // TODO #18
@@ -149,7 +148,6 @@ contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 tokensLength = tokens.length;
     if (tokensLength == 0) revert Errors.EmptyArray();
     if (weights.length != tokensLength) revert Errors.DifferentSizeArrays(tokensLength, weights.length);
-    // TODO check percentage sum is 100 ?
 
     uint256 totalWeight;
 

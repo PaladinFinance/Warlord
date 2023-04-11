@@ -168,7 +168,7 @@ contract ClaimRewards is StakerTest {
   function testClaimNoRewards(address reward) public {
     vm.assume(reward != zero);
 
-    // TODO caller should be a staker
+    // TODO more assertions
 
     assertEqDecimal(staker.claimRewards(reward, receiver), 0, 18, "should return 0 when no rewards available");
   }

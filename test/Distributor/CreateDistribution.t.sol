@@ -44,7 +44,7 @@ contract CreateDistribution is DistributorTest {
   }
 
   function testMultipleDistributions() public {
-    // TODO
+    // TODO implementation
   }
 
   function testOnlyDistributionManager(uint256 amount) public {
