@@ -4,51 +4,59 @@ pragma solidity 0.8.16;
 import "./ZapTest.sol";
 
 contract ZapAura is ZapTest {
-    function testDefaultBehavior(uint256 amount) public {
-        vm.assume(amount > 1e4 && amount < aura.balanceOf(alice));
-        
-        uint256 prevWarSupply = war.totalSupply();
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(zap)), 0);
+  function testDefaultBehavior(uint256 amount) public {
+    vm.assume(amount > 1e4 && amount < aura.balanceOf(alice));
 
-        uint256 initialStakedAmount = staker.balanceOf(alice);
-        uint256 initialBalanceStaker = war.balanceOf(address(staker));
+    uint256 prevWarSupply = war.totalSupply();
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(war.balanceOf(address(zap)), 0);
 
-        assertEq(initialStakedAmount, 0, "initial staked balance should be zero");
+    uint256 initialStakedAmount = staker.balanceOf(alice);
+    uint256 initialBalanceStaker = war.balanceOf(address(staker));
 
-        uint256 expectedMintAmount = ratios.getMintAmount(address(aura), amount);
+    assertEq(initialStakedAmount, 0, "initial staked balance should be zero");
 
-        vm.startPrank(alice);
-        aura.approve(address(zap), amount);
-        uint256 stakedAmount = zap.zap(address(aura), amount, alice);
+    uint256 expectedMintAmount = ratios.getMintAmount(address(aura), amount);
 
-        vm.stopPrank();
+    vm.startPrank(alice);
+    aura.approve(address(zap), amount);
+    uint256 stakedAmount = zap.zap(address(aura), amount, alice);
 
-        assertEq(stakedAmount, expectedMintAmount);
+    vm.stopPrank();
 
-        assertEq(aura.balanceOf(address(zap)), 0);
+    assertEq(stakedAmount, expectedMintAmount);
 
-        assertEq(war.totalSupply(), prevWarSupply + expectedMintAmount);
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(zap)), 0);
+    assertEq(aura.balanceOf(address(zap)), 0);
 
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(staker)), initialBalanceStaker + expectedMintAmount, "contract should have received sender's war tokens");
-        assertEq(staker.balanceOf(alice), initialStakedAmount + expectedMintAmount, "receiver should have a corresponding amount of staked tokens");
-    }
+    assertEq(war.totalSupply(), prevWarSupply + expectedMintAmount);
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(war.balanceOf(address(zap)), 0);
 
-    function testZeroAmount() public {
-        vm.expectRevert(Errors.ZeroValue.selector);
-        zap.zap(address(aura), 0, alice);
-    }
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(
+      war.balanceOf(address(staker)),
+      initialBalanceStaker + expectedMintAmount,
+      "contract should have received sender's war tokens"
+    );
+    assertEq(
+      staker.balanceOf(alice),
+      initialStakedAmount + expectedMintAmount,
+      "receiver should have a corresponding amount of staked tokens"
+    );
+  }
 
-    function testAddressZeroToken() public {
-        vm.expectRevert(Errors.ZeroAddress.selector);
-        zap.zap(zero, 1e18, alice);
-    }
+  function testZeroAmount() public {
+    vm.expectRevert(Errors.ZeroValue.selector);
+    zap.zap(address(aura), 0, alice);
+  }
 
-    function testAddressZeroReceiver() public {
-        vm.expectRevert(Errors.ZeroAddress.selector);
-        zap.zap(address(aura), 1e18, zero);
-    }
+  function testAddressZeroToken() public {
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    zap.zap(zero, 1e18, alice);
+  }
+
+  function testAddressZeroReceiver() public {
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    zap.zap(address(aura), 1e18, zero);
+  }
 }

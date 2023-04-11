@@ -4,151 +4,159 @@ pragma solidity 0.8.16;
 import "./ZapTest.sol";
 
 contract ZapMutiple is ZapTest {
-    function testDefaultBehavior(uint256 amountCvx, uint256 amountAura) public {
-        vm.assume(amountCvx > 1e4 && amountCvx < cvx.balanceOf(alice));
-        vm.assume(amountAura > 1e4 && amountAura < aura.balanceOf(alice));
+  function testDefaultBehavior(uint256 amountCvx, uint256 amountAura) public {
+    vm.assume(amountCvx > 1e4 && amountCvx < cvx.balanceOf(alice));
+    vm.assume(amountAura > 1e4 && amountAura < aura.balanceOf(alice));
 
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = amountCvx;
-        amounts[1] = amountAura;
-        
-        uint256 prevWarSupply = war.totalSupply();
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(zap)), 0);
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = amountCvx;
+    amounts[1] = amountAura;
 
-        uint256 initialStakedAmount = staker.balanceOf(alice);
-        uint256 initialBalanceStaker = war.balanceOf(address(staker));
+    uint256 prevWarSupply = war.totalSupply();
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(war.balanceOf(address(zap)), 0);
 
-        assertEq(initialStakedAmount, 0, "initial staked balance should be zero");
+    uint256 initialStakedAmount = staker.balanceOf(alice);
+    uint256 initialBalanceStaker = war.balanceOf(address(staker));
 
-        uint256 expectedMintAmount;
-        expectedMintAmount += ratios.getMintAmount(address(cvx), amountCvx);
-        expectedMintAmount += ratios.getMintAmount(address(aura), amountAura);
+    assertEq(initialStakedAmount, 0, "initial staked balance should be zero");
 
-        vm.startPrank(alice);
-        cvx.approve(address(zap), amountCvx);
-        aura.approve(address(zap), amountAura);
-        uint256 stakedAmount = zap.zapMultiple(tokens, amounts, alice);
+    uint256 expectedMintAmount;
+    expectedMintAmount += ratios.getMintAmount(address(cvx), amountCvx);
+    expectedMintAmount += ratios.getMintAmount(address(aura), amountAura);
 
-        vm.stopPrank();
+    vm.startPrank(alice);
+    cvx.approve(address(zap), amountCvx);
+    aura.approve(address(zap), amountAura);
+    uint256 stakedAmount = zap.zapMultiple(tokens, amounts, alice);
 
-        assertEq(stakedAmount, expectedMintAmount);
+    vm.stopPrank();
 
-        assertEq(cvx.balanceOf(address(zap)), 0);
-        assertEq(aura.balanceOf(address(zap)), 0);
+    assertEq(stakedAmount, expectedMintAmount);
 
-        assertEq(war.totalSupply(), prevWarSupply + expectedMintAmount);
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(zap)), 0);
+    assertEq(cvx.balanceOf(address(zap)), 0);
+    assertEq(aura.balanceOf(address(zap)), 0);
 
-        assertEq(war.balanceOf(alice), 0);
-        assertEq(war.balanceOf(address(staker)), initialBalanceStaker + expectedMintAmount, "contract should have received sender's war tokens");
-        assertEq(staker.balanceOf(alice), initialStakedAmount + expectedMintAmount, "receiver should have a corresponding amount of staked tokens");
-    }
+    assertEq(war.totalSupply(), prevWarSupply + expectedMintAmount);
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(war.balanceOf(address(zap)), 0);
 
-    function testArrayEmpty() public {
-        address[] memory tokens = new address[](0);
-        uint256[] memory amounts = new uint256[](0);
+    assertEq(war.balanceOf(alice), 0);
+    assertEq(
+      war.balanceOf(address(staker)),
+      initialBalanceStaker + expectedMintAmount,
+      "contract should have received sender's war tokens"
+    );
+    assertEq(
+      staker.balanceOf(alice),
+      initialStakedAmount + expectedMintAmount,
+      "receiver should have a corresponding amount of staked tokens"
+    );
+  }
 
-        vm.expectRevert(Errors.EmptyArray.selector);
-        zap.zapMultiple(tokens, amounts, alice);
-    }
+  function testArrayEmpty() public {
+    address[] memory tokens = new address[](0);
+    uint256[] memory amounts = new uint256[](0);
 
-    function testArraySizeDifferent() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 1e18;
+    vm.expectRevert(Errors.EmptyArray.selector);
+    zap.zapMultiple(tokens, amounts, alice);
+  }
 
-        vm.expectRevert(abi.encodeWithSelector(Errors.DifferentSizeArrays.selector, tokens.length, amounts.length));
-        zap.zapMultiple(tokens, amounts, alice);
-    }
+  function testArraySizeDifferent() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](1);
+    amounts[0] = 1e18;
 
-    function testZeroAmount1() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 0;
-        amounts[1] = 1e18;
+    vm.expectRevert(abi.encodeWithSelector(Errors.DifferentSizeArrays.selector, tokens.length, amounts.length));
+    zap.zapMultiple(tokens, amounts, alice);
+  }
 
-        vm.startPrank(alice);
-        cvx.approve(address(zap), type(uint256).max);
-        aura.approve(address(zap), type(uint256).max);
+  function testZeroAmount1() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = 0;
+    amounts[1] = 1e18;
 
-        vm.expectRevert(Errors.ZeroValue.selector);
-        zap.zapMultiple(tokens, amounts, alice);
+    vm.startPrank(alice);
+    cvx.approve(address(zap), type(uint256).max);
+    aura.approve(address(zap), type(uint256).max);
 
-        vm.stopPrank();
-    }
+    vm.expectRevert(Errors.ZeroValue.selector);
+    zap.zapMultiple(tokens, amounts, alice);
 
-    function testZeroAmount2() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 1e18;
-        amounts[1] = 0;
+    vm.stopPrank();
+  }
 
-        vm.startPrank(alice);
-        cvx.approve(address(zap), type(uint256).max);
-        aura.approve(address(zap), type(uint256).max);
+  function testZeroAmount2() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = 1e18;
+    amounts[1] = 0;
 
-        vm.expectRevert(Errors.ZeroValue.selector);
-        zap.zapMultiple(tokens, amounts, alice);
+    vm.startPrank(alice);
+    cvx.approve(address(zap), type(uint256).max);
+    aura.approve(address(zap), type(uint256).max);
 
-        vm.stopPrank();
-    }
+    vm.expectRevert(Errors.ZeroValue.selector);
+    zap.zapMultiple(tokens, amounts, alice);
 
-    function testAddressZeroToken1() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = zero;
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 1e18;
-        amounts[1] = 1e18;
+    vm.stopPrank();
+  }
 
-        vm.startPrank(alice);
-        cvx.approve(address(zap), type(uint256).max);
-        aura.approve(address(zap), type(uint256).max);
+  function testAddressZeroToken1() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = zero;
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = 1e18;
+    amounts[1] = 1e18;
 
-        vm.expectRevert(Errors.ZeroAddress.selector);
-        zap.zapMultiple(tokens, amounts, alice);
+    vm.startPrank(alice);
+    cvx.approve(address(zap), type(uint256).max);
+    aura.approve(address(zap), type(uint256).max);
 
-        vm.stopPrank();
-    }
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    zap.zapMultiple(tokens, amounts, alice);
 
-    function testAddressZeroToken2() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = zero;
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 1e18;
-        amounts[1] = 1e18;
+    vm.stopPrank();
+  }
 
-        vm.startPrank(alice);
-        cvx.approve(address(zap), type(uint256).max);
-        aura.approve(address(zap), type(uint256).max);
+  function testAddressZeroToken2() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = zero;
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = 1e18;
+    amounts[1] = 1e18;
 
-        vm.expectRevert(Errors.ZeroAddress.selector);
-        zap.zapMultiple(tokens, amounts, alice);
+    vm.startPrank(alice);
+    cvx.approve(address(zap), type(uint256).max);
+    aura.approve(address(zap), type(uint256).max);
 
-        vm.stopPrank();
-    }
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    zap.zapMultiple(tokens, amounts, alice);
 
-    function testAddressZeroReceiver() public {
-        address[] memory tokens = new address[](2);
-        tokens[0] = address(cvx);
-        tokens[1] = address(aura);
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 1e18;
-        amounts[1] = 1e18;
+    vm.stopPrank();
+  }
 
-        vm.expectRevert(Errors.ZeroAddress.selector);
-        zap.zapMultiple(tokens, amounts, zero);
-    }
+  function testAddressZeroReceiver() public {
+    address[] memory tokens = new address[](2);
+    tokens[0] = address(cvx);
+    tokens[1] = address(aura);
+    uint256[] memory amounts = new uint256[](2);
+    amounts[0] = 1e18;
+    amounts[1] = 1e18;
+
+    vm.expectRevert(Errors.ZeroAddress.selector);
+    zap.zapMultiple(tokens, amounts, zero);
+  }
 }

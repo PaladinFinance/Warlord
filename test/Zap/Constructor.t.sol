@@ -26,9 +26,6 @@ contract Constructor is ZapTest {
   }
 
   function testMaxAllowance() public {
-    assertEq(
-        IERC20(address(war)).allowance(address(zap), address(staker)),
-        type(uint256).max
-    );
+    assertEq(IERC20(address(war)).allowance(address(zap), address(staker)), type(uint256).max);
   }
 }
