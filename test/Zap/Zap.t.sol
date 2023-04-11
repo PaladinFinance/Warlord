@@ -16,7 +16,7 @@ contract Zap is ZapTest {
       war.balanceOf(address(zap)), 0, 18, "war balance of the zap contract at the beginning should be zero"
     );
 
-    uint256 initialStakedAmount = staker.balanceOf(alice);
+    uint256 initialStakedAmount = staker.balanceOf(receiver);
     uint256 initialBalanceStaker = war.balanceOf(address(staker));
 
     assertEqDecimal(initialStakedAmount, 0, 18, "initial staked balance should be zero");
@@ -26,6 +26,10 @@ contract Zap is ZapTest {
     vm.startPrank(alice);
 
     token.approve(address(zap), amount);
+
+    vm.expectEmit(true, true, false, true);
+    emit Zap(alice, receiver, expectedMintAmount);
+
     uint256 stakedAmount = zap.zap(address(token), amount, receiver);
 
     vm.stopPrank();

@@ -10,6 +10,8 @@ contract ZapTest is WarlordTest {
 
   WarZap zap;
 
+  event Zap(address indexed sender, address indexed receiver, uint256 stakedAmount);
+
   function setUp() public virtual override {
     WarlordTest.setUp();
 

@@ -4,6 +4,7 @@ pragma solidity 0.8.16;
 import "./ZapTest.sol";
 
 contract ZapMutiple is ZapTest {
+  address receiver = makeAddr("receiver");
   function testDefaultBehavior(uint256 amountCvx, uint256 amountAura) public {
     vm.assume(amountCvx > 1e4 && amountCvx < cvx.balanceOf(alice));
     vm.assume(amountAura > 1e4 && amountAura < aura.balanceOf(alice));
@@ -19,7 +20,7 @@ contract ZapMutiple is ZapTest {
     assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(address(zap)), 0);
 
-    uint256 initialStakedAmount = staker.balanceOf(alice);
+    uint256 initialStakedAmount = staker.balanceOf(receiver);
     uint256 initialBalanceStaker = war.balanceOf(address(staker));
 
     assertEq(initialStakedAmount, 0, "initial staked balance should be zero");
@@ -31,7 +32,11 @@ contract ZapMutiple is ZapTest {
     vm.startPrank(alice);
     cvx.approve(address(zap), amountCvx);
     aura.approve(address(zap), amountAura);
-    uint256 stakedAmount = zap.zapMultiple(tokens, amounts, alice);
+
+    vm.expectEmit(true, true, false, true);
+    emit Zap(alice, receiver, expectedMintAmount);
+
+    uint256 stakedAmount = zap.zapMultiple(tokens, amounts, receiver);
 
     vm.stopPrank();
 
@@ -51,7 +56,7 @@ contract ZapMutiple is ZapTest {
       "contract should have received sender's war tokens"
     );
     assertEq(
-      staker.balanceOf(alice),
+      staker.balanceOf(receiver),
       initialStakedAmount + expectedMintAmount,
       "receiver should have a corresponding amount of staked tokens"
     );
