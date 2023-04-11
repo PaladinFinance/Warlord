@@ -7,18 +7,18 @@ contract Unpause is ZapTest {
   function setUp() public override {
     ZapTest.setUp();
     vm.prank(admin);
-    staker.pause();
+    zap.pause();
   }
 
   function testDefaultBehavior() public {
-    assertTrue(staker.paused(), "the contract should be paused at the beginning");
+    assertTrue(zap.paused(), "the contract should be paused at the beginning");
     vm.prank(admin);
-    staker.unpause();
-    assertFalse(staker.paused(), "the contract should be unpaused after the call");
+    zap.unpause();
+    assertFalse(zap.paused(), "the contract should be unpaused after the call");
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
-    staker.unpause();
+    zap.unpause();
   }
 }
