@@ -1,5 +1,12 @@
+//██████╗  █████╗ ██╗      █████╗ ██████╗ ██╗███╗   ██╗
+//██╔══██╗██╔══██╗██║     ██╔══██╗██╔══██╗██║████╗  ██║
+//██████╔╝███████║██║     ███████║██║  ██║██║██╔██╗ ██║
+//██╔═══╝ ██╔══██║██║     ██╔══██║██║  ██║██║██║╚██╗██║
+//██║     ██║  ██║███████╗██║  ██║██████╔╝██║██║ ╚████║
+//╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝
+
 pragma solidity 0.8.16;
-//SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: BUSL-1.1
 
 import {IHolyPaladinToken} from "interfaces/external/IHolyPaladinToken.sol";
 import {Owner} from "utils/Owner.sol";
