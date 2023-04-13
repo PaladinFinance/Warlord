@@ -18,6 +18,20 @@ contract QueueRewards is StakerTest {
     assertTrue(staker.queueRewards(reward, amount));
   }
 
+  function testQueueLessThan85WithUnfinishedDistribution(uint256 seed) public {
+    // TODO assertions
+    fuzzRewards(seed, true, false);
+    fuzzRewards(seed, true, false);
+  }
+
+  function testQueueMoreThan85WithUnfinishedDistribution(uint256 seed) public {
+    uint256[] memory rewardsAmount = generateNumberArrayFromHash(seed, queueableRewards.length, 1e21);
+    for (uint256 i; i < queueableRewards.length; ++i) {
+      _queue(queueableRewards[i], rewardsAmount[i]);
+    }
+    fuzzRewards(seed, true, false);
+  }
+
   function testZeroAmount(uint256 seed) public {
     (address sender, address reward) = randomQueueableReward(seed);
 

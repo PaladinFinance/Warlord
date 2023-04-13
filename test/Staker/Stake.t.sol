@@ -54,7 +54,7 @@ contract Stake is StakerTest {
     uint256 actualAmount = amount == type(uint256).max ? initialBalance : amount;
 
     vm.expectEmit(true, true, false, true);
-    emit Staked(sender, receiver, actualAmount); 
+    emit Staked(sender, receiver, actualAmount);
 
     staker.stake(amount, receiver);
 
