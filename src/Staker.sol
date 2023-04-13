@@ -326,8 +326,18 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Update the reward state for all reward tokens
    */
-  function updateAllRewardState() external whenNotPaused {
-    _updateAllRewardStates();
+  function updateAllRewardStates() external whenNotPaused {
+    address[] memory _rewards = rewardTokens;
+    uint256 length = _rewards.length;
+
+    // For all reward token in the list, update the reward state
+    for (uint256 i; i < length;) {
+      _updateRewardState(_rewards[i]);
+
+      unchecked {
+        ++i;
+      }
+    }
   }
 
   // Reward Managers functions
@@ -505,23 +515,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     uint256 currentRewardPerToken = rewardStates[reward].rewardPerToken;
     userState.accruedRewards += _getUserEarnedRewards(reward, user, currentRewardPerToken);
     userState.lastRewardPerToken = currentRewardPerToken;
-  }
-
-  /**
-   * @dev Update the reward state for all the reward tokens
-   */
-  function _updateAllRewardStates() internal {
-    address[] memory _rewards = rewardTokens;
-    uint256 length = _rewards.length;
-
-    // For all reward token in the list, update the reward state
-    for (uint256 i; i < length;) {
-      _updateRewardState(_rewards[i]);
-
-      unchecked {
-        ++i;
-      }
-    }
   }
 
   /**
