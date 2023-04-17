@@ -88,7 +88,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
 
   function _migrate(address receiver) internal virtual;
 
-  function migrate(address receiver) external onlyOwner whenPaused {
+  function migrate(address receiver) external nonReentrant onlyOwner whenPaused {
     if (receiver == address(0)) revert Errors.ZeroAddress();
     _migrate(receiver);
   }
