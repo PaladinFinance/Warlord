@@ -318,7 +318,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @notice Update the reward state for a given reward token
    * @param reward Address of the reward token
    */
-  function updateRewardState(address reward) external whenNotPaused {
+  function updateRewardState(address reward) external nonReentrant whenNotPaused {
     if (reward == address(0)) revert Errors.ZeroAddress();
     _updateRewardState(reward);
   }
@@ -326,7 +326,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Update the reward state for all reward tokens
    */
-  function updateAllRewardStates() external whenNotPaused {
+  function updateAllRewardStates() external nonReentrant whenNotPaused {
     address[] memory _rewards = rewardTokens;
     uint256 length = _rewards.length;
 
