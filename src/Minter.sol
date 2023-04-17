@@ -46,11 +46,15 @@ contract WarMinter is Owner, ReentrancyGuard {
     lockers[vlToken] = warLocker;
   }
 
-  function mint(address vlToken, uint256 amount) external {
-    mint(vlToken, amount, msg.sender);
+  function mint(address vlToken, uint256 amount) external nonReentrant {
+    _mint(vlToken, amount, msg.sender);
   }
 
-  function mint(address vlToken, uint256 amount, address receiver) public nonReentrant {
+  function mint(address vlToken, uint256 amount, address receiver) external nonReentrant {
+    _mint(vlToken, amount, receiver);
+  }
+
+  function _mint(address vlToken, uint256 amount, address receiver) internal {
     if (amount == 0) revert Errors.ZeroValue();
     if (vlToken == address(0) || receiver == address(0)) revert Errors.ZeroAddress();
     if (lockers[vlToken] == address(0)) revert Errors.NoWarLocker();
@@ -69,19 +73,23 @@ contract WarMinter is Owner, ReentrancyGuard {
     war.mint(receiver, mintAmount);
   }
 
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) public {
+  function _mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) internal {
     if (vlTokens.length != amounts.length) revert Errors.DifferentSizeArrays(vlTokens.length, amounts.length);
     if (vlTokens.length == 0) revert Errors.EmptyArray();
     uint256 length = vlTokens.length;
     for (uint256 i; i < length;) {
-      mint(vlTokens[i], amounts[i], receiver);
+      _mint(vlTokens[i], amounts[i], receiver);
       unchecked {
         ++i;
       }
     }
   }
 
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) external {
-    mintMultiple(vlTokens, amounts, msg.sender);
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) external nonReentrant {
+    _mintMultiple(vlTokens, amounts, receiver);
+  }
+
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) external nonReentrant {
+    _mintMultiple(vlTokens, amounts, msg.sender);
   }
 }
