@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./RatiosTest.sol";
 
-contract GetRedeemAmount is MintRatioTest {
+contract GetRedeemAmount is RatiosTest {
   function testDefaultBehavior(uint256 initialMintAmount) public {
     address token = randomVlToken(initialMintAmount);
     vm.assume(initialMintAmount > MINT_PRECISION_LOSS);

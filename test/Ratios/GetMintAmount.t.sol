@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./RatiosTest.sol";
 
-contract GetMintAmount is MintRatioTest {
+contract GetMintAmount is RatiosTest {
   function testMaxWarSupplyCvx() public {
     _maxWarSupplyPerToken(address(cvx), cvxMaxSupply);
   }

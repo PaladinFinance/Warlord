@@ -3,7 +3,7 @@ pragma solidity 0.8.16;
 
 import "./RatiosTest.sol";
 
-contract AddTokenWithSupply is MintRatioTest {
+contract AddTokenWithSupply is RatiosTest {
   function testDefaultBehavior(address token, uint256 maxSupply) public {
     vm.assume(token != zero && token != address(cvx) && token != address(aura));
     vm.assume(maxSupply > 0);

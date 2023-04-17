@@ -4,7 +4,7 @@ pragma solidity 0.8.16;
 import "../MainnetTest.sol";
 import "src/Ratios.sol";
 
-contract MintRatioTest is MainnetTest {
+contract RatiosTest is MainnetTest {
   WarRatios ratios;
 
   uint256 constant UNIT = 1e18;
