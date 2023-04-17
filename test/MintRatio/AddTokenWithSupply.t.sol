@@ -5,7 +5,7 @@ import "./MintRatioTest.sol";
 
 contract AddTokenWithSupply is MintRatioTest {
   function testDefaultBehavior(address token, uint256 maxSupply) public {
-    vm.assume(token != zero);
+    vm.assume(token != zero && token != address(cvx) && token != address(aura));
     vm.assume(maxSupply > 0);
 
     ratios.addTokenWithSupply(token, maxSupply);
