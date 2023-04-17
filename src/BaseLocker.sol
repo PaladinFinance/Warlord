@@ -68,7 +68,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
 
   function _lock(uint256 amount) internal virtual;
 
-  function lock(uint256 amount) external whenNotPaused nonReenrant {
+  function lock(uint256 amount) external whenNotPaused nonReentrant {
     if (warMinter != msg.sender) revert Errors.CallerNotAllowed();
     if (amount == 0) revert Errors.ZeroValue();
     _lock(amount);
@@ -76,7 +76,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
 
   function _processUnlock() internal virtual;
 
-  function processUnlock() external whenNotPaused nonReenrant {
+  function processUnlock() external whenNotPaused nonReentrant {
     _processUnlock();
   }
 
