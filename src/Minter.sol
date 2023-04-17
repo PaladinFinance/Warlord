@@ -85,7 +85,10 @@ contract WarMinter is Owner, ReentrancyGuard {
     }
   }
 
-  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver) external nonReentrant {
+  function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver)
+    external
+    nonReentrant
+  {
     _mintMultiple(vlTokens, amounts, receiver);
   }
 
