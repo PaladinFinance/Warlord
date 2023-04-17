@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./MintRatioTest.sol";
+import "./RatiosTest.sol";
 
 contract GetRedeemAmount is MintRatioTest {
   function testDefaultBehavior(uint256 initialMintAmount) public {
