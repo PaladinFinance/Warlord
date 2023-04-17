@@ -15,8 +15,9 @@ import {IWarLocker} from "interfaces/IWarLocker.sol";
 import {IRatios} from "interfaces/IRatios.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
+import {ReentrancyGuard} from "openzeppelin/security/ReentrancyGuard.sol";
 
-contract WarMinter is Owner {
+contract WarMinter is Owner, ReentrancyGuard {
   // 10_000 tokens (with 18 decimals)
   uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
 
@@ -49,7 +50,7 @@ contract WarMinter is Owner {
     mint(vlToken, amount, msg.sender);
   }
 
-  function mint(address vlToken, uint256 amount, address receiver) public {
+  function mint(address vlToken, uint256 amount, address receiver) public nonReentrant {
     if (amount == 0) revert Errors.ZeroValue();
     if (vlToken == address(0) || receiver == address(0)) revert Errors.ZeroAddress();
     if (lockers[vlToken] == address(0)) revert Errors.NoWarLocker();
