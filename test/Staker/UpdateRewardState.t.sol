@@ -5,8 +5,9 @@ import "./StakerTest.sol";
 
 contract UpdateRewardState is StakerTest {
   uint256 constant DISTRIBUTION_DURATION = 604_800; // 1 week
-  function testDefaultBehavior(/*uint128 timeDelta*/) public {
-    uint128 timeDelta = 100; // doesn't work with 604801;
+
+  function testDefaultBehavior( /*uint128 timeDelta*/ ) public {
+    uint128 timeDelta = 604_801;
     RewardAndAmount[] memory fuzzedRewards = fuzzRewards(timeDelta);
 
     uint256 initialTime = block.timestamp;
@@ -23,7 +24,11 @@ contract UpdateRewardState is StakerTest {
       SimpleRewardState memory expectedState = futureState(reward, timeDelta, initialState);
 
       assertEq(finalState.lastUpdate, expectedState.lastUpdate, "last update should correspond to the expected one");
-      assertEq(finalState.distributionEndTimestamp, expectedState.distributionEndTimestamp, "distribution end should correspond to the expected one");
+      assertEq(
+        finalState.distributionEndTimestamp,
+        expectedState.distributionEndTimestamp,
+        "distribution end should correspond to the expected one"
+      );
     }
   }
 

@@ -3,4 +3,6 @@ pragma solidity 0.8.16;
 
 import "./StakerTest.sol";
 
-contract GetUserRewardState is StakerTest {}
+contract GetUserRewardState is StakerTest {
+  function testDefaultBehavior() public {}
+}
