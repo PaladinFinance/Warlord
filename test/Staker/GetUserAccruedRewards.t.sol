@@ -49,5 +49,4 @@ contract GetUserAccruedRewards is StakerTest {
       console.log(staker.balanceOf(stakers[i]));
     }
   }
-
 }

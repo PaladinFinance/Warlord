@@ -474,8 +474,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   {
     UserRewardState storage userState = rewardStates[reward].userStates[user];
 
-    // Get the user scaled balance 
-    // TODO is it correct to talk about scaled balance or does this come from dullahan?
+    // Get the user staked balance
     uint256 userStakedAmount = balanceOf(user);
 
     if (userStakedAmount == 0) return 0;
