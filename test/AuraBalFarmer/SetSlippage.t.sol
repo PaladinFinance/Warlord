@@ -7,6 +7,10 @@ contract SetSlippage is AuraBalFarmerTest {
   function testDefaultBehavior(uint256 bps) public {
     vm.assume(bps < 500);
     assertEq(auraBalFarmer.slippageBps(), 9950);
+
+    vm.expectEmit(true, false, false, true);
+    emit SetSlippage(auraBalFarmer.slippageBps(), 10_000 - bps);
+
     vm.prank(admin);
     auraBalFarmer.setSlippage(bps);
     assertEq(auraBalFarmer.slippageBps(), 10_000 - bps);

@@ -32,6 +32,8 @@ contract AuraBalFarmerTest is MainnetTest {
   uint256 constant setUpBalBalance = 150_000e18;
   uint256 constant setUpAuraBalBalance = 150_000e18;
 
+  event SetSlippage(uint256 oldSlippage, uint256 newSlippage);
+
   function setUp() public virtual override {
     MainnetTest.setUp();
     fork();

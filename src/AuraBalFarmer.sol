@@ -24,6 +24,8 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
   uint256 public slippageBps;
 
+  event SetSlippage(uint256 oldSlippage, uint256 newSlippage);
+
   using SafeERC20 for IERC20;
 
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {
@@ -37,7 +39,10 @@ contract WarAuraBalFarmer is WarBaseFarmer {
 
   function setSlippage(uint256 _slippageBps) external onlyOwner {
     if (_slippageBps > 500) revert Errors.SlippageTooHigh();
+    uint256 oldSlippage = slippageBps;
     slippageBps = 10_000 - _slippageBps;
+
+    emit SetSlippage(oldSlippage, slippageBps);
   }
 
   function _isTokenSupported(address _token) internal pure override returns (bool) {
