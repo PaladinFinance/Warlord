@@ -67,7 +67,12 @@ contract Deployment is Script, MainnetTest {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(deployerPrivateKey);
 
-    // Deploy the whole protocol
+    deploy();
+
+    vm.stopBroadcast();
+  }
+
+  function deploy() public {
     war = new WarToken();
     ratios = new WarRatios();
     minter = new WarMinter(address(war), address(ratios));
@@ -106,7 +111,5 @@ contract Deployment is Script, MainnetTest {
 
     staker.addRewardDepositor(address(controller));
     staker.addRewardDepositor(swapper);
-
-    vm.stopBroadcast();
   }
 }
