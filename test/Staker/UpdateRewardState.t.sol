@@ -7,8 +7,8 @@ contract UpdateRewardState is StakerTest {
   uint256 constant DISTRIBUTION_DURATION = 604_800; // 1 week
 
   function testDefaultBehavior( /*uint128 timeDelta*/ ) public {
-    uint128 timeDelta = 604_801;
-    RewardAndAmount[] memory fuzzedRewards = fuzzRewards(timeDelta);
+    uint128 timeDelta = 604_805;
+    /*RewardAndAmount[] memory fuzzedRewards = */fuzzRewards(timeDelta);
 
     uint256 initialTime = block.timestamp;
     uint256 finalTime = block.timestamp + timeDelta;
@@ -74,17 +74,14 @@ contract UpdateRewardState is StakerTest {
     returns (SimpleRewardState memory newState)
   {
     assertLt(timeDelta, type(uint128).max, "durations are encoded as uint128");
-    // Deep coping struct
-    newState.lastUpdate = state.lastUpdate;
+
+    newState.distributionEndTimestamp = uint128(block.timestamp - timeDelta + DISTRIBUTION_DURATION);
+    newState.lastUpdate = timeDelta > 1 weeks ? newState.distributionEndTimestamp : state.lastUpdate + uint128(timeDelta);
 
     if (staker.rewardFarmers(reward) != zero) {
       // indexed reward
     } else {
       // queueable reward
     }
-
-    // TODO use safe128 not to break everything with fuzzing
-    newState.lastUpdate += uint128(timeDelta);
-    newState.distributionEndTimestamp = uint128(block.timestamp - timeDelta + DISTRIBUTION_DURATION);
   }
 }

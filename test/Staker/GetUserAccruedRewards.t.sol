@@ -20,15 +20,8 @@ contract GetUserAccruedRewards is StakerTest {
   }
 
   function fuzzUnstakers(uint256 seed, address[] memory stakers) public returns (address[] memory unstakers) {
-    /*for (uint256 i; i < stakers.length; ++i) {
-      console.log(staker.balanceOf(stakers[i]));
-    }*/
-
     if (stakers.length == 0) return new address[](0);
     uint256 unstakerIncrease = seed % stakers.length + 1;
-    /*console.log(seed);
-    console.log(stakers.length);
-    console.log(unstakerIncrease);*/ 
 
     for (uint256 i = unstakerIncrease; i < stakers.length; i += unstakerIncrease) {
       address unstaker = stakers[i];
