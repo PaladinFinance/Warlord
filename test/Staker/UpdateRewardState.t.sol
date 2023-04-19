@@ -8,7 +8,8 @@ contract UpdateRewardState is StakerTest {
 
   function testDefaultBehavior( /*uint128 timeDelta*/ ) public {
     uint128 timeDelta = 604_805;
-    /*RewardAndAmount[] memory fuzzedRewards = */fuzzRewards(timeDelta);
+    /*RewardAndAmount[] memory fuzzedRewards = */
+    fuzzRewards(timeDelta);
 
     uint256 initialTime = block.timestamp;
     uint256 finalTime = block.timestamp + timeDelta;
@@ -76,7 +77,8 @@ contract UpdateRewardState is StakerTest {
     assertLt(timeDelta, type(uint128).max, "durations are encoded as uint128");
 
     newState.distributionEndTimestamp = uint128(block.timestamp - timeDelta + DISTRIBUTION_DURATION);
-    newState.lastUpdate = timeDelta > 1 weeks ? newState.distributionEndTimestamp : state.lastUpdate + uint128(timeDelta);
+    newState.lastUpdate =
+      timeDelta > 1 weeks ? newState.distributionEndTimestamp : state.lastUpdate + uint128(timeDelta);
 
     if (staker.rewardFarmers(reward) != zero) {
       // indexed reward
