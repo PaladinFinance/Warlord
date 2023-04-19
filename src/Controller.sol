@@ -26,7 +26,7 @@ import "interfaces/external/incentives/IIncentivesDistributors.sol";
  * @author xx
  * @notice Controller to harvest from Locker & Farmer and process the rewards
  */
-contract Controller is ReentrancyGuard, Pausable, Owner {
+contract WarController is ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
 
   // Constants

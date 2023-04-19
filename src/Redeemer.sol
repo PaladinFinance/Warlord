@@ -24,7 +24,7 @@ import {IWarLocker} from "interfaces/IWarLocker.sol";
  * @author xx
  * @notice Redeem vlTokens agaisnt WAR & burn WAR
  */
-contract Redeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
+contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
 
   // Constants
