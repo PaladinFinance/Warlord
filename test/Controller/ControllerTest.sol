@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../MainnetTest.sol";
+import "../WarlordTest.sol";
 import "src/Token.sol";
 import {WarStaker} from "src/Staker.sol";
 import {WarRatios} from "src/Ratios.sol";
 import {WarMinter} from "src/Minter.sol";
 import "src/Controller.sol";
 
-contract ControllerTest is MainnetTest {
+contract ControllerTest is WarlordTest {
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);
   event SetMinter(address oldMinter, address newMinter);
   event SetStaker(address oldStaker, address newStaker);
@@ -20,26 +20,11 @@ contract ControllerTest is MainnetTest {
   event SetFarmer(address indexed token, address famer);
   event SetDistributionToken(address indexed token, bool distribution);
 
-  address swapper = makeAddr("swapper");
-  address incentivesClaimer = makeAddr("incentivesClaimer");
-  address feeReceiver = makeAddr("feeReceiver");
-
-  WarToken war;
-  WarRatios ratios;
-  WarMinter minter;
-  WarStaker staker;
-  Controller controller;
-
   function setUp() public virtual override {
+    WarlordTest.setUp();
+
     vm.startPrank(admin);
-
-    war = new WarToken();
-    ratios = new WarRatios();
-    minter = new WarMinter(address(war), address(ratios));
-    staker = new WarStaker(address(war));
-    controller =
-      new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, feeReceiver);
-
+    controller = new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
     vm.stopPrank();
   }
 }

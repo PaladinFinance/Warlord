@@ -12,32 +12,32 @@ contract Constructor is ControllerTest {
     assertEq(
       controller.incentivesClaimer(), address(incentivesClaimer), "incentives claimer should be assigned correctly"
     );
-    assertEq(controller.feeReceiver(), address(feeReceiver), "fee receiver should be assigned correctly");
+    assertEq(controller.feeReceiver(), protocolFeeReceiver, "fee receiver should be assigned correctly");
   }
 
   function testZeroAddressWarToken() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(zero, address(minter), address(staker), swapper, incentivesClaimer, feeReceiver);
+    controller = new Controller(zero, address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressMinter() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), zero, address(staker), swapper, incentivesClaimer, feeReceiver);
+    controller = new Controller(address(war), zero, address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressStaker() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), zero, swapper, incentivesClaimer, feeReceiver);
+    controller = new Controller(address(war), address(minter), zero, swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressSwapper() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, feeReceiver);
+    controller = new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressIncentivesClaimer() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), swapper, zero, feeReceiver);
+    controller = new Controller(address(war), address(minter), address(staker), swapper, zero, protocolFeeReceiver);
   }
 
   function testZeroAddressFeeReceiver() public {
