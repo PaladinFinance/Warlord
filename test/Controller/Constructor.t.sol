@@ -32,7 +32,8 @@ contract Constructor is ControllerTest {
 
   function testZeroAddressSwapper() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, protocolFeeReceiver);
+    controller =
+      new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressIncentivesClaimer() public {

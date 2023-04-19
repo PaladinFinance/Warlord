@@ -24,7 +24,8 @@ contract ControllerTest is WarlordTest {
     WarlordTest.setUp();
 
     vm.startPrank(admin);
-    controller = new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
+    controller =
+    new Exposed_Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
     vm.stopPrank();
   }
 }
