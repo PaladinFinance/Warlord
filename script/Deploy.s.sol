@@ -64,8 +64,8 @@ contract Deployment is Script, MainnetTest {
   WarStaker staker;
 
   function run() public {
-    // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    vm.startBroadcast(0x218A6903Fc15f71e06263b8e3C4638d927c02227);
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
 
     // Deploy the whole protocol
     war = new WarToken();
