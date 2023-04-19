@@ -16,3 +16,4 @@ docs/
 # Coverage
 coverage/
 broadcast/
+deployment_report.json
