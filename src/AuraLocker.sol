@@ -90,7 +90,7 @@ contract WarAuraLocker is IncentivizedLocker {
       // otherwise withdraw everything and lock only what's left
       vlAura.processExpiredLocks(false);
       withdrawalAmount = Math.min(unlockableBalance, withdrawalAmount);
-      aura.transfer(address(redeemModule), withdrawalAmount);
+      aura.safeTransfer(address(redeemModule), withdrawalAmount);
       IWarRedeemModule(redeemModule).notifyUnlock(address(aura), withdrawalAmount);
 
       uint256 relock = unlockableBalance - withdrawalAmount;
@@ -107,7 +107,7 @@ contract WarAuraLocker is IncentivizedLocker {
     // withdraws unlockable balance to receiver
     vlAura.processExpiredLocks(false);
     uint256 unlockedBalance = aura.balanceOf(address(this));
-    aura.transfer(receiver, unlockedBalance);
+    aura.safeTransfer(receiver, unlockedBalance);
 
     // withdraws rewards to controller
     _harvest();

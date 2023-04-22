@@ -77,7 +77,7 @@ contract WarCvxLocker is IncentivizedLocker {
       // otherwise withdraw everything and lock only what's left
       vlCvx.processExpiredLocks(false);
       withdrawalAmount = Math.min(unlockableBalance, withdrawalAmount);
-      cvx.transfer(address(redeemModule), withdrawalAmount);
+      cvx.safeTransfer(address(redeemModule), withdrawalAmount);
       IWarRedeemModule(redeemModule).notifyUnlock(address(cvx), withdrawalAmount);
 
       uint256 relock = unlockableBalance - withdrawalAmount;
