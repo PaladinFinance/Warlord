@@ -43,7 +43,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
 
     if (_token == address(crv)) {
       uint256 initialBalance = cvxCrv.balanceOf(address(this));
-      crv.safeApprove(address(crvDepositor), 0);
+      if (crv.allowance(address(this), address(crvDepositor)) != 0) crv.safeApprove(address(crvDepositor), 0);
       crv.safeIncreaseAllowance(address(crvDepositor), _amount);
       crvDepositor.deposit(_amount, true, address(0));
 
@@ -52,7 +52,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
 
     _index = stakableAmount;
 
-    cvxCrv.safeApprove(address(cvxCrvStaker), 0);
+    if (cvxCrv.allowance(address(this), address(cvxCrvStaker)) != 0) cvxCrv.safeApprove(address(cvxCrvStaker), 0);
     cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), stakableAmount);
     cvxCrvStaker.stake(stakableAmount, address(this));
     return stakableAmount;
