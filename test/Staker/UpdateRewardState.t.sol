@@ -103,6 +103,7 @@ contract UpdateRewardState is StakerTest {
     newState.ratePerSecond = state.ratePerSecond;
     newState.currentRewardAmount = state.currentRewardAmount;
 
+    // TODO do rewardPerToken
     /*
     uint256 totalAccruedAmount;
     bool skip;
