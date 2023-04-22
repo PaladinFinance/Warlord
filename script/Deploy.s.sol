@@ -17,10 +17,10 @@ import {WarCvxCrvFarmer} from "src/CvxCrvFarmer.sol";
 
 // Enter/Exit
 import {WarMinter} from "src/Minter.sol";
-import {Redeemer} from "src/Redeemer.sol";
+import {WarRedeemer} from "src/Redeemer.sol";
 
 // Infrastructure
-import {Controller} from "src/Controller.sol";
+import {WarController} from "src/Controller.sol";
 import {HolyPaladinDistributor} from "src/Distributor.sol";
 import {WarRatios} from "src/Ratios.sol";
 import {WarStaker} from "src/Staker.sol";
@@ -55,10 +55,10 @@ contract Deployment is Script, MainnetTest {
 
   // Enter/Exit
   WarMinter minter;
-  Redeemer redeemer;
+  WarRedeemer redeemer;
 
   // Infrastracture
-  Controller controller;
+  WarController controller;
   HolyPaladinDistributor distributor;
   WarRatios ratios;
   WarStaker staker;
@@ -76,10 +76,10 @@ contract Deployment is Script, MainnetTest {
     war = new WarToken();
     ratios = new WarRatios();
     minter = new WarMinter(address(war), address(ratios));
-    redeemer = new Redeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
+    redeemer = new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
     staker = new WarStaker(address(war));
     controller =
-      new Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
+      new WarController(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
     auraLocker = new WarAuraLocker(address(controller), address(redeemer), address(minter), auraDelegate);
     cvxLocker = new WarCvxLocker(address(controller), address(redeemer), address(minter), cvxDelegate);
 

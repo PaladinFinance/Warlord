@@ -17,32 +17,32 @@ contract Constructor is ControllerTest {
 
   function testZeroAddressWarToken() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(zero, address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
+    controller = new WarController(zero, address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressMinter() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), zero, address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
+    controller = new WarController(address(war), zero, address(staker), swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressStaker() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), zero, swapper, incentivesClaimer, protocolFeeReceiver);
+    controller = new WarController(address(war), address(minter), zero, swapper, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressSwapper() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     controller =
-      new Controller(address(war), address(minter), address(staker), zero, incentivesClaimer, protocolFeeReceiver);
+      new WarController(address(war), address(minter), address(staker), zero, incentivesClaimer, protocolFeeReceiver);
   }
 
   function testZeroAddressIncentivesClaimer() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), swapper, zero, protocolFeeReceiver);
+    controller = new WarController(address(war), address(minter), address(staker), swapper, zero, protocolFeeReceiver);
   }
 
   function testZeroAddressFeeReceiver() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
-    controller = new Controller(address(war), address(minter), address(staker), swapper, incentivesClaimer, zero);
+    controller = new WarController(address(war), address(minter), address(staker), swapper, incentivesClaimer, zero);
   }
 }

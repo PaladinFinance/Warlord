@@ -30,7 +30,7 @@ contract ControllerTest is WarlordTest {
   }
 }
 
-contract Exposed_Controller is Controller {
+contract Exposed_Controller is WarController {
   constructor(
     address _war,
     address _minter,
@@ -38,7 +38,7 @@ contract Exposed_Controller is Controller {
     address _swapper,
     address _incentivesClaimer,
     address _feeReceiver
-  ) Controller(_war, _minter, _staker, _swapper, _incentivesClaimer, _feeReceiver) {}
+  ) WarController(_war, _minter, _staker, _swapper, _incentivesClaimer, _feeReceiver) {}
 
   function getFarmersLength() public view returns (uint256) {
     return farmers.length;
@@ -49,6 +49,6 @@ contract Exposed_Controller is Controller {
   }
 }
 
-function expose(Controller c) pure returns (Exposed_Controller) {
+function expose(WarController c) pure returns (Exposed_Controller) {
   return Exposed_Controller(address(c));
 }

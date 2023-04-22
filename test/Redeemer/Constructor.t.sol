@@ -14,25 +14,25 @@ contract Constructor is RedeemerTest {
   function testZeroAddressWar() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
-    new Redeemer(zero, address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
+    new WarRedeemer(zero, address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
   }
 
   function testZeroAddressRatios() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
-    new Redeemer(address(war), zero, redemptionFeeReceiver, REDEMPTION_FEE);
+    new WarRedeemer(address(war), zero, redemptionFeeReceiver, REDEMPTION_FEE);
   }
 
   function testZeroAddressFeeReceiver() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
-    new Redeemer(address(war), address(ratios), zero, REDEMPTION_FEE);
+    new WarRedeemer(address(war), address(ratios), zero, REDEMPTION_FEE);
   }
 
   function testInvalidParameterZero() public {
     vm.expectRevert(Errors.InvalidParameter.selector);
 
-    new Redeemer(address(war), address(ratios), redemptionFeeReceiver, 0);
+    new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, 0);
   }
 
   function testInvalidParameterTooBig(uint256 fee) public {
@@ -40,6 +40,6 @@ contract Constructor is RedeemerTest {
 
     vm.expectRevert(Errors.InvalidParameter.selector);
 
-    new Redeemer(address(war), address(ratios), redemptionFeeReceiver, fee);
+    new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, fee);
   }
 }
