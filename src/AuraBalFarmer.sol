@@ -63,7 +63,6 @@ contract WarAuraBalFarmer is WarBaseFarmer {
       uint256 minOut = balDepositor.getMinOut(_amount, slippageBps);
       balDepositor.deposit(_amount, minOut, true, address(0));
 
-      // TODO #17 check if this is the case for auraBal
       stakableAmount = auraBal.balanceOf(address(this)) - initialBalance;
     }
 

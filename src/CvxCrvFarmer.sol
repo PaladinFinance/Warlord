@@ -37,8 +37,6 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
   }
 
   function _stake(address _token, uint256 _amount) internal override returns (uint256) {
-    // TODO #17
-
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
 
     if (_token == address(crv)) {
