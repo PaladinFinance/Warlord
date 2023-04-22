@@ -50,7 +50,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
       stakableAmount = cvxCrv.balanceOf(address(this)) - initialBalance;
     }
 
-    _index = stakableAmount;
+    _index += stakableAmount;
 
     if (cvxCrv.allowance(address(this), address(cvxCrvStaker)) != 0) cvxCrv.safeApprove(address(cvxCrvStaker), 0);
     cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), stakableAmount);
