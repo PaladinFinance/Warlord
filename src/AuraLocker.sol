@@ -69,7 +69,7 @@ contract WarAuraLocker is IncentivizedLocker {
   function _lock(uint256 amount) internal override {
     aura.safeTransferFrom(msg.sender, address(this), amount);
 
-    if (aura.allowance(address(this), address(aura)) != 0) aura.safeApprove(address(vlAura), 0);
+    if (aura.allowance(address(this), address(vlAura)) != 0) aura.safeApprove(address(vlAura), 0);
     aura.safeIncreaseAllowance(address(vlAura), amount);
 
     vlAura.lock(address(this), amount);
@@ -143,7 +143,7 @@ contract WarAuraLocker is IncentivizedLocker {
 
       uint256 relock = unlockableBalance - withdrawalAmount;
       if (relock > 0) {
-        if (aura.allowance(address(this), address(aura)) != 0) aura.safeApprove(address(vlAura), 0);
+        if (aura.allowance(address(this), address(vlAura)) != 0) aura.safeApprove(address(vlAura), 0);
         aura.safeIncreaseAllowance(address(vlAura), relock);
         vlAura.lock(address(this), relock);
       }
