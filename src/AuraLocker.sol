@@ -37,7 +37,7 @@ contract WarAuraLocker is IncentivizedLocker {
   /**
    * @notice Address of the delegate for gauge votes
    */
-  address public governanceDelegate;
+  address public gaugeDelegate;
 
   /**
    * @notice Event emitted when the gauge delegate is updated
@@ -111,8 +111,8 @@ contract WarAuraLocker is IncentivizedLocker {
     (,, uint256 lockedBalance,) = vlAura.lockedBalances(address(this));
     if (lockedBalance == 0) revert Errors.DelegationRequiresLock();
 
-    emit SetGaugeDelegate(governanceDelegate, _delegatee);
-    governanceDelegate = _delegatee;
+    emit SetGaugeDelegate(gaugeDelegate, _delegatee);
+    gaugeDelegate = _delegatee;
 
     vlAura.delegate(_delegatee);
   }
@@ -138,7 +138,7 @@ contract WarAuraLocker is IncentivizedLocker {
       // otherwise withdraw everything and lock only what's left
       vlAura.processExpiredLocks(false);
       withdrawalAmount = Math.min(unlockableBalance, withdrawalAmount);
-      aura.transfer(address(redeemModule), withdrawalAmount);
+      aura.safeTransfer(address(redeemModule), withdrawalAmount);
       IWarRedeemModule(redeemModule).notifyUnlock(address(aura), withdrawalAmount);
 
       uint256 relock = unlockableBalance - withdrawalAmount;
@@ -159,7 +159,7 @@ contract WarAuraLocker is IncentivizedLocker {
     // withdraws unlockable balance to receiver
     vlAura.processExpiredLocks(false);
     uint256 unlockedBalance = aura.balanceOf(address(this));
-    aura.transfer(receiver, unlockedBalance);
+    aura.safeTransfer(receiver, unlockedBalance);
 
     // withdraws rewards to controller
     _harvest();

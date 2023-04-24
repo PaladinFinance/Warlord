@@ -112,7 +112,7 @@ contract WarMinter is Owner, ReentrancyGuard {
 
     // Pull the tokens, and deposit them in the Locker
     IERC20(vlToken).safeTransferFrom(msg.sender, address(this), amount);
-    IERC20(vlToken).safeApprove(address(locker), 0);
+    if (IERC20(vlToken).allowance(address(this), address(locker)) != 0) IERC20(vlToken).safeApprove(address(locker), 0);
     IERC20(vlToken).safeIncreaseAllowance(address(locker), amount);
     locker.lock(amount);
 

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "../MainnetTest.sol";
+import "../WarlordTest.sol";
 import "src/Ratios.sol";
 
-contract RatiosTest is MainnetTest {
-  WarRatios ratios;
-
+contract RatiosTest is WarlordTest {
   uint256 constant UNIT = 1e18;
   uint256 constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
   uint256 constant MINT_PRECISION_LOSS = 1e6;

@@ -76,24 +76,25 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
    * @return uint256 : Amount staked
    */
   function _stake(address _token, uint256 _amount) internal override returns (uint256) {
-    // TODO #17
-
     IERC20(_token).safeTransferFrom(controller, address(this), _amount);
+
+    uint256 stakableAmount = _amount;
 
     if (_token == address(crv)) {
       uint256 initialBalance = cvxCrv.balanceOf(address(this));
-      crv.safeApprove(address(crvDepositor), 0);
+      if (crv.allowance(address(this), address(crvDepositor)) != 0) crv.safeApprove(address(crvDepositor), 0);
       crv.safeIncreaseAllowance(address(crvDepositor), _amount);
       crvDepositor.deposit(_amount, true, address(0));
-      // Take into account possible bonus for locking crv
-      _index += cvxCrv.balanceOf(address(this)) - initialBalance;
-    } else {
-      _index += _amount;
+
+      stakableAmount = cvxCrv.balanceOf(address(this)) - initialBalance;
     }
-    cvxCrv.safeApprove(address(cvxCrvStaker), 0);
-    cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), _amount);
-    cvxCrvStaker.stake(_amount, address(this));
-    return _amount;
+
+    _index += stakableAmount;
+
+    if (cvxCrv.allowance(address(this), address(cvxCrvStaker)) != 0) cvxCrv.safeApprove(address(cvxCrvStaker), 0);
+    cvxCrv.safeIncreaseAllowance(address(cvxCrvStaker), stakableAmount);
+    cvxCrvStaker.stake(stakableAmount, address(this));
+    return stakableAmount;
   }
 
   /**
