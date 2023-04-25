@@ -16,6 +16,7 @@ import {WarAuraBalFarmer} from "src/AuraBalFarmer.sol";
 import {WarCvxCrvFarmer} from "src/CvxCrvFarmer.sol";
 
 // Enter/Exit
+import {WarZap} from "src/Zap.sol";
 import {WarMinter} from "src/Minter.sol";
 import {WarRedeemer} from "src/Redeemer.sol";
 
@@ -58,6 +59,7 @@ contract Deployment is Script, MainnetTest {
   WarCvxCrvFarmer cvxCrvFarmer;
 
   // Enter/Exit
+  WarZap zap;
   WarMinter minter;
   WarRedeemer redeemer;
 
@@ -120,5 +122,7 @@ contract Deployment is Script, MainnetTest {
 
     staker.addRewardDepositor(address(controller));
     staker.addRewardDepositor(swapper);
+
+    zap = new WarZap(address(minter), address(staker), address(war));
   }
 }
