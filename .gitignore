@@ -17,3 +17,7 @@ docs/
 coverage/
 broadcast/
 deployment_report.json
+
+# Other
+.hypothesis/
+flatten/

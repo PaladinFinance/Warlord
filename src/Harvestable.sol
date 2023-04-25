@@ -12,14 +12,34 @@ import {IHarvestable} from "interfaces/IHarvestable.sol";
 import {Owner} from "utils/Owner.sol";
 import {Errors} from "utils/Errors.sol";
 
+/**
+ * @title Harvestable contract
+ * @author Paladin
+ * @notice Contract haversting reward tokens to send to the Controller
+ */
 abstract contract Harvestable is IHarvestable, Owner {
+
+  /**
+   * @notice List of harvestable reward tokens
+   */
   address[] private _rewardTokens;
+  /**
+   * @notice Set to true when a reward token is listed
+   */
   mapping(address => bool) private _rewardAssigned;
 
+  /**
+   * @notice Returns the list of rewards token that can be harvested for this contract
+   * @return address[] : List of tokens
+   */
   function rewardTokens() external view returns (address[] memory) {
     return _rewardTokens;
   }
 
+  /**
+   * @notice Adds a token to the list of harvestable tokens
+   * @param reward Address of the token
+   */
   function addReward(address reward) external onlyOwner {
     if (reward == address(0)) revert Errors.ZeroAddress();
     if (_rewardAssigned[reward]) revert Errors.AlreadySet();
@@ -28,6 +48,10 @@ abstract contract Harvestable is IHarvestable, Owner {
     _rewardAssigned[reward] = true;
   }
 
+  /**
+   * @notice Removes a token from the list of harvestable tokens
+   * @param reward Address of the token
+   */
   function removeReward(address reward) external onlyOwner {
     if (reward == address(0)) revert Errors.ZeroAddress();
     if (!_rewardAssigned[reward]) revert Errors.NotRewardToken();
