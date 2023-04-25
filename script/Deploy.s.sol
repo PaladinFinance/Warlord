@@ -26,6 +26,10 @@ import {WarRatios} from "src/Ratios.sol";
 import {WarStaker} from "src/Staker.sol";
 
 contract Deployment is Script, MainnetTest {
+  // WarToken roles
+  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
   // Delegation
   address auraDelegate = makeAddr("auraDelegate");
   address cvxDelegate = makeAddr("cvxDelegate");
@@ -77,6 +81,11 @@ contract Deployment is Script, MainnetTest {
     ratios = new WarRatios();
     minter = new WarMinter(address(war), address(ratios));
     redeemer = new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
+
+    // Setting up permissions
+    war.grantRole(MINTER_ROLE, address(minter));
+    war.grantRole(BURNER_ROLE, address(redeemer));
+
     staker = new WarStaker(address(war));
     controller =
       new WarController(address(war), address(minter), address(staker), swapper, incentivesClaimer, protocolFeeReceiver);

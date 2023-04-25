@@ -686,4 +686,21 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     if (n > type(uint128).max) revert Errors.NumberExceed128Bits();
     return uint128(n);
   }
+
+  /**
+   * @notice Recover ERC2O tokens in the contract
+   * @dev Recover ERC2O tokens in the contract
+   * @param token Address of the ERC2O token
+   * @return bool: success
+   */
+  function recoverERC20(address token) external onlyOwner returns (bool) {
+    if (token == address(warToken)) revert Errors.RecoverForbidden();
+
+    if (token == address(0)) revert Errors.ZeroAddress();
+    uint256 amount = IERC20(token).balanceOf(address(this));
+    if (amount == 0) revert Errors.ZeroValue();
+    IERC20(token).safeTransfer(msg.sender, amount);
+
+    return true;
+  }
 }

@@ -95,4 +95,19 @@ contract WarMinter is Owner, ReentrancyGuard {
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) external nonReentrant {
     _mintMultiple(vlTokens, amounts, msg.sender);
   }
+
+  /**
+   * @notice Recover ERC2O tokens in the contract
+   * @dev Recover ERC2O tokens in the contract
+   * @param token Address of the ERC2O token
+   * @return bool: success
+   */
+  function recoverERC20(address token) external onlyOwner returns (bool) {
+    if (token == address(0)) revert Errors.ZeroAddress();
+    uint256 amount = IERC20(token).balanceOf(address(this));
+    if (amount == 0) revert Errors.ZeroValue();
+    IERC20(token).safeTransfer(msg.sender, amount);
+
+    return true;
+  }
 }
