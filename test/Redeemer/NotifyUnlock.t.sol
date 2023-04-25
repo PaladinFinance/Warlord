@@ -4,6 +4,11 @@ pragma solidity 0.8.16;
 import "./RedeemerTest.sol";
 
 contract NotifyUnlock is RedeemerTest {
+  struct TokenIndex {
+    uint256 queueIndex;
+    uint256 redeemIndex;
+  }
+
   function testDefaultBehavior(address token, uint256 amount) public {
     vm.assume(token != zero);
 
@@ -31,5 +36,26 @@ contract NotifyUnlock is RedeemerTest {
     vm.expectRevert("Pausable: paused");
 
     redeemer.notifyUnlock(token, amount);
+  }
+
+  function testNotifyAlreadyUpdatedIndex(address token, uint256 previousAmount, uint256 amount) public {
+    vm.assume(token != zero);
+    vm.assume(previousAmount <= (type(uint256).max/2) && amount <= (type(uint256).max/2));
+
+    DummyLocker locker = new DummyLocker(token);
+
+    vm.prank(admin);
+    redeemer.setLocker(token, address(locker));
+
+    vm.prank(address(locker));
+    redeemer.notifyUnlock(token, previousAmount);
+
+    
+    (, uint256 previousRedeemIndex) = redeemer.tokenIndexes(token);
+
+    vm.prank(address(locker));
+    redeemer.notifyUnlock(token, amount);
+    (, uint256 redeemIndex) = redeemer.tokenIndexes(token);
+    assertEq(redeemIndex, previousRedeemIndex + amount, "redeemIndex should have increased by amount");
   }
 }

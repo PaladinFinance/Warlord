@@ -35,6 +35,7 @@ library Errors {
   error CannotRedeemYet();
   error AlreadyRedeemed();
   error WeightOverflow();
+  error InvalidWeightSum();
 
   // Staker
   error AlreadyListedDepositor();

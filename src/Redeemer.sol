@@ -46,6 +46,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   struct RedeemTicket {
+    uint256 id;
     uint256 amount;
     uint256 redeemIndex;
     address token; // TODO #18
@@ -74,7 +75,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   // Events
 
-  event NewRedeemTicket(address indexed token, address indexed user, uint256 amount, uint256 redeemIndex);
+  event NewRedeemTicket(address indexed token, address indexed user, uint256 id, uint256 amount, uint256 redeemIndex);
 
   event Redeemed(address indexed token, address indexed user, address receiver, uint256 indexed ticketNumber);
 
@@ -99,6 +100,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   // View Functions
 
   function queuedForWithdrawal(address token) external view returns (uint256) {
+    if(tokenIndexes[token].queueIndex <= tokenIndexes[token].redeemIndex) return 0;
     return tokenIndexes[token].queueIndex - tokenIndexes[token].redeemIndex;
   }
 
@@ -154,6 +156,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   {
     uint256 tokensLength = tokens.length;
     if (tokensLength == 0) revert Errors.EmptyArray();
+    if (amount == 0) revert Errors.ZeroValue();
     if (weights.length != tokensLength) revert Errors.DifferentSizeArrays(tokensLength, weights.length);
 
     uint256 totalWeight;
@@ -167,11 +170,16 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     WarToken(war).burn(address(this), burnAmount);
 
     for (uint256 i; i < tokensLength;) {
+      if (lockers[tokens[i]] == address(0)) revert Errors.NotListedLocker();
+
       totalWeight += weights[i];
       if (totalWeight > MAX_BPS) revert Errors.WeightOverflow();
 
       uint256 warAmount = (burnAmount * weights[i]) / MAX_BPS;
       uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
+
+      // Not need for a ticket if the weigth gives a value of 0
+      if(redeemAmount == 0) continue;
 
       _joinQueue(tokens[i], msg.sender, redeemAmount);
 
@@ -179,6 +187,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
         ++i;
       }
     }
+    if(totalWeight != MAX_BPS) revert Errors.InvalidWeightSum();
   }
 
   function redeem(uint256[] calldata tickets, address receiver) external nonReentrant whenNotPaused {
@@ -204,9 +213,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 newQueueIndex = tokenIndex.queueIndex + amount;
     tokenIndex.queueIndex = newQueueIndex;
 
-    userRedeems[user].push(RedeemTicket({token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false}));
+    uint256 userNextTicketId = userRedeems[user].length;
 
-    emit NewRedeemTicket(token, user, amount, newQueueIndex);
+    userRedeems[user].push(RedeemTicket({id: userNextTicketId, token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false}));
+
+    emit NewRedeemTicket(token, user, userNextTicketId, amount, newQueueIndex);
   }
 
   function _redeem(address user, address receiver, uint256 ticketNumber) internal {
