@@ -19,18 +19,33 @@ import {IMinter} from "interfaces/IMinter.sol";
 
 /**
  * @title Warlord Zap contract
- * @author xx
+ * @author Paladin
  * @notice Zap to mint WAR & stake it directly
  */
 contract WarZap is ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
 
+  /**
+   * @notice Address of the WAR token
+   */
   IERC20 public immutable warToken;
+  /**
+   * @notice Address of the Minter contract
+   */
   IMinter public immutable minter;
+  /**
+   * @notice Address of the Staker contract
+   */
   IStaker public immutable staker;
 
+  /**
+   * @notice Event emitted when zapping in
+   */
   event Zap(address indexed sender, address indexed receiver, uint256 stakedAmount);
 
+
+
+  // Constructor
   constructor(address _minter, address _staker, address _warToken) {
     if (_staker == address(0) || _minter == address(0) || _warToken == address(0)) revert Errors.ZeroAddress();
     staker = IStaker(_staker);
@@ -40,19 +55,29 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
     IERC20(_warToken).safeApprove(_staker, type(uint256).max);
   }
 
+  /**
+   * @notice Zaps a given amount of tokens to mint WAR and stake it
+   * @param token Address of the token to deposit
+   * @param amount Amount to deposit
+   * @param receiver Address to stake for
+   * @return uint256 : Amount of WAR staked
+   */
   function zap(address token, uint256 amount, address receiver) external nonReentrant whenNotPaused returns (uint256) {
     if (amount == 0) revert Errors.ZeroValue();
     if (token == address(0) || receiver == address(0)) revert Errors.ZeroAddress();
 
     uint256 prevBalance = IERC20(warToken).balanceOf(address(this));
 
+    // Pull the token
     IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
 
+    // Mint WAR
     IERC20(token).safeIncreaseAllowance(address(minter), amount);
     minter.mint(token, amount);
 
     uint256 mintedAmount = IERC20(warToken).balanceOf(address(this)) - prevBalance;
 
+    // Stake the WAR tokens for the receiver
     uint256 stakedAmount = staker.stake(mintedAmount, receiver);
 
     emit Zap(msg.sender, receiver, stakedAmount);
@@ -60,6 +85,13 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
     return stakedAmount;
   }
 
+  /**
+   * @notice Zaps given amounts of tokens to mint WAR and stake it
+   * @param vlTokens List of token addresses to deposit
+   * @param amounts Amounts to deposit for each token
+   * @param receiver Address to stake for
+   * @return uint256 : Amount of WAR staked
+   */
   function zapMultiple(address[] calldata vlTokens, uint256[] calldata amounts, address receiver)
     external
     nonReentrant
@@ -73,14 +105,17 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
 
     uint256 prevBalance = IERC20(warToken).balanceOf(address(this));
 
+    // for each token in the list
     for (uint256 i; i < length;) {
       address token = vlTokens[i];
       uint256 amount = amounts[i];
       if (amount == 0) revert Errors.ZeroValue();
       if (token == address(0)) revert Errors.ZeroAddress();
 
+      // Pull the token
       IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
 
+      // Mint WAR
       IERC20(token).safeIncreaseAllowance(address(minter), amount);
       minter.mint(token, amount);
 
@@ -89,8 +124,10 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
       }
     }
 
+    // Get the total amount of WAR minted
     uint256 mintedAmount = IERC20(warToken).balanceOf(address(this)) - prevBalance;
 
+    // Stake the WAR tokens for the receiver
     uint256 stakedAmount = staker.stake(mintedAmount, receiver);
 
     emit Zap(msg.sender, receiver, stakedAmount);

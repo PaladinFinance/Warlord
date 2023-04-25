@@ -8,8 +8,6 @@ contract ZapTest is WarlordTest {
   uint256 constant cvxMaxSupply = 100_000_000e18;
   uint256 constant auraMaxSupply = 100_000_000e18;
 
-  WarZap zap;
-
   event Zap(address indexed sender, address indexed receiver, uint256 stakedAmount);
 
   function setUp() public virtual override {

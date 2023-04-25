@@ -23,8 +23,8 @@ import "interfaces/external/incentives/IIncentivesDistributors.sol";
 
 /**
  * @title Warlord Controller contract
- * @author xx
- * @notice Controller to harvest from Locker & Farmer and process the rewards
+ * @author Paladin
+ * @notice Controller to harvest from Locker & Farmer and process the rewards for distribution
  */
 contract WarController is ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
@@ -35,56 +35,138 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice 1e18 scale
    */
   uint256 public constant UNIT = 1e18;
+  /**
+   * @notice Max BPS value (100%)
+   */
   uint256 public constant MAX_BPS = 10_000;
+
 
   // Storage
 
+  /**
+   * @notice Address of the WAR token
+   */
   address public immutable war;
 
+  /**
+   * @notice Address of the Minter contract
+   */
   IMinter public minter;
 
+  /**
+   * @notice Address of the Staker contract
+   */
   IStaker public staker;
 
+  /**
+   * @notice Address of the Swap manager
+   */
   address public swapper;
 
+  /**
+   * @notice Address of the Incentives Claimer
+   */
   address public incentivesClaimer;
 
+  /**
+   * @notice Ratio of fees taken on havested rewards
+   */
   uint256 public feeRatio = 500;
+  /**
+   * @notice Address to receive the fees
+   */
   address public feeReceiver;
 
+  /**
+   * @notice List of Lockers contract
+   */
   address[] public lockers;
+  /**
+   * @notice List of Farmers contract
+   */
   address[] public farmers;
 
+  /**
+   * @notice Address of the Locker for a token
+   */
   mapping(address => address) public tokenLockers;
+  /**
+   * @notice Address of the Farmer for a token
+   */
   mapping(address => address) public tokenFarmers;
+  /**
+   * @notice Tokens set for pure distribution (and that does not have a Locker or a Farmer contract)
+   */
   mapping(address => bool) public distributionTokens;
 
+  /**
+   * @notice Amounts of tokens available for swaps to WETH
+   */
   mapping(address => uint256) public swapperAmounts;
+
 
   // Events
 
+  /**
+   * @notice Event emitted when tokens are pulled
+   */
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);
+  /**
+   * @notice Event emitted when the Minter address is set
+   */
   event SetMinter(address oldMinter, address newMinter);
+  /**
+   * @notice Event emitted when the Staker address is set
+   */
   event SetStaker(address oldStaker, address newStaker);
+  /**
+   * @notice Event emitted when the Swapper address is updated
+   */
   event SetSwapper(address oldSwapper, address newSwapper);
+  /**
+   * @notice Event emitted when the Fee Recevier address is updated
+   */
   event SetFeeReceiver(address oldFeeReceiver, address newFeeReceiver);
+  /**
+   * @notice Event emitted when the Incentives Claimer address is updated
+   */
   event SetIncentivesClaimer(address oldIncentivesClaimer, address newIncentivesClaimer);
+  /**
+   * @notice Event emitted when the Fee Ratio is updated
+   */
   event SetFeeRatio(uint256 oldFeeRatio, uint256 newFeeRatio);
+  /**
+   * @notice Event emitted when a Locker is set
+   */
   event SetLocker(address indexed token, address locker);
+  /**
+   * @notice Event emitted when a Farmer is set
+   */
   event SetFarmer(address indexed token, address famer);
+  /**
+   * @notice Event emitted when a token is set for distribution
+   */
   event SetDistributionToken(address indexed token, bool distribution);
+
 
   // Modifiers
 
+  /**
+   * @notice Checks the caller is the Swapper address
+   */
   modifier onlySwapper() {
     if (msg.sender != swapper) revert Errors.CallerNotAllowed();
     _;
   }
 
+  /**
+   * @notice Checks the address is the Incentives Claimer address
+   */
   modifier onlyIncentivesClaimer() {
     if (msg.sender != incentivesClaimer) revert Errors.CallerNotAllowed();
     _;
   }
+
 
   // Constructor
 
@@ -109,12 +191,21 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     feeReceiver = _feeReceiver;
   }
 
+
   // State changing functions
 
+  /**
+   * @notice Harvests rewards from a given Harvestable contract
+   * @param target Address of the contract to harvest from
+   */
   function harvest(address target) external nonReentrant whenNotPaused {
     IHarvestable(target).harvest();
   }
 
+  /**
+   * @notice Harvests rewards from Harvestable contracts
+   * @param targets List of contracts to harvest from
+   */
   function harvestMultiple(address[] calldata targets) external nonReentrant whenNotPaused {
     uint256 length = targets.length;
     if (length == 0) revert Errors.EmptyArray();
@@ -128,12 +219,16 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Harvest from all listed Harvestable contracts (Locker & Farmers)
+   */
   function harvestAll() external nonReentrant whenNotPaused {
     address[] memory _lockers = lockers;
     address[] memory _farmers = farmers;
     uint256 lockersLength = _lockers.length;
     uint256 farmersLength = _farmers.length;
 
+    // Harvest from all listed Lockers
     for (uint256 i; i < lockersLength;) {
       IHarvestable(_lockers[i]).harvest();
 
@@ -142,6 +237,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       }
     }
 
+    // Harvest from all listed Farmers
     for (uint256 i; i < farmersLength;) {
       IHarvestable(_farmers[i]).harvest();
 
@@ -151,24 +247,42 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Processes a token held in this contract
+   * @param token Address of the token to process
+   */
   function process(address token) external nonReentrant whenNotPaused {
     _processReward(token);
   }
 
+  /**
+   * @notice Processes tokens held in this contract
+   * @param tokens List of tokens to process
+   */
   function processMultiple(address[] calldata tokens) external nonReentrant whenNotPaused {
     _processMultiple(tokens);
   }
 
+  /**
+   * @notice Harvests rewards from a given Harvestable contract & process the received rewards
+   * @param target Address of the contract to harvest from
+   */
   function harvestAndProcess(address target) external nonReentrant whenNotPaused {
     IHarvestable(target).harvest();
+
+    _processMultiple(IHarvestable(target).rewardTokens());
   }
 
+  /**
+   * @notice Harvest from all listed Harvestable contracts (Locker & Farmers) & process the received rewards
+   */
   function harvestAllAndProcessAll() external nonReentrant whenNotPaused {
     address[] memory _lockers = lockers;
     address[] memory _farmers = farmers;
     uint256 lockersLength = _lockers.length;
     uint256 farmersLength = _farmers.length;
 
+    // Harvest & process for each Locker
     for (uint256 i; i < lockersLength;) {
       IHarvestable(_lockers[i]).harvest();
 
@@ -179,6 +293,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       }
     }
 
+    // Harvest & process for each Farmer
     for (uint256 i; i < farmersLength;) {
       IHarvestable(_farmers[i]).harvest();
 
@@ -190,10 +305,18 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Pulls a token to be swapped to WETH
+   * @param token Address of the token to pull
+   */
   function pullToken(address token) external nonReentrant whenNotPaused onlySwapper {
     _pullToken(token);
   }
 
+  /**
+   * @notice Pulls tokens to be swapped to WETH
+   * @param tokens List of tokens to pull
+   */
   function pullMultipleTokens(address[] calldata tokens) external nonReentrant whenNotPaused onlySwapper {
     uint256 length = tokens.length;
     if (length == 0) revert Errors.EmptyArray();
@@ -207,6 +330,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Claims voting rewards from Quest for the given Locker
+   * @param locker Address of the Locker having pending rewards
+   * @param distributor Address of the contract distributing the rewards
+   * @param claimParams Parameters to claim the rewards
+   */
   function claimQuestRewards(address locker, address distributor, IQuestDistributor.ClaimParams[] calldata claimParams)
     external
     nonReentrant
@@ -235,6 +364,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Claims voting rewards for the given Locker from the Paladin Delegation address
+   * @param locker Address of the Locker having pending rewards
+   * @param distributor Address of the contract distributing the rewards
+   * @param claimParams Parameters to claim the rewards
+   */
   function claimDelegationRewards(
     address locker,
     address distributor,
@@ -261,6 +396,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Claims voting rewards from Votium for the given Locker
+   * @param locker Address of the Locker having pending rewards
+   * @param distributor Address of the contract distributing the rewards
+   * @param claimParams Parameters to claim the rewards
+   */
   function claimVotiumRewards(address locker, address distributor, IVotiumDistributor.claimParam[] calldata claimParams)
     external
     nonReentrant
@@ -288,6 +429,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @notice Claims voting rewards from HiddenHands for the given Locker
+   * @param locker Address of the Locker having pending rewards
+   * @param distributor Address of the contract distributing the rewards
+   * @param claimParams Parameters to claim the rewards
+   */
   function claimHiddenHandsRewards(
     address locker,
     address distributor,
@@ -309,39 +456,59 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+
   // Internal functions
 
+  /**
+   * @dev Processes a token based on their distribution/associted contract & take a fee on the amount processed
+   * @param token Address of the token to process
+   */
   function _processReward(address token) internal {
+    // Load the token & get the amount to process
     IERC20 _token = IERC20(token);
     uint256 currentBalance = _token.balanceOf(address(this));
 
+    // Calculate the amount of fees to take
     uint256 feeAmount = (currentBalance * feeRatio) / MAX_BPS;
     uint256 processAmount = currentBalance - feeAmount;
 
+    // Send the fees
     _sendFees(token, feeAmount);
 
     if (tokenLockers[token] != address(0)) {
+      // If the token is associated to a Locker:
+      // 1 . Mint WAR with the token
       if (_token.allowance(address(this), address(minter)) != 0) _token.safeApprove(address(minter), 0);
       _token.safeIncreaseAllowance(address(minter), processAmount);
       minter.mint(token, processAmount);
 
+      // 1 . Send the WAR to be distributed via the Staker
       IERC20 _war = IERC20(war);
       uint256 warBalance = _war.balanceOf(address(this));
       _war.safeTransfer(address(staker), warBalance);
       staker.queueRewards(war, warBalance);
     } else if (tokenFarmers[token] != address(0)) {
+      // If the token is associated to a Farmer:
+      // Send the token in the Farmer
       address _farmer = tokenFarmers[token];
       if (_token.allowance(address(this), _farmer) != 0) _token.safeApprove(_farmer, 0);
       _token.safeIncreaseAllowance(_farmer, processAmount);
       IFarmer(_farmer).stake(token, processAmount);
     } else if (distributionTokens[token]) {
+      // If the token is set for direct distribution:
+      // Send the token to be distributed via the Staker
       _token.safeTransfer(address(staker), processAmount);
       staker.queueRewards(token, processAmount);
     } else {
+      // Otherwise, set the token to be swapped for WETH by the Swapper
       swapperAmounts[token] += processAmount;
     }
   }
 
+  /**
+   * @dev Processes multiple tokens
+   * @param tokens List of tokens to process
+   */
   function _processMultiple(address[] memory tokens) internal {
     uint256 length = tokens.length;
 
@@ -354,6 +521,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
+  /**
+   * @dev Sends the given token to the Swapper
+   * @param token Address of the token to send
+   */
   function _pullToken(address token) internal {
     uint256 amount = swapperAmounts[token];
     swapperAmounts[token] = 0;
@@ -363,12 +534,22 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit PullTokens(msg.sender, token, amount);
   }
 
+  /**
+   * @dev Sends the given amount of fees to the Fee Receiver
+   * @param token Address of the token
+   * @param amount Amount of fees to send
+   */
   function _sendFees(address token, uint256 amount) internal {
     IERC20(token).safeTransfer(feeReceiver, amount);
   }
 
+
   // Admin functions
 
+  /**
+   * @notice Updates the Minter contract address
+   * @param newMinter Address of the Minter
+   */
   function setMinter(address newMinter) external onlyOwner {
     if (newMinter == address(0)) revert Errors.ZeroAddress();
     if (newMinter == address(minter)) revert Errors.AlreadySet();
@@ -379,6 +560,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetMinter(oldMinter, newMinter);
   }
 
+  /**
+   * @notice Updates the Staker contract address
+   * @param newStaker Address of the new Staker
+   */
   function setStaker(address newStaker) external onlyOwner {
     if (newStaker == address(0)) revert Errors.ZeroAddress();
     if (newStaker == address(staker)) revert Errors.AlreadySet();
@@ -389,6 +574,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetStaker(oldStaker, newStaker);
   }
 
+  /**
+   * @notice Updates the Swapper address
+   * @param newSwapper Address of the new Swapper
+   */
   function setSwapper(address newSwapper) external onlyOwner {
     if (newSwapper == address(0)) revert Errors.ZeroAddress();
     if (newSwapper == swapper) revert Errors.AlreadySet();
@@ -399,6 +588,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetSwapper(oldSwapper, newSwapper);
   }
 
+  /**
+   * @notice Updates the Incentives Claimer address
+   * @param newIncentivesClaimer Address of the new Incentives Claimer
+   */
   function setIncentivesClaimer(address newIncentivesClaimer) external onlyOwner {
     if (newIncentivesClaimer == address(0)) revert Errors.ZeroAddress();
     if (newIncentivesClaimer == incentivesClaimer) revert Errors.AlreadySet();
@@ -409,6 +602,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetIncentivesClaimer(oldIncentivesClaimer, newIncentivesClaimer);
   }
 
+  /**
+   * @notice Updates the Fee Receiver address
+   * @param newFeeReceiver Address of the new Fee Receiver
+   */
   function setFeeReceiver(address newFeeReceiver) external onlyOwner {
     if (newFeeReceiver == address(0)) revert Errors.ZeroAddress();
     if (newFeeReceiver == feeReceiver) revert Errors.AlreadySet();
@@ -419,6 +616,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetFeeReceiver(oldFeeReceiver, newFeeReceiver);
   }
 
+  /**
+   * @notice Updates the Fee ratio
+   * @param newFeeRatio Value (BPS) of the new fee ratio
+   */
   function setFeeRatio(uint256 newFeeRatio) external onlyOwner {
     if (newFeeRatio > 1000) revert Errors.InvalidFeeRatio();
     if (newFeeRatio == feeRatio) revert Errors.AlreadySet();
@@ -429,6 +630,11 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetFeeRatio(oldFeeRatio, newFeeRatio);
   }
 
+  /**
+   * @notice Sets a Locker contract for a token
+   * @param token Address of the token
+   * @param locker Address of the Locker contract
+   */
   function setLocker(address token, address locker) external onlyOwner {
     if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
     if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
@@ -468,6 +674,11 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetLocker(token, locker);
   }
 
+  /**
+   * @notice Sets a Farmer contract for a token
+   * @param token Address of the token
+   * @param farmer Address of the Farmer contract
+   */
   function setFarmer(address token, address farmer) external onlyOwner {
     if (token == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
     if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
@@ -508,6 +719,11 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     emit SetFarmer(token, farmer);
   }
 
+  /**
+   * @notice Sets a token for direct distribution
+   * @param token Address of the token
+   * @param distribution True if the token is for direct distribution
+   */
   function setDistributionToken(address token, bool distribution) external onlyOwner {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();

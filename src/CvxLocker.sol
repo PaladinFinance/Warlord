@@ -13,12 +13,29 @@ import {IDelegateRegistry} from "interfaces/external/IDelegateRegistry.sol";
 import {CvxLockerV2} from "interfaces/external/convex/vlCvx.sol";
 import {Math} from "openzeppelin/utils/math/Math.sol";
 
+/**
+ * @title Warlord CVX Locker contract
+ * @author Paladin
+ * @notice Contract locking CVX into vlCVX, claiming rewards and delegating voting power
+ */
 contract WarCvxLocker is IncentivizedLocker {
+  using SafeERC20 for IERC20;
+
+  /**
+   * @notice Address of the vlCVX contract
+   */
   CvxLockerV2 private constant vlCvx = CvxLockerV2(0x72a19342e8F1838460eBFCCEf09F6585e32db86E);
+  /**
+   * @notice Address of the CVX token
+   */
   IERC20 private constant cvx = IERC20(0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B);
+  /**
+   * @notice Address of the DelegateRegistry contract
+   */
   IDelegateRegistry private constant registry = IDelegateRegistry(0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446);
 
-  using SafeERC20 for IERC20;
+
+  // Constructor
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
@@ -26,10 +43,18 @@ contract WarCvxLocker is IncentivizedLocker {
     registry.setDelegate("cvx.eth", _delegatee);
   }
 
+  /**
+   * @notice Returns the address of the token being locked
+   * @return address : token
+   */
   function token() external pure returns (address) {
     return address(cvx);
   }
 
+  /**
+   * @dev Locks the tokens in the vlToken contract
+   * @param amount Amount to lock
+   */
   function _lock(uint256 amount) internal override {
     cvx.safeTransferFrom(msg.sender, address(this), amount);
 
@@ -39,6 +64,9 @@ contract WarCvxLocker is IncentivizedLocker {
     vlCvx.lock(address(this), amount, 0);
   }
 
+  /**
+   * @dev Harvest rewards & send them to the Controller
+   */
   function _harvest() internal override {
     CvxLockerV2.EarnedData[] memory rewards = vlCvx.claimableRewards(address(this));
     uint256 rewardsLength = rewards.length;
@@ -56,16 +84,26 @@ contract WarCvxLocker is IncentivizedLocker {
     }
   }
 
+  /**
+   * @dev Updates the Delegatee & delegates the voting power
+   * @param _delegatee Address of the delegatee
+   */
   function _setDelegate(address _delegatee) internal override {
     registry.setDelegate("cvx.eth", _delegatee);
   }
 
+  /**
+   * @dev Processes the unlock of tokens
+   */
   function _processUnlock() internal override {
+    // Harvest the rewards before processing unlocks
     _harvest();
 
+    // Get the amount being unlocked
     (, uint256 unlockableBalance,,) = vlCvx.lockedBalances(address(this));
     if (unlockableBalance == 0) return;
 
+    // Get the amount needed in the Redeem Module
     uint256 withdrawalAmount = IWarRedeemModule(redeemModule).queuedForWithdrawal(address(cvx));
 
     // If unlock == 0 relock everything
@@ -89,6 +127,10 @@ contract WarCvxLocker is IncentivizedLocker {
     }
   }
 
+  /**
+   * @dev Migrates the tokens hold by this contract to another address (& unlocks everything that can be unlocked)
+   * @param receiver Address to receive the migrated tokens
+   */
   function _migrate(address receiver) internal override {
     // TODO #19
     // withdraws unlockable balance to receiver
