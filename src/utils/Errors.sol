@@ -16,6 +16,9 @@ library Errors {
   error CallerNotPendingOwner();
   error CallerNotAllowed();
 
+  // Token
+  error AllowanceUnderflow();
+
   // Controller
   error ListedLocker();
   error ListedFarmer();
