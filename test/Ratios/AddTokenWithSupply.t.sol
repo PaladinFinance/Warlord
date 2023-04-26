@@ -8,6 +8,7 @@ contract AddTokenWithSupply is RatiosTest {
     vm.assume(token != zero && token != address(cvx) && token != address(aura));
     vm.assume(maxSupply > 0);
 
+    vm.prank(admin);
     ratios.addTokenWithSupply(token, maxSupply);
     assertEq(ratios.warPerToken(token), MAX_WAR_SUPPLY_PER_TOKEN * UNIT / maxSupply);
   }
@@ -21,16 +22,19 @@ contract AddTokenWithSupply is RatiosTest {
 
   function testCantAddZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
+    vm.prank(admin);
     ratios.addTokenWithSupply(zero, 500e18);
   }
 
   function testCantAddZeroSupply() public {
     vm.expectRevert(Errors.ZeroValue.selector);
+    vm.prank(admin);
     ratios.addTokenWithSupply(address(42), 0);
   }
 
   function testCantAddAlreadyExistingToken() public {
     vm.expectRevert(Errors.SupplyAlreadySet.selector);
+    vm.prank(admin);
     ratios.addTokenWithSupply(address(cvx), 50e18);
   }
 }

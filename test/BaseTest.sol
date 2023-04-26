@@ -20,6 +20,10 @@ contract BaseTest is Test {
 
 contract MockERC20 is ERC20 {
   constructor() ERC20("MockToken", "MCK", 18) {}
+
+  function mint(address to, uint256 amount) external {
+    _mint(to, amount);
+  }
 }
 
 // make a function that takes a list of addresses and returns a random one

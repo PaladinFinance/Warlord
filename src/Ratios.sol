@@ -9,7 +9,6 @@ pragma solidity 0.8.16;
 //SPDX-License-Identifier: BUSL-1.1
 
 import {IRatios} from "interfaces/IRatios.sol";
-import {ERC20} from "solmate/tokens/ERC20.sol";
 import {Errors} from "utils/Errors.sol";
 import {Owner} from "utils/Owner.sol";
 
@@ -25,9 +24,9 @@ contract WarRatios is IRatios, Owner {
    */
   uint256 private constant UNIT = 1e18;
   /**
-   * @notice Max supply of WAR that can be minted per token : 10_000 tokens (with 18 decimals)
+   * @notice Max supply of WAR that can be minted per token : 100M tokens (with 18 decimals)
    */
-  uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
+  uint256 private constant MAX_WAR_SUPPLY_PER_TOKEN = 100_000_000 * 1e18;
 
   /**
    * @notice Amount of WAR to mint per token for each listed token

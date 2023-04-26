@@ -76,7 +76,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Address of the contract calulating the burn amounts
    */
-  IRatios public ratios;
+  IRatios public immutable ratios;
 
   /**
    * @notice Address fo receive the redeem fees

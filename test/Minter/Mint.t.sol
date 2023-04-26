@@ -18,7 +18,6 @@ contract Mint is MinterTest {
     // TODO assertEq(IERC20(source).balanceOf(alice), 0);
     assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(receiver), expectedMintAmount);
-    assertEq(minter.mintedSupplyPerToken(source), expectedMintAmount);
   }
 
   function _mintWithImplicitReceiver(address source, uint256 amount) internal {
@@ -29,7 +28,6 @@ contract Mint is MinterTest {
     minter.mint(source, amount);
     uint256 expectedMintAmount = ratios.getMintAmount(source, amount);
     assertEq(war.balanceOf(alice), expectedMintAmount);
-    assertEq(minter.mintedSupplyPerToken(source), expectedMintAmount);
   }
 
   function testDefaultBehavior(uint256 amount, address receiver) public {
@@ -42,21 +40,6 @@ contract Mint is MinterTest {
     vm.assume(amount > 1e4);
     address token = randomVlToken(amount);
     _mintWithImplicitReceiver(token, amount);
-  }
-
-  function _mintMoreThanMaxSupply(address token, uint256 amount) internal {
-    vm.startPrank(alice);
-    IERC20(token).approve(address(minter), amount);
-    vm.expectRevert(Errors.MintAmountBiggerThanSupply.selector);
-    minter.mint(token, amount);
-    vm.stopPrank();
-  }
-
-  function testMintMoreThanMaxSupply(uint256 amount) public {
-    vm.assume(amount >= 1e32 && amount <= 1e50);
-    address token = randomVlToken(amount);
-    deal(token, alice, amount);
-    _mintMoreThanMaxSupply(token, amount);
   }
 
   function testZeroAddress(uint256 amount) public {
@@ -90,8 +73,19 @@ contract Mint is MinterTest {
 
   function testRevertsWithZeroMintAmount(uint256 amount) public {
     vm.assume(amount > 0 && amount < 1e4);
-    vm.prank(alice);
+    
+    vm.startPrank(admin);
+    MockERC20 otherToken = new MockERC20();
+    DummyLocker otherLocker = new DummyLocker(address(otherToken));
+    minter.setLocker(address(otherToken), address(otherLocker));
+    otherToken.mint(address(alice), 100e18);
+    vm.stopPrank();
+    ratios.addTokenWithSupply(address(otherToken), 1e30);
+    
+    vm.startPrank(alice);
+    otherToken.approve(address(minter), 100e18);
     vm.expectRevert(Errors.ZeroMintAmount.selector);
-    minter.mint(address(cvx), amount);
+    minter.mint(address(otherToken), amount);
+    vm.stopPrank();
   }
 }

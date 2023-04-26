@@ -44,18 +44,14 @@ contract GetMintAmount is RatiosTest {
     _defaultBehavior(address(cvx), cvxMaxSupply, amount);
   }
 
-  function _precisionLoss(address token, uint256 amount) internal {
+  function testPrecisionLoss(uint256 amount) public {
+    vm.assume(amount > 0 && amount < 1e4);
+
+    address token = makeAddr("otherToken");
+    vm.prank(admin);
+    ratios.addTokenWithSupply(token, cvxMaxSupply * 1e4);
+
     assertEq(ratios.getMintAmount(token, amount), 0);
-  }
-
-  function testCvxPrecisionLoss(uint256 amount) public {
-    vm.assume(amount > 0 && amount < 1e4);
-    _precisionLoss(address(cvx), amount);
-  }
-
-  function testAuraPrecisionLoss(uint256 amount) public {
-    vm.assume(amount > 0 && amount < 1e4);
-    _precisionLoss(address(aura), amount);
   }
 
   function testZeroAddress(uint256 amount) public {

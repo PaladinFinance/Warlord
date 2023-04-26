@@ -33,7 +33,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   /**
    * @notice WAR token contract
    */
-  WarToken public war;
+  WarToken public immutable war;
   /**
    * @notice Address of the contract calulating the mint amounts
    */
@@ -42,10 +42,6 @@ contract WarMinter is Owner, ReentrancyGuard {
    * @notice Address of the Locker set for each token
    */
   mapping(address => address) public lockers;
-  /**
-   * @notice Total amount of WAR minted per token
-   */
-  mapping(address => uint256) public mintedSupplyPerToken;
 
 
   // Constructor
@@ -53,15 +49,6 @@ contract WarMinter is Owner, ReentrancyGuard {
   constructor(address _war, address _ratios) {
     if (_war == address(0) || _ratios == address(0)) revert Errors.ZeroAddress();
     war = WarToken(_war);
-    ratios = IRatios(_ratios);
-  }
-
-  /**
-   * @notice Sets the Ratio contract
-   * @param _ratios Address of the mint Ratios contract
-   */
-  function setMintRatio(address _ratios) external onlyOwner {
-    if (_ratios == address(0)) revert Errors.ZeroAddress();
     ratios = IRatios(_ratios);
   }
 
@@ -119,8 +106,7 @@ contract WarMinter is Owner, ReentrancyGuard {
     // Get the amount of WAR to mint for the deposited amount
     uint256 mintAmount = ratios.getMintAmount(vlToken, amount);
     if (mintAmount == 0) revert Errors.ZeroMintAmount();
-    mintedSupplyPerToken[vlToken] += mintAmount;
-    if (mintedSupplyPerToken[vlToken] > MAX_SUPPLY_PER_TOKEN) revert Errors.MintAmountBiggerThanSupply();
+
     // Mint the WAR to the receiver
     war.mint(receiver, mintAmount);
   }
