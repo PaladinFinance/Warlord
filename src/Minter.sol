@@ -37,7 +37,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   /**
    * @notice Address of the contract calulating the mint amounts
    */
-  IRatios public ratios;
+  IRatios public immutable ratios;
   /**
    * @notice Address of the Locker set for each token
    */
