@@ -234,7 +234,7 @@ contract JoinQueue is RedeemerTest {
 
         vm.startPrank(alice);
 
-        vm.expectRevert(Errors.WeightOverflow.selector);
+        vm.expectRevert(Errors.InvalidWeightSum.selector);
         redeemer.joinQueue(tokens, weights, amount);
 
         vm.stopPrank();

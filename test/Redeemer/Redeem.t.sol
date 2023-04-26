@@ -45,7 +45,7 @@ contract Redeem is RedeemerTest {
 
         vm.startPrank(alice);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, true, true);
         emit Redeemed(address(cvx), alice, alice, ticket.id);
 
         redeemer.redeem(tickets, alice);
@@ -78,7 +78,7 @@ contract Redeem is RedeemerTest {
 
         uint256[] memory tickets = new uint256[](2);
         tickets[0] = ticket1.id;
-        tickets[0] = ticket2.id;
+        tickets[1] = ticket2.id;
 
         uint256 neededAmount = redeemer.queuedForWithdrawal(address(cvx));
 
@@ -93,10 +93,10 @@ contract Redeem is RedeemerTest {
 
         vm.startPrank(alice);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, true, true);
         emit Redeemed(address(cvx), alice, alice, ticket1.id);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, true, true);
         emit Redeemed(address(cvx), alice, alice, ticket2.id);
 
         redeemer.redeem(tickets, alice);
@@ -143,7 +143,7 @@ contract Redeem is RedeemerTest {
 
         uint256[] memory tickets = new uint256[](2);
         tickets[0] = ticket1.id;
-        tickets[0] = ticket2.id;
+        tickets[1] = ticket2.id;
 
         uint256 neededAmount = redeemer.queuedForWithdrawal(address(cvx));
 
@@ -158,10 +158,10 @@ contract Redeem is RedeemerTest {
 
         vm.startPrank(alice);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, true, true);
         emit Redeemed(address(cvx), alice, alice, ticket1.id);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, true, true);
         emit Redeemed(address(cvx), alice, alice, ticket2.id);
 
         redeemer.redeem(tickets, alice);

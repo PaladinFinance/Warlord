@@ -34,7 +34,6 @@ library Errors {
   error InvalidIndex();
   error CannotRedeemYet();
   error AlreadyRedeemed();
-  error WeightOverflow();
   error InvalidWeightSum();
 
   // Staker

@@ -265,7 +265,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
       if (lockers[tokens[i]] == address(0)) revert Errors.NotListedLocker();
 
       totalWeight += weights[i];
-      if (totalWeight > MAX_BPS) revert Errors.WeightOverflow();
+      if (totalWeight > MAX_BPS) revert Errors.InvalidWeightSum();
 
       // Calculate the amount of WAR burned for each token in the list
       // based on the given weights
