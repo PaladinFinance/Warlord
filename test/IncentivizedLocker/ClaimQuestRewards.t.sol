@@ -1,21 +1,18 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import "./IncentivizedLockerTest.sol";
+import {QuestTest} from "./IncentivizedLockerTest.sol";
+import "src/IncentivizedLocker.sol";
 
-contract ClaimQuestRewards is IncentivizedLockerTest {
+contract ClaimQuestRewards is QuestTest {
   error MerkleRootNotUpdated();
   error AlreadyClaimed();
   error InvalidProof();
 
   function testDefaultBehavior() public {
-    // The goal of this test is to simulate this transaction
-    // by pretending that the contract is the claimer
     // https://etherscan.io/tx/0x69748ad386d6455d1c0c2d1fa0f63ca1c025b0c2787f0911ac032f93250dc52e
-    vm.roll(16_852_914);
-    vm.warp(1_679_121_539);
 
-    IncentivizedLocker l = deployLockerAt(address(0x387ACB7f56A6f29137a21d7Eb755A3F638cab45B));
+    IncentivizedLocker l = deployLockerAt(0x387ACB7f56A6f29137a21d7Eb755A3F638cab45B);
 
     address distributor = 0xce6dc32252d85e2e955Bfd3b85660917F040a933;
 

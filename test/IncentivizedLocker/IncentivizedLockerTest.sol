@@ -11,10 +11,7 @@ contract IncentivizedLockerTest is MainnetTest {
   address warMinter;
   address delegate;
 
-  function setUp() public virtual override {
-    MainnetTest.setUp();
-    fork();
-
+  function init() public {
     controller = makeAddr("controller");
     redeemModule = makeAddr("redeemModule");
     warMinter = makeAddr("warMinter");
@@ -35,6 +32,15 @@ contract IncentivizedLockerTest is MainnetTest {
       vm.store(target, bytes32(i), targetMemory[i]);
     }
     return IncentivizedLocker(target);
+  }
+}
+
+contract QuestTest is IncentivizedLockerTest {
+  function setUp() public virtual override {
+    MainnetTest.setUp();
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 16_852_914);
+
+    init();
   }
 }
 
