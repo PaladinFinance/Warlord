@@ -59,6 +59,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    *   redeemed: true if redeemed
    */
   struct RedeemTicket {
+    uint256 id;
     uint256 amount;
     uint256 redeemIndex;
     address token; // TODO #18
@@ -114,9 +115,9 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   // Events
 
   /**
-   * @notice Event emitted when a Redeem ticket is created
-   */
-  event NewRedeemTicket(address indexed token, address indexed user, uint256 amount, uint256 redeemIndex);
+  * @notice Event emitted when a Redeem ticket is created
+  */
+  event NewRedeemTicket(address indexed token, address indexed user, uint256 id, uint256 amount, uint256 redeemIndex);
 
   /**
    * @notice Event emitted when a Redeem ticket is redeemed
@@ -163,6 +164,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    * @return uint256 : amount queued
    */
   function queuedForWithdrawal(address token) external view returns (uint256) {
+    if(tokenIndexes[token].queueIndex <= tokenIndexes[token].redeemIndex) return 0;
     return tokenIndexes[token].queueIndex - tokenIndexes[token].redeemIndex;
   }
 
@@ -243,6 +245,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   {
     uint256 tokensLength = tokens.length;
     if (tokensLength == 0) revert Errors.EmptyArray();
+    if (amount == 0) revert Errors.ZeroValue();
     if (weights.length != tokensLength) revert Errors.DifferentSizeArrays(tokensLength, weights.length);
 
     uint256 totalWeight;
@@ -259,14 +262,20 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     WarToken(war).burn(address(this), burnAmount);
 
     for (uint256 i; i < tokensLength;) {
+      if (lockers[tokens[i]] == address(0)) revert Errors.NotListedLocker();
+
       totalWeight += weights[i];
-      if (totalWeight > MAX_BPS) revert Errors.WeightOverflow();
+      if (totalWeight > MAX_BPS) revert Errors.InvalidWeightSum();
 
       // Calculate the amount of WAR burned for each token in the list
       // based on the given weights
       uint256 warAmount = (burnAmount * weights[i]) / MAX_BPS;
       // Get the amount of token to redeem based on the WAR amount
       uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
+
+
+      // Not need for a ticket if the weigth gives a value of 0
+      if(redeemAmount == 0) continue;
 
       // Join the redeem queue for the token
       _joinQueue(tokens[i], msg.sender, redeemAmount);
@@ -275,6 +284,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
         ++i;
       }
     }
+    if(totalWeight != MAX_BPS) revert Errors.InvalidWeightSum();
   }
 
   /**
@@ -314,11 +324,13 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 newQueueIndex = tokenIndex.queueIndex + amount;
     tokenIndex.queueIndex = newQueueIndex;
 
+    uint256 userNextTicketId = userRedeems[user].length;
+    
     // Add a new ticket to the user list,
     // using the new queue index as the redeem index for this ticket
-    userRedeems[user].push(RedeemTicket({token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false}));
+    userRedeems[user].push(RedeemTicket({id: userNextTicketId, token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false}));
 
-    emit NewRedeemTicket(token, user, amount, newQueueIndex);
+    emit NewRedeemTicket(token, user, userNextTicketId, amount, newQueueIndex);
   }
 
   /**
