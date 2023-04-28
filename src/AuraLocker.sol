@@ -129,4 +129,5 @@ contract WarAuraLocker is IncentivizedLocker {
     IERC20(_token).safeTransfer(owner(), amount);
 
     return true;
-  }}
+  }
+}

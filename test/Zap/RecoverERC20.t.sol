@@ -1,42 +1,55 @@
-// SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
+//SPDX-License-Identifier: MIT
 
 import "./ZapTest.sol";
+import {ERC20} from "solmate/tokens/ERC20.sol";
 
-contract Recover is ZapTest {
+contract RecoverERC20 is ZapTest {
+  RandomERC20 r;
+
+  function setUp() public override {
+    ZapTest.setUp();
+    r = new RandomERC20(address(zap));
+  }
+
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 0 && amount < 15_000e18);
-    deal(address(crv), address(admin), amount);
+    vm.assume(amount > 0);
 
-    vm.startPrank(admin);
-    crv.transfer(address(zap), amount);
+    r.sendAmount(amount);
 
-    uint256 prevBalance = crv.balanceOf(address(admin));
-
-    zap.recoverERC20(address(crv));
-
-    vm.stopPrank();
-
-    assertEq(crv.balanceOf(admin), prevBalance + amount);
-    assertEq(crv.balanceOf(address(zap)), 0);
-  }
-
-  function testZeroBalance() public {
-    vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(admin);
-    zap.recoverERC20(address(crv));
+    zap.recoverERC20(address(r));
+    assertEqDecimal(r.balanceOf(admin), amount, 18, "Recovered amount should be the minted one");
   }
 
-  function testAddressZeroToken() public {
+  function testZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
+
     vm.prank(admin);
     zap.recoverERC20(zero);
   }
 
-  function testOnlyOwner(address caller) public {
-    vm.assume(caller != admin);
+  function testZeroValue() public {
+    vm.expectRevert(Errors.ZeroValue.selector);
+
+    vm.prank(admin);
+    zap.recoverERC20(address(r));
+  }
+
+  function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
-    vm.prank(caller);
-    zap.recoverERC20(address(crv));
+    zap.recoverERC20(address(r));
+  }
+}
+
+contract RandomERC20 is ERC20 {
+  address zap;
+
+  constructor(address _zap) ERC20("Random", "RDM", 18) {
+    zap = _zap;
+  }
+
+  function sendAmount(uint256 amount) public {
+    _mint(zap, amount);
   }
 }

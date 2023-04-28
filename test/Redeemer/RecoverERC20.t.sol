@@ -13,6 +13,8 @@ contract RecoverERC20 is RedeemerTest {
   }
 
   function testDefaultBehavior(uint256 amount) public {
+    vm.assume(amount > 0);
+
     r.sendAmount(amount);
 
     vm.prank(admin);
@@ -39,6 +41,20 @@ contract RecoverERC20 is RedeemerTest {
 
   function testRecoverForbiddenCvxCrv(uint256 amount) public {
     recoverForbidden(address(cvx), amount);
+  }
+
+  function testZeroAddress() public {
+    vm.expectRevert(Errors.ZeroAddress.selector);
+
+    vm.prank(admin);
+    redeemer.recoverERC20(zero);
+  }
+
+  function testZeroValue() public {
+    vm.expectRevert(Errors.ZeroValue.selector);
+
+    vm.prank(admin);
+    redeemer.recoverERC20(address(r));
   }
 
   function testOnlyOwner() public {
