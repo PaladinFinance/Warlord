@@ -16,11 +16,12 @@ contract IncreaseAllowance is TokenTest {
     }
 
     function testWithPreviousAllowance(uint256 previousAllowance, uint256 increaseAmount) public {
+      uint256 sum;
       unchecked {
-        vm.assume(previousAllowance + increaseAmount > previousAllowance);
-        vm.assume(previousAllowance + increaseAmount > increaseAmount);
-        vm.assume(previousAllowance + increaseAmount <= type(uint256).max);
+        sum = previousAllowance + increaseAmount;
       }
+      vm.assume(sum > previousAllowance && sum > increaseAmount);
+      vm.assume(previousAllowance + increaseAmount <= type(uint256).max);
 
         vm.prank(alice);
         war.approve(bob, previousAllowance);
