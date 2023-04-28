@@ -1,15 +1,15 @@
 pragma solidity 0.8.16;
 //SPDX-License-Identifier: MIT
 
-import "./ZapTest.sol";
+import "./AuraBalFarmerTest.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 
-contract RecoverERC20 is ZapTest {
+contract RecoverERC20 is AuraBalFarmerTest {
   RandomERC20 r;
 
   function setUp() public override {
-    ZapTest.setUp();
-    r = new RandomERC20(address(zap));
+    AuraBalFarmerTest.setUp();
+    r = new RandomERC20(address(auraBalFarmer));
   }
 
   function testDefaultBehavior(uint256 amount) public {
@@ -18,7 +18,7 @@ contract RecoverERC20 is ZapTest {
     r.sendAmount(amount);
 
     vm.prank(admin);
-    zap.recoverERC20(address(r));
+    auraBalFarmer.recoverERC20(address(r));
     assertEqDecimal(r.balanceOf(admin), amount, 18, "Recovered amount should be the minted one");
   }
 
@@ -26,30 +26,30 @@ contract RecoverERC20 is ZapTest {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
     vm.prank(admin);
-    zap.recoverERC20(zero);
+    auraBalFarmer.recoverERC20(zero);
   }
 
   function testZeroValue() public {
     vm.expectRevert(Errors.ZeroValue.selector);
 
     vm.prank(admin);
-    zap.recoverERC20(address(r));
+    auraBalFarmer.recoverERC20(address(r));
   }
 
   function testOnlyOwner() public {
     vm.expectRevert("Ownable: caller is not the owner");
-    zap.recoverERC20(address(r));
+    auraBalFarmer.recoverERC20(address(r));
   }
 }
 
 contract RandomERC20 is ERC20 {
-  address zap;
+  address auraBalFarmer;
 
-  constructor(address _zap) ERC20("Random", "RDM", 18) {
-    zap = _zap;
+  constructor(address _auraBalFarmer) ERC20("Random", "RDM", 18) {
+    auraBalFarmer = _auraBalFarmer;
   }
 
   function sendAmount(uint256 amount) public {
-    _mint(zap, amount);
+    _mint(auraBalFarmer, amount);
   }
 }

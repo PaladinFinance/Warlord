@@ -133,4 +133,22 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     cvxCrvStaker.withdraw(cvxCrvStakedBalance);
     cvxCrv.safeTransfer(receiver, cvxCrvStakedBalance);
   }
+
+  /**
+   * @notice Recover ERC2O tokens in the contract
+   * @dev Recover ERC2O tokens in the contract
+   * @param _token Address of the ERC2O token
+   * @return bool: success
+   */
+  function recoverERC20(address _token) external onlyOwner returns (bool) {
+    if (_token == address(cvxCrvStaker)) revert Errors.RecoverForbidden();
+
+    if (_token == address(0)) revert Errors.ZeroAddress();
+    uint256 amount = IERC20(_token).balanceOf(address(this));
+    if (amount == 0) revert Errors.ZeroValue();
+
+    IERC20(_token).safeTransfer(owner(), amount);
+
+    return true;
+  }
 }
