@@ -39,7 +39,6 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
    */
   CrvDepositor private constant crvDepositor = CrvDepositor(0x8014595F2AB54cD7c604B00E9fb932176fDc86Ae);
 
-
   // Constructor
 
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {}
@@ -112,7 +111,7 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
     return cvxCrvStaker.balanceOf(address(this));
   }
 
- /**
+  /**
    * @dev Withdraws tokens and sends them to the receiver
    * @param receiver Address to receive the tokens
    * @param amount Amount to send

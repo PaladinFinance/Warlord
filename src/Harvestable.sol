@@ -18,7 +18,6 @@ import {Errors} from "utils/Errors.sol";
  * @notice Contract haversting reward tokens to send to the Controller
  */
 abstract contract Harvestable is IHarvestable, Owner {
-
   /**
    * @notice List of harvestable reward tokens
    */

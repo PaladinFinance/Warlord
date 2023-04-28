@@ -40,7 +40,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    */
   uint256 public constant MAX_BPS = 10_000;
 
-
   // Storage
 
   /**
@@ -104,7 +103,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    */
   mapping(address => uint256) public swapperAmounts;
 
-
   // Events
 
   /**
@@ -148,7 +146,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    */
   event SetDistributionToken(address indexed token, bool distribution);
 
-
   // Modifiers
 
   /**
@@ -166,7 +163,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (msg.sender != incentivesClaimer) revert Errors.CallerNotAllowed();
     _;
   }
-
 
   // Constructor
 
@@ -190,7 +186,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     incentivesClaimer = _incentivesClaimer;
     feeReceiver = _feeReceiver;
   }
-
 
   // State changing functions
 
@@ -456,7 +451,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
   }
 
-
   // Internal functions
 
   /**
@@ -542,7 +536,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   function _sendFees(address token, uint256 amount) internal {
     IERC20(token).safeTransfer(feeReceiver, amount);
   }
-
 
   // Admin functions
 

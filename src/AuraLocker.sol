@@ -44,7 +44,6 @@ contract WarAuraLocker is IncentivizedLocker {
    */
   event SetGaugeDelegate(address oldDelegate, address newDelegate);
 
-
   // Constructor
 
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)

@@ -20,7 +20,7 @@ import {Errors} from "utils/Errors.sol";
 /**
  * @title Warlord Staking contract
  * @author Paladin
- * @notice Staking system for Warlord to distribute yield & rewards, 
+ * @notice Staking system for Warlord to distribute yield & rewards,
  *         mints an ERC20 token representing user staked amounts.
  */
 contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
@@ -49,7 +49,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @notice Ratio of the total reward amount to be in the queue before moving it to distribution
    */
   uint256 private constant UPDATE_REWARD_RATIO = 8500; // 85 %
-
 
   // Structs
 
@@ -104,36 +103,34 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     uint256 amount;
   }
 
-
   // Storage
-  
+
   /**
    * @notice Address of the Warlord token
    */
   address public immutable warToken;
-  
+
   /**
    * @notice List of reward token distributed by this contract (past & current)
    */
-  address[] public rewardTokens;  
+  address[] public rewardTokens;
   /**
    * @notice Reward state for each reward token
    */
-  mapping(address => RewardState) public rewardStates;  
+  mapping(address => RewardState) public rewardStates;
   /**
    * @notice Address of Farmer contract for specific reward tokens
    */
-  mapping(address => address) public rewardFarmers;  
+  mapping(address => address) public rewardFarmers;
   /**
    * @notice Last indexes for reward token from Farmer contracts
    */
   mapping(address => uint256) private farmerLastIndex;
-  
+
   /**
    * @notice Address allowed to deposit reward tokens
    */
   mapping(address => bool) public rewardDepositors;
-
 
   // Events
 
@@ -172,7 +169,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
 
   event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
-
   // Modifers
 
   /**
@@ -183,14 +179,12 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     _;
   }
 
-
   // Constructor
 
   constructor(address _warToken) ERC20("Staked Warlord token", "stkWAR") {
     if (_warToken == address(0)) revert Errors.ZeroAddress();
     warToken = _warToken;
   }
-
 
   // View functions
 
@@ -260,7 +254,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     }
     return rewardAmounts;
   }
-
 
   // State-changing functions
 
@@ -366,7 +359,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     }
   }
 
-
   // Reward Managers functions
 
   /**
@@ -449,7 +441,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
 
     emit NewRewards(rewardToken, rewardAmount, distributionEnd);
   }
-
 
   // Internal functions
 
@@ -656,7 +647,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     }
   }
 
-
   // Admin functions
 
   /**
@@ -714,7 +704,6 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
 
     emit SetRewardFarmer(rewardToken, farmer);
   }
-
 
   // Maths
 

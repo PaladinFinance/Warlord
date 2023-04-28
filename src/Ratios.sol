@@ -18,7 +18,6 @@ import {Owner} from "utils/Owner.sol";
  * @notice Calculate the amounts of WAR to mint or burn
  */
 contract WarRatios is IRatios, Owner {
-
   /**
    * @notice 1e18 scale
    */

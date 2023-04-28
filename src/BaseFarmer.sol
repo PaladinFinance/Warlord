@@ -21,7 +21,6 @@ import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
  * @notice Base implementation for Farmer contracts
  */
 abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard, Harvestable {
-
   /**
    * @notice Address of the Controller contract
    */
@@ -49,7 +48,6 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard, Ha
    */
   event Staked(uint256 amount);
 
-
   // Modifiers
 
   /**
@@ -67,7 +65,6 @@ abstract contract WarBaseFarmer is IFarmer, Owner, Pausable, ReentrancyGuard, Ha
     if (warStaker != msg.sender) revert Errors.CallerNotAllowed();
     _;
   }
-
 
   // Constructor
 

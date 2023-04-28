@@ -35,7 +35,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
    */
   uint256 public constant MONTH = 2_628_000;
 
-
   // Struct
 
   /**
@@ -52,7 +51,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
     uint256 amount; // uint96
     uint256 totalLocked;
   }
-
 
   // Storage
 
@@ -94,7 +92,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
    */
   uint256 public totalUndistributedAmount;
 
-
   // Events
 
   /**
@@ -112,7 +109,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
    */
   event DistributionManagerUpdated(address indexed oldDistributionManager, address indexed newDistributionManager);
 
-
   // Modifiers
 
   /**
@@ -123,7 +119,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
     if (msg.sender != distributionManager) revert Errors.CallerNotAllowed();
     _;
   }
-
 
   // Constructor
 
@@ -161,7 +156,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
       }
     }
   }
-
 
   // State-changing functions
 
@@ -223,7 +217,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
   function updateUser(address user) external nonReentrant whenNotPaused {
     _updateUserClaimable(user);
   }
-
 
   // Internal functions
 
@@ -296,7 +289,7 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
       }
     }
 
-    // Accrue the total amount for the user 
+    // Accrue the total amount for the user
     // & set the undistributed amount for future distributions
     userAccruedAmount[user] += accruedAmount;
     totalUndistributedAmount += undistributedAmount;
@@ -304,7 +297,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
     // Update the user last index
     userLastDistributionIndex[user] = currentIndex;
   }
-
 
   // Admin functions
 

@@ -38,7 +38,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    */
   uint256 public constant MAX_BPS = 10_000;
 
-
   // Struct
 
   /**
@@ -50,7 +49,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 queueIndex;
     uint256 redeemIndex;
   }
-  
+
   /**
    * @notice RedeemTicket struct
    *   amount: amount of tokens to redeem
@@ -65,7 +64,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     address token; // TODO #18
     bool redeemed;
   }
-
 
   // Storage
 
@@ -111,12 +109,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   // user => token => UserIndexes
   mapping(address => RedeemTicket[]) public userRedeems;
 
-
   // Events
 
   /**
-  * @notice Event emitted when a Redeem ticket is created
-  */
+   * @notice Event emitted when a Redeem ticket is created
+   */
   event NewRedeemTicket(address indexed token, address indexed user, uint256 id, uint256 amount, uint256 redeemIndex);
 
   /**
@@ -142,7 +139,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    */
   event FeeReceiverUpdated(address oldFeeReceiver, address newFeeReceiver);
 
-
   // Constructor
 
   constructor(address _war, address _ratios, address _feeReceiver, uint256 _redeemFee) {
@@ -155,7 +151,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     redeemFee = _redeemFee;
   }
 
-
   // View Functions
 
   /**
@@ -164,7 +159,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    * @return uint256 : amount queued
    */
   function queuedForWithdrawal(address token) external view returns (uint256) {
-    if(tokenIndexes[token].queueIndex <= tokenIndexes[token].redeemIndex) return 0;
+    if (tokenIndexes[token].queueIndex <= tokenIndexes[token].redeemIndex) return 0;
     return tokenIndexes[token].queueIndex - tokenIndexes[token].redeemIndex;
   }
 
@@ -217,7 +212,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     return activeRedeemTickets;
   }
 
-
   // State Changing Functions
 
   /**
@@ -233,7 +227,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Joins the redeem queue for each token & burns the given amount of WAR token 
+   * @notice Joins the redeem queue for each token & burns the given amount of WAR token
    * @param tokens List of tokens to redeem
    * @param weights Weight (BPS) of redeem for each token
    * @param amount Amount of WAR to burn
@@ -273,9 +267,8 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
       // Get the amount of token to redeem based on the WAR amount
       uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
 
-
       // Not need for a ticket if the weigth gives a value of 0
-      if(redeemAmount == 0) continue;
+      if (redeemAmount == 0) continue;
 
       // Join the redeem queue for the token
       _joinQueue(tokens[i], msg.sender, redeemAmount);
@@ -284,7 +277,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
         ++i;
       }
     }
-    if(totalWeight != MAX_BPS) revert Errors.InvalidWeightSum();
+    if (totalWeight != MAX_BPS) revert Errors.InvalidWeightSum();
   }
 
   /**
@@ -308,7 +301,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     }
   }
 
-
   // Internal Functions
 
   /**
@@ -325,10 +317,12 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     tokenIndex.queueIndex = newQueueIndex;
 
     uint256 userNextTicketId = userRedeems[user].length;
-    
+
     // Add a new ticket to the user list,
     // using the new queue index as the redeem index for this ticket
-    userRedeems[user].push(RedeemTicket({id: userNextTicketId, token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false}));
+    userRedeems[user].push(
+      RedeemTicket({id: userNextTicketId, token: token, amount: amount, redeemIndex: newQueueIndex, redeemed: false})
+    );
 
     emit NewRedeemTicket(token, user, userNextTicketId, amount, newQueueIndex);
   }
@@ -356,7 +350,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
     emit Redeemed(token, user, receiver, ticketNumber);
   }
-
 
   // Admin Functions
 

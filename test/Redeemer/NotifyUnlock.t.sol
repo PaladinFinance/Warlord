@@ -40,7 +40,7 @@ contract NotifyUnlock is RedeemerTest {
 
   function testNotifyAlreadyUpdatedIndex(address token, uint256 previousAmount, uint256 amount) public {
     vm.assume(token != zero);
-    vm.assume(previousAmount <= (type(uint256).max/2) && amount <= (type(uint256).max/2));
+    vm.assume(previousAmount <= (type(uint256).max / 2) && amount <= (type(uint256).max / 2));
 
     DummyLocker locker = new DummyLocker(token);
 
@@ -50,7 +50,6 @@ contract NotifyUnlock is RedeemerTest {
     vm.prank(address(locker));
     redeemer.notifyUnlock(token, previousAmount);
 
-    
     (, uint256 previousRedeemIndex) = redeemer.tokenIndexes(token);
 
     vm.prank(address(locker));

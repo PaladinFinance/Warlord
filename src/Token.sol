@@ -18,7 +18,6 @@ import {Errors} from "utils/Errors.sol";
  * @notice ERC20 token minted by deposit in Warlord
  */
 contract WarToken is ERC20, AccessControl {
-
   /**
    * @notice Event emitted when a new pending owner is set
    */
@@ -40,7 +39,6 @@ contract WarToken is ERC20, AccessControl {
    * @notice Burner role
    */
   bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
-
 
   // Constructor
 
@@ -112,7 +110,7 @@ contract WarToken is ERC20, AccessControl {
     allowance[msg.sender][spender] = newAllowance;
 
     emit Approval(msg.sender, spender, newAllowance);
-        
+
     return true;
   }
 
@@ -123,14 +121,14 @@ contract WarToken is ERC20, AccessControl {
    */
   function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
     uint256 currentAllowance = allowance[msg.sender][spender];
-    if(subtractedValue > currentAllowance) revert Errors.AllowanceUnderflow();
-        
+    if (subtractedValue > currentAllowance) revert Errors.AllowanceUnderflow();
+
     uint256 newAllowance = currentAllowance - subtractedValue;
 
     allowance[msg.sender][spender] = newAllowance;
 
     emit Approval(msg.sender, spender, newAllowance);
-        
+
     return true;
   }
 }

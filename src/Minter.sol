@@ -43,7 +43,6 @@ contract WarMinter is Owner, ReentrancyGuard {
    */
   mapping(address => address) public lockers;
 
-
   // Constructor
 
   constructor(address _war, address _ratios) {
@@ -130,7 +129,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   }
 
   /**
-   * @notice Mints WAR token based of the amounts of tokens deposited 
+   * @notice Mints WAR token based of the amounts of tokens deposited
    * @param vlTokens List of address of tokens to deposit
    * @param amounts List of amounts to deposit
    * @param receiver Address to receive the minted WAR
@@ -143,7 +142,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   }
 
   /**
-   * @notice Mints WAR token based of the amounts of tokens deposited 
+   * @notice Mints WAR token based of the amounts of tokens deposited
    * @param vlTokens List of address of tokens to deposit
    * @param amounts List of amounts to deposit
    */

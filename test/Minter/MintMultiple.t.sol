@@ -23,7 +23,8 @@ contract MintMultiple is MinterTest {
     minter.mintMultiple(lockers, amounts, bob);
 
     //uint256 totalMintedAmount = minter.mintedSupplyPerToken(lockers[0]) + minter.mintedSupplyPerToken(lockers[1]);
-    uint256 totalMintedAmount = ratios.getMintAmount(lockers[0], amounts[0]) + ratios.getMintAmount(lockers[1], amounts[1]);
+    uint256 totalMintedAmount =
+      ratios.getMintAmount(lockers[0], amounts[0]) + ratios.getMintAmount(lockers[1], amounts[1]);
     assertEq(war.totalSupply(), totalMintedAmount);
     assertEq(war.balanceOf(bob), totalMintedAmount);
   } // TODO more tests with iterative minting
@@ -41,9 +42,10 @@ contract MintMultiple is MinterTest {
     assertEq(war.balanceOf(alice), 0);
     vm.prank(alice);
     minter.mintMultiple(lockers, amounts);
-    
+
     //uint256 totalMintedAmount = minter.mintedSupplyPerToken(lockers[0]) + minter.mintedSupplyPerToken(lockers[1]);
-    uint256 totalMintedAmount = ratios.getMintAmount(lockers[0], amounts[0]) + ratios.getMintAmount(lockers[1], amounts[1]);
+    uint256 totalMintedAmount =
+      ratios.getMintAmount(lockers[0], amounts[0]) + ratios.getMintAmount(lockers[1], amounts[1]);
     assertEq(war.totalSupply(), totalMintedAmount);
     assertEq(war.balanceOf(alice), totalMintedAmount);
   }

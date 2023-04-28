@@ -5,7 +5,6 @@ import "../WarlordTest.sol";
 import {DummyLocker} from "../Minter/MinterTest.sol";
 
 contract RedeemerTest is WarlordTest {
-
   address _minter = makeAddr("minter");
 
   function setUp() public virtual override {

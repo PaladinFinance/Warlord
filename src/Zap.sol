@@ -43,8 +43,6 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
    */
   event Zap(address indexed sender, address indexed receiver, uint256 stakedAmount);
 
-
-
   // Constructor
   constructor(address _minter, address _staker, address _warToken) {
     if (_staker == address(0) || _minter == address(0) || _warToken == address(0)) revert Errors.ZeroAddress();

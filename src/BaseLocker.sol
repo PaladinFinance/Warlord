@@ -25,7 +25,6 @@ import {WarMinter} from "src/Minter.sol";
  * @notice Base implementation for Locker contracts
  */
 abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard, Harvestable {
-
   /**
    * @notice Address of the voting power delegate
    */
@@ -63,7 +62,6 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
    * @notice Event emitted when the Locker is shutdown
    */
   event Shutdown();
-
 
   // Constructor
 

@@ -73,7 +73,7 @@ contract Mint is MinterTest {
 
   function testRevertsWithZeroMintAmount(uint256 amount) public {
     vm.assume(amount > 0 && amount < 1e4);
-    
+
     vm.startPrank(admin);
     MockERC20 otherToken = new MockERC20();
     DummyLocker otherLocker = new DummyLocker(address(otherToken));
@@ -81,7 +81,7 @@ contract Mint is MinterTest {
     otherToken.mint(address(alice), 100e18);
     vm.stopPrank();
     ratios.addTokenWithSupply(address(otherToken), 1e30);
-    
+
     vm.startPrank(alice);
     otherToken.approve(address(minter), 100e18);
     vm.expectRevert(Errors.ZeroMintAmount.selector);

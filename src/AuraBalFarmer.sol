@@ -54,7 +54,6 @@ contract WarAuraBalFarmer is WarBaseFarmer {
    */
   event SetSlippage(uint256 oldSlippage, uint256 newSlippage);
 
-
   // Constructor
 
   constructor(address _controller, address _warStaker) WarBaseFarmer(_controller, _warStaker) {
@@ -155,7 +154,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     return auraBalStaker.balanceOf(address(this));
   }
 
- /**
+  /**
    * @dev Withdraws tokens and sends them to the receiver
    * @param receiver Address to receive the tokens
    * @param amount Amount to send
