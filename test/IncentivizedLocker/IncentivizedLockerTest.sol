@@ -62,7 +62,7 @@ contract VotiumTest is IncentivizedLockerTest {
     MainnetTest.setUp();
 
     // https://etherscan.io/tx/0xf8c0aa5f030fb808b8536f794036921a0b4bcd3324abe642961fd77820c56ef4
-    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_142_839);
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_142_838);
 
     init();
   }
