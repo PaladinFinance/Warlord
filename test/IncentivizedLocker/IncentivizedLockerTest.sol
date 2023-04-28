@@ -73,7 +73,7 @@ contract HiddenHandTest is IncentivizedLockerTest {
     MainnetTest.setUp();
 
     // https://etherscan.io/tx/0x49b4de35d8451adb305a335578e012d5c39fe6ca1341684e19c1c0d8c84cf479
-    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_144_288);
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_144_287);
 
     init();
   }
