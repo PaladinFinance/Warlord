@@ -264,9 +264,21 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     _unpause();
   }
 
-  function recoverERC20(address token) external onlyOwner {
+  /**
+   * @notice Recover ERC2O tokens in the contract
+   * @dev Recover ERC2O tokens in the contract
+   * @param token Address of the ERC2O token
+   * @return bool: success
+   */
+  function recoverERC20(address token) external onlyOwner returns (bool) {
     if (token == address(war) || lockers[token] != address(0)) revert Errors.RecoverForbidden();
 
+    if (token == address(0)) revert Errors.ZeroAddress();
+    uint256 amount = IERC20(token).balanceOf(address(this));
+    if (amount == 0) revert Errors.ZeroValue();
+
     IERC20(token).safeTransfer(owner(), IERC20(token).balanceOf(address(this)));
+
+    return true;
   }
 }
