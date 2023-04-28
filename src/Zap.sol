@@ -124,7 +124,8 @@ contract WarZap is ReentrancyGuard, Pausable, Owner {
     if (token == address(0)) revert Errors.ZeroAddress();
     uint256 amount = IERC20(token).balanceOf(address(this));
     if (amount == 0) revert Errors.ZeroValue();
-    IERC20(token).safeTransfer(msg.sender, amount);
+
+    IERC20(token).safeTransfer(owner(), amount);
 
     return true;
   }

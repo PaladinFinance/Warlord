@@ -277,7 +277,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 amount = IERC20(token).balanceOf(address(this));
     if (amount == 0) revert Errors.ZeroValue();
 
-    IERC20(token).safeTransfer(owner(), IERC20(token).balanceOf(address(this)));
+    IERC20(token).safeTransfer(owner(), amount);
 
     return true;
   }
