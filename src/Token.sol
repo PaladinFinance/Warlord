@@ -101,6 +101,11 @@ contract WarToken is ERC20, AccessControl {
     _burn(from, amount);
   }
 
+  /**
+   * @dev Atomically increases the allowance granted to `spender` by the caller.
+   * @param spender The address of the spender
+   * @param addedValue Amount of token to increase the allowance
+   */
   function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
     uint256 newAllowance = allowance[msg.sender][spender] + addedValue;
 
@@ -111,6 +116,11 @@ contract WarToken is ERC20, AccessControl {
     return true;
   }
 
+  /**
+   * @dev Atomically decreases the allowance granted to `spender` by the caller.
+   * @param spender The address of the spender
+   * @param subtractedValue Amount of token to increase the allowance
+   */
   function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
     uint256 currentAllowance = allowance[msg.sender][spender];
     if(subtractedValue > currentAllowance) revert Errors.AllowanceUnderflow();
