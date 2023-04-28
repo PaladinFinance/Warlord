@@ -9,17 +9,13 @@ contract ClaimQuestRewards is IncentivizedLockerTest {
   error InvalidProof();
 
   function testDefaultBehavior() public {
-    /*
     // The goal of this test is to simulate this transaction
     // by pretending that the contract is the claimer
     // https://etherscan.io/tx/0x69748ad386d6455d1c0c2d1fa0f63ca1c025b0c2787f0911ac032f93250dc52e
     vm.roll(16_852_914);
     vm.warp(1_679_121_539);
 
-    // This operations just copies the bytecode without copying the storage initialization
     IncentivizedLocker l = deployLockerAt(address(0x387ACB7f56A6f29137a21d7Eb755A3F638cab45B));
-    // Owner is no initialized in copy
-    vm.prank(address(0));
 
     address distributor = 0xce6dc32252d85e2e955Bfd3b85660917F040a933;
 
@@ -33,16 +29,16 @@ contract ClaimQuestRewards is IncentivizedLockerTest {
     merkleProof[5] = 0x6932185c40c92cbc9fcd8ecd135c24e052933c955831935d9be6861f75228581;
     merkleProof[6] = 0xe7bec982a6f472ed8a4f23dc8c04f591464d8b26a8f9c92551248c17de579dae;
 
+    vm.prank(controller);
     l.claimQuestRewards(
       distributor,
-      11,
-      1_678_320_000,
-      78,
-      0x387ACB7f56A6f29137a21d7Eb755A3F638cab45B,
-      1_284_345_628_780_223_838_366,
+      11, // quest id
+      1_678_320_000, // period
+      78, // index
+      0x387ACB7f56A6f29137a21d7Eb755A3F638cab45B, // account
+      1_284_345_628_780_223_838_366, // amount
       merkleProof
     );
-    */
   }
 
   function testOnlyController(
