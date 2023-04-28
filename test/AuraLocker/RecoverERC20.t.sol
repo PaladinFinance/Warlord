@@ -37,7 +37,6 @@ contract RecoverERC20 is AuraLockerTest {
     recoverForbidden(address(aura), amount);
   }
 
-
   function testZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 

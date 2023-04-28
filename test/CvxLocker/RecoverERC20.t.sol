@@ -37,7 +37,6 @@ contract RecoverERC20 is CvxLockerTest {
     recoverForbidden(address(cvx), amount);
   }
 
-
   function testZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
 
