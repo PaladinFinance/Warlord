@@ -38,7 +38,42 @@ contract IncentivizedLockerTest is MainnetTest {
 contract QuestTest is IncentivizedLockerTest {
   function setUp() public virtual override {
     MainnetTest.setUp();
+
+    // https://etherscan.io/tx/0x69748ad386d6455d1c0c2d1fa0f63ca1c025b0c2787f0911ac032f93250dc52e
     vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 16_852_914);
+
+    init();
+  }
+}
+
+contract DelegationAddressTest is IncentivizedLockerTest {
+  function setUp() public virtual override {
+    MainnetTest.setUp();
+
+    // https://etherscan.io/tx/0x869e684381f31a6282779a453bbc4e89352f7c4400890d29747108a5ccf5ce70
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_137_056);
+
+    init();
+  }
+}
+
+contract VotiumTest is IncentivizedLockerTest {
+  function setUp() public virtual override {
+    MainnetTest.setUp();
+
+    // https://etherscan.io/tx/0xf8c0aa5f030fb808b8536f794036921a0b4bcd3324abe642961fd77820c56ef4
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_142_839);
+
+    init();
+  }
+}
+
+contract HiddenHandTest is IncentivizedLockerTest {
+  function setUp() public virtual override {
+    MainnetTest.setUp();
+
+    // https://etherscan.io/tx/0x49b4de35d8451adb305a335578e012d5c39fe6ca1341684e19c1c0d8c84cf479
+    vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_144_288);
 
     init();
   }
