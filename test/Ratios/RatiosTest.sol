@@ -6,8 +6,8 @@ import "src/Ratios.sol";
 
 contract RatiosTest is WarlordTest {
   uint256 constant UNIT = 1e18;
-  uint256 constant MAX_WAR_SUPPLY_PER_TOKEN = 10_000 * 1e18;
-  uint256 constant MINT_PRECISION_LOSS = 1e6;
+  uint256 constant MAX_WAR_SUPPLY_PER_TOKEN = 100_000_000 * 1e18;
+  uint256 constant MINT_PRECISION_LOSS = 1;
 
   uint256 constant cvxMaxSupply = 100_000_000e18;
   uint256 constant auraMaxSupply = 100_000_000e18;
@@ -20,5 +20,6 @@ contract RatiosTest is WarlordTest {
     ratios = new WarRatios();
     ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
     ratios.addTokenWithSupply(address(aura), auraMaxSupply);
+    vm.stopPrank();
   }
 }
