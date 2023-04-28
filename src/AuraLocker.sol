@@ -120,11 +120,13 @@ contract WarAuraLocker is IncentivizedLocker {
    * @return bool: success
    */
   function recoverERC20(address _token) external onlyOwner returns (bool) {
+    if (_token == address(aura)) revert Errors.RecoverForbidden();
+
     if (_token == address(0)) revert Errors.ZeroAddress();
     uint256 amount = IERC20(_token).balanceOf(address(this));
     if (amount == 0) revert Errors.ZeroValue();
-    IERC20(_token).safeTransfer(msg.sender, amount);
+
+    IERC20(_token).safeTransfer(owner(), amount);
 
     return true;
-  }
-}
+  }}
