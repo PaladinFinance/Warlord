@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.16;
 
-import {IHiddenHandsDistributor} from "interfaces/external/incentives/IIncentivesDistributors.sol";
+import {IHiddenHandDistributor} from "interfaces/external/incentives/IIncentivesDistributors.sol";
 
 interface IIncentivizedLocker {
   function claimQuestRewards(
@@ -32,5 +32,5 @@ interface IIncentivizedLocker {
     bytes32[] calldata merkleProof
   ) external;
 
-  function claimHiddenHandsRewards(address distributor, IHiddenHandsDistributor.Claim[] calldata claimParams) external;
+  function claimHiddenHandRewards(address distributor, IHiddenHandDistributor.Claim[] calldata claimParams) external;
 }

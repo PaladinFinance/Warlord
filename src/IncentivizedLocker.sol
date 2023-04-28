@@ -14,7 +14,7 @@ import {
   IQuestDistributor,
   IDelegationDistributor,
   IVotiumDistributor,
-  IHiddenHandsDistributor
+  IHiddenHandDistributor
 } from "interfaces/external/incentives/IIncentivesDistributors.sol";
 import {Errors} from "utils/Errors.sol";
 
@@ -106,18 +106,18 @@ abstract contract IncentivizedLocker is WarBaseLocker, IIncentivizedLocker {
   }
 
   /**
-   * @notice Claims voting rewards from HiddenHands
+   * @notice Claims voting rewards from HiddenHand
    * @param distributor Address of the contract distributing the rewards
    * @param claimParams Parameters for claims
    */
-  function claimHiddenHandsRewards(address distributor, IHiddenHandsDistributor.Claim[] calldata claimParams)
+  function claimHiddenHandRewards(address distributor, IHiddenHandDistributor.Claim[] calldata claimParams)
     external
     nonReentrant
     onlyController
   {
     require(claimParams.length == 1);
 
-    IHiddenHandsDistributor _distributor = IHiddenHandsDistributor(distributor);
+    IHiddenHandDistributor _distributor = IHiddenHandDistributor(distributor);
     address token = _distributor.rewards(claimParams[0].identifier).token;
 
     _distributor.claim(claimParams);

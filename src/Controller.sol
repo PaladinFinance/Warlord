@@ -425,15 +425,15 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Claims voting rewards from HiddenHands for the given Locker
+   * @notice Claims voting rewards from HiddenHand for the given Locker
    * @param locker Address of the Locker having pending rewards
    * @param distributor Address of the contract distributing the rewards
    * @param claimParams Parameters to claim the rewards
    */
-  function claimHiddenHandsRewards(
+  function claimHiddenHandRewards(
     address locker,
     address distributor,
-    IHiddenHandsDistributor.Claim[] memory claimParams
+    IHiddenHandDistributor.Claim[] memory claimParams
   ) external nonReentrant whenNotPaused onlyIncentivesClaimer {
     if (locker == address(0) || distributor == address(0)) revert Errors.ZeroAddress();
 
@@ -441,9 +441,9 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (length == 0) revert Errors.EmptyArray();
 
     for (uint256 i; i < length;) {
-      IHiddenHandsDistributor.Claim[] memory claim = new IHiddenHandsDistributor.Claim[](1);
+      IHiddenHandDistributor.Claim[] memory claim = new IHiddenHandDistributor.Claim[](1);
       claim[0] = claimParams[i];
-      IIncentivizedLocker(locker).claimHiddenHandsRewards(distributor, claim);
+      IIncentivizedLocker(locker).claimHiddenHandRewards(distributor, claim);
 
       unchecked {
         i++;

@@ -48,7 +48,7 @@ interface IVotiumDistributor {
     external;
 }
 
-interface IHiddenHandsDistributor {
+interface IHiddenHandDistributor {
   struct Reward {
     address token;
     bytes32 merkleRoot;
