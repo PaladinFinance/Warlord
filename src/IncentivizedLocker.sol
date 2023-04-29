@@ -120,8 +120,12 @@ abstract contract IncentivizedLocker is WarBaseLocker, IIncentivizedLocker {
     IHiddenHandDistributor _distributor = IHiddenHandDistributor(distributor);
     address token = _distributor.rewards(claimParams[0].identifier).token;
 
+    uint256 initialBalance = IERC20(token).balanceOf(address(this));
+
     _distributor.claim(claimParams);
 
-    IERC20(token).safeTransfer(controller, claimParams[0].amount);
+    uint256 claimedAmount = IERC20(token).balanceOf(address(this)) - initialBalance;
+
+    IERC20(token).safeTransfer(controller, claimedAmount);
   }
 }
