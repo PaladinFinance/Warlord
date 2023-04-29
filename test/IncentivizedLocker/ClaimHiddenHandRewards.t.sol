@@ -11,55 +11,49 @@ contract ClaimHiddenHandRewards is HiddenHandTest {
   error InvalidProof();
 
   function testDefaultBehavior() public {
-    // https://etherscan.io/tx/0x69748ad386d6455d1c0c2d1fa0f63ca1c025b0c2787f0911ac032f93250dc52e
+    // https://etherscan.io/tx/0xda4319f4f8f1da3c46a26073191c28017066c13309e38afcb28e7a7f0cf58371
 
-    IncentivizedLocker l = deployLockerAt(0x3A22107564513d257f79394C3E58eB8a0F54043C);
+    IncentivizedLocker l = deployLockerAt(0x43e49750A2Ac66dCE8D35bb4bE8Cbd458Dc91736);
 
     address distributor = 0x0b139682D5C9Df3e735063f46Fb98c689540Cf3A;
 
     IHiddenHandDistributor.Claim[] memory claimParams = new IHiddenHandDistributor.Claim[](1);
     claimParams[0].merkleProof = new bytes32[](11);
 
-    claimParams[0].merkleProof[0] = 0xcf9b4fc83d4082efc102c37f3f2e08655e660eeadeb0cda2ce326d2eedcaa934;
-    claimParams[0].merkleProof[1] = 0x6598b4a6898d7c94c2db55c0e2f6c89b18116e4490de1dc7f996a04652766edc;
-    claimParams[0].merkleProof[2] = 0x7c913d68ddce525652ab4ac5e8f7360eba9116046da75f7e02daffda27313c9c;
-    claimParams[0].merkleProof[3] = 0x06c2ce0bdcb67eb4bc6c414c78d094cb9aa99f7e28c4be96a1c7ab35b7eaa76b;
-    claimParams[0].merkleProof[4] = 0x0ca672a53a1fb1e8fadbc9d214f326f0360b003e810ce0609b7107baa2284565;
-    claimParams[0].merkleProof[5] = 0xcc2502d705d0bd727eed5825a2b286b3b898f262bc58a12520c3e9766ceb616f;
-    claimParams[0].merkleProof[6] = 0x77d1c62e7338a886204bea1861077ad43ed764bc2fb2c1a4d3326bb6a31ea2ac;
-    claimParams[0].merkleProof[7] = 0x42bca385c587a99c6b19773d259d55e79210594809acbf0fb892724aa464d80b;
-    claimParams[0].merkleProof[8] = 0xa17d664c961a7fb6e4da487f3b70389ec83609e3247d79f96e8862a31b370d70;
-    claimParams[0].merkleProof[9] = 0x69980ec4b2600386e25a46b292de37779b25c9c5629dae807ff31678ab88abed;
+    claimParams[0].merkleProof[0] = 0x13b65923196b7070cde8629e79c15348a1547fc0b5f5d620ccc5ccd64aa39fae;
+    claimParams[0].merkleProof[1] = 0xa1201ecf76fb9aa2ba060d106196adc10b5151bd489798972f1bc0f27e42a823;
+    claimParams[0].merkleProof[2] = 0xbb75724834485ed056021643567a12ad91b4956ed037d15e38bdfa3fcdf87e23;
+    claimParams[0].merkleProof[3] = 0xe799155e60287379f6720f59aa13c6c9bdfde8d4d997fc8b9e6876807b82f1de;
+    claimParams[0].merkleProof[4] = 0xb8ba9253b589586d8aed5ce72734b62819a140e3683361d5d276aa356a3c20e3;
+    claimParams[0].merkleProof[5] = 0x0a7b04c11ec4d69e7119f46b001c436c278e0b3f0c4dc3b2ccefcd7369d28d4e;
+    claimParams[0].merkleProof[6] = 0x659bf9c67b3341fc65bae36b8c2c7c7fe22c0a2065e24ce3ecc2e20800d5fcb0;
+    claimParams[0].merkleProof[7] = 0x9ffd460afbd4057e31e634715cad2e62d11402f437c73c761ef3cb34b910732a;
+    claimParams[0].merkleProof[8] = 0xfd19484fe93e0c1d91330e33456d1de3e359c42004290bce6022d8a43549412f;
+    claimParams[0].merkleProof[9] = 0x3218a10e42653f25263e2ee265306bcf326dbc3550e57653bf177c2c7c63acb3;
     claimParams[0].merkleProof[10] = 0xa1b5de8f8be45db1236068006c4e9683279c3d0fab99c8fc31c447bf2133b2bc;
 
     claimParams[0].identifier = 0x8eee07e6aecfd58a059e9c795e092747309d76151e2ab9562faf60b2d64673fd;
-    claimParams[0].account = 0x3A22107564513d257f79394C3E58eB8a0F54043C;
-    claimParams[0].amount = 2_745_971_278_089_960_463_473;
+    claimParams[0].account = 0x43e49750A2Ac66dCE8D35bb4bE8Cbd458Dc91736;
+    claimParams[0].amount = 49_974_316_119_848_575_671;
 
     vm.prank(controller);
     l.claimHiddenHandRewards(distributor, claimParams);
   }
-  /*
-  function testOnlyController(
-    address distributor,
-    IHiddenHandDistributor.Claim[] calldata claimParams
-  ) public {
-    vm.assume(claimParams.length == 1);
+
+  function testOnlyController(address distributor) public {
+    IHiddenHandDistributor.Claim[] memory claimParams = new IHiddenHandDistributor.Claim[](1);
 
     vm.expectRevert(Errors.CallerNotAllowed.selector);
     dummyLocker.claimHiddenHandRewards(distributor, claimParams);
   }
 
-  function testWrongLength(
-    address distributor,
-    IHiddenHandDistributor.Claim[] calldata claimParams
-  ) public {
-    vm.assume(claimParams.length != 1);
-    
+  function testWrongLength(address distributor, uint256 claimParamsLength) public {
+    vm.assume(claimParamsLength != 1 && claimParamsLength < 10);
+    IHiddenHandDistributor.Claim[] memory claimParams = new IHiddenHandDistributor.Claim[](claimParamsLength);
+
     vm.expectRevert();
 
     vm.prank(controller);
     dummyLocker.claimHiddenHandRewards(distributor, claimParams);
   }
-  */
 }
