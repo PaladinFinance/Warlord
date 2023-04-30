@@ -540,6 +540,20 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   // Admin functions
 
   /**
+   * @notice Pause the contract
+   */
+  function pause() external onlyOwner {
+    _pause();
+  }
+
+  /**
+   * @notice Unpause the contract
+   */
+  function unpause() external onlyOwner {
+    _unpause();
+  }
+
+  /**
    * @notice Updates the Minter contract address
    * @param newMinter Address of the Minter
    */
