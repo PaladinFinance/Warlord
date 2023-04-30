@@ -72,7 +72,7 @@ contract HiddenHandTest is IncentivizedLockerTest {
   function setUp() public virtual override {
     MainnetTest.setUp();
 
-    // https://etherscan.io/tx/0x6a7e234f357cc0695d3202df1b6d219a7a60dc48915aeaae6cf57d7e3390608d
+    // https://etherscan.io/tx/0xda4319f4f8f1da3c46a26073191c28017066c13309e38afcb28e7a7f0cf58371
     vm.createSelectFork(vm.rpcUrl("ethereum_alchemy"), 17_136_627);
 
     init();
