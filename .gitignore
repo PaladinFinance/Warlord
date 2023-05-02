@@ -21,3 +21,4 @@ deployment_report.json
 # Other
 .hypothesis/
 flatten/
+.idea/
