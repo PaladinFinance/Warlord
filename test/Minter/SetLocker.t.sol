@@ -7,7 +7,7 @@ contract SetLocker is MinterTest {
   function testDefaultBehavior(uint256 supply) public {
     vm.assume(supply > 1e20 && supply < 1e40);
     address token = makeAddr("token");
-    DummyLocker locker = new DummyLocker(token); // TODO test with actual lockers
+    DummyLocker locker = new DummyLocker(token);
     vm.prank(admin);
     minter.setLocker(token, address(locker));
     assertEq(minter.lockers(token), address(locker));

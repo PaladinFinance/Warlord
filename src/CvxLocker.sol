@@ -109,8 +109,6 @@ contract WarCvxLocker is IncentivizedLocker {
     if (withdrawalAmount == 0) {
       vlCvx.processExpiredLocks(true);
     } else {
-      // TODO better test coverage for this case
-      // sometimes fuzzing doesn't manage to cover it
       // otherwise withdraw everything and lock only what's left
       vlCvx.processExpiredLocks(false);
       withdrawalAmount = Math.min(unlockableBalance, withdrawalAmount);
@@ -131,7 +129,6 @@ contract WarCvxLocker is IncentivizedLocker {
    * @param receiver Address to receive the migrated tokens
    */
   function _migrate(address receiver) internal override {
-    // TODO #19
     // withdraws unlockable balance to receiver
     vlCvx.withdrawExpiredLocksTo(receiver);
 

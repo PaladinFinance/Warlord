@@ -18,7 +18,6 @@ contract Migrate is AuraLockerTest {
   }
 
   function testDefaultBehavior() public {
-    // TODO #19
     vm.warp(block.timestamp + 1000 days);
     uint256 auraBalRewards = _getRewards();
     (,, uint256 initialLockedBalance,) = vlAura.lockedBalances(address(locker));

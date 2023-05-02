@@ -169,11 +169,8 @@ contract WarAuraBalFarmer is WarBaseFarmer {
    * @param receiver Address to receive the migrated tokens
    */
   function _migrate(address receiver) internal override {
-    // TODO #19
     // Unstake and send auraBal
     uint256 auraBalStakedBalance = auraBalStaker.balanceOf(address(this));
-    // TODO check that claim does NOT send to the controller
-    // No clue of what this TODO means anymore but probably something related to the additional argument in withdraw
     auraBalStaker.withdraw(auraBalStakedBalance, false);
     auraBal.safeTransfer(receiver, auraBalStakedBalance);
   }

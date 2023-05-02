@@ -81,7 +81,7 @@ contract WarAuraLocker is IncentivizedLocker {
     AuraLocker.EarnedData[] memory rewards = vlAura.claimableRewards(address(this));
     uint256 rewardsLength = rewards.length;
 
-    vlAura.getReward(address(this), false); // TODO check for extras
+    vlAura.getReward(address(this), false);
 
     for (uint256 i; i < rewardsLength;) {
       IERC20 rewardToken = IERC20(rewards[i].token);
@@ -154,7 +154,6 @@ contract WarAuraLocker is IncentivizedLocker {
    * @param receiver Address to receive the migrated tokens
    */
   function _migrate(address receiver) internal override {
-    // TODO #19
     // withdraws unlockable balance to receiver
     vlAura.processExpiredLocks(false);
     uint256 unlockedBalance = aura.balanceOf(address(this));

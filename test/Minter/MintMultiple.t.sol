@@ -27,7 +27,7 @@ contract MintMultiple is MinterTest {
       ratios.getMintAmount(lockers[0], amounts[0]) + ratios.getMintAmount(lockers[1], amounts[1]);
     assertEq(war.totalSupply(), totalMintedAmount);
     assertEq(war.balanceOf(bob), totalMintedAmount);
-  } // TODO more tests with iterative minting
+  }
 
   function testDefaultBehaviorWithImplicitReceiver(uint256 amount1, uint256 amount2) public {
     vm.assume(amount1 > 1e4 && amount2 > 1e4);

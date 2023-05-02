@@ -126,7 +126,6 @@ contract WarCvxCrvFarmer is WarBaseFarmer {
    * @param receiver Address to receive the migrated tokens
    */
   function _migrate(address receiver) internal override {
-    // TODO #19
     // Unstake and send cvxCrv
     uint256 cvxCrvStakedBalance = cvxCrvStaker.balanceOf(address(this));
     cvxCrvStaker.withdraw(cvxCrvStakedBalance);

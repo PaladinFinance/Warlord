@@ -115,7 +115,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
    * @notice Checks the caller is the distribution manager
    */
   modifier onlyDistributionManager() {
-    // TODO should this be a modifier since it's used only once?
     if (msg.sender != distributionManager) revert Errors.CallerNotAllowed();
     _;
   }
