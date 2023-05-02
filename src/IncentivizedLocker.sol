@@ -21,7 +21,7 @@ import {Errors} from "utils/Errors.sol";
 /**
  * @title Incentivized Locker contract
  * @author Paladin
- * @notice Locker contract cpapble of claiming vote rewards from different sources
+ * @notice Locker contract capable of claiming vote rewards from different sources
  */
 abstract contract IncentivizedLocker is WarBaseLocker, IIncentivizedLocker {
   using SafeERC20 for IERC20;

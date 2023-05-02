@@ -18,7 +18,7 @@ import "./BaseFarmer.sol";
 /**
  * @title Warlord auraBAL Farmer contract
  * @author Paladin
- * @notice Contract reciving auraBAL or BAL to farm auraBAL rewards
+ * @notice Contract receiving auraBAL or BAL to farm auraBAL rewards
  */
 contract WarAuraBalFarmer is WarBaseFarmer {
   using SafeERC20 for IERC20;
@@ -70,7 +70,7 @@ contract WarAuraBalFarmer is WarBaseFarmer {
   }
 
   /**
-   * @notice Sets the slipppage allowed for BAL deposits
+   * @notice Sets the slippage allowed for BAL deposits
    * @param _slippageBps Slippage parameter
    */
   function setSlippage(uint256 _slippageBps) external onlyOwner {
@@ -130,9 +130,9 @@ contract WarAuraBalFarmer is WarBaseFarmer {
     bal.safeTransfer(controller, bal.balanceOf(address(this)));
     aura.safeTransfer(controller, aura.balanceOf(address(this)));
 
-    uint256 extraRewardslength = auraBalStaker.extraRewardsLength();
+    uint256 extraRewardsLength = auraBalStaker.extraRewardsLength();
 
-    for (uint256 i; i < extraRewardslength;) {
+    for (uint256 i; i < extraRewardsLength;) {
       IRewards rewarder = IRewards(auraBalStaker.extraRewards(i));
       IERC20 _token = IERC20(rewarder.rewardToken());
       uint256 balance = _token.balanceOf(address(this));

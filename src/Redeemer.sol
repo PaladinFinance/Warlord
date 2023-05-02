@@ -22,7 +22,7 @@ import {IWarLocker} from "interfaces/IWarLocker.sol";
 /**
  * @title Warlord contract to redeem vlTokens by burning WAR
  * @author Paladin
- * @notice Redeem vlTokens agaisnt WAR & burn WAR
+ * @notice Redeem vlTokens against WAR & burn WAR
  */
 contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   using SafeERC20 for IERC20;
@@ -73,7 +73,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   address public immutable war;
 
   /**
-   * @notice Address of the contract calulating the burn amounts
+   * @notice Address of the contract calculating the burn amounts
    */
   IRatios public immutable ratios;
 
@@ -99,7 +99,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   uint256 public redeemFee = 500; // 5% in BPS
 
   /**
-   * @notice Indexes sttruct for each token
+   * @notice Indexes struct for each token
    */
   mapping(address => TokenIndex) public tokenIndexes;
 
@@ -122,7 +122,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   event Redeemed(address indexed token, address indexed user, address receiver, uint256 indexed ticketNumber);
 
   /**
-   * @notice Event emitted whend setting a Locker for a token
+   * @notice Event emitted when setting a Locker for a token
    */
   event SetWarLocker(address indexed token, address indexed locker);
 
@@ -164,7 +164,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Returns an user Reddem tickets
+   * @notice Returns an user Redeem tickets
    * @param user Address of the user
    * @return RedeemTicket[] : user Redeem tickets
    */
@@ -173,7 +173,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Returns an user active Reddem tickets
+   * @notice Returns an user active Redeem tickets
    * @param user Address of the user
    * @return RedeemTicket[] : user active Redeem tickets
    */
@@ -215,7 +215,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   // State Changing Functions
 
   /**
-   * @notice Notifys when a Locker unlocks token and send them to this contract
+   * @notice Notifies when a Locker unlocks token and send them to this contract
    * @param token Address of the token
    * @param amount Amount of token unlocked
    */
@@ -251,7 +251,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 feeAmount = (amount * redeemFee) / MAX_BPS;
     uint256 burnAmount = amount - feeAmount;
 
-    // Trasnfer out the fees & burn the rest of the WAR tokens
+    // Transfer out the fees & burn the rest of the WAR tokens
     IERC20(war).safeTransfer(feeReceiver, feeAmount);
     WarToken(war).burn(address(this), burnAmount);
 
@@ -267,7 +267,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
       // Get the amount of token to redeem based on the WAR amount
       uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
 
-      // Not need for a ticket if the weigth gives a value of 0
+      // Not need for a ticket if the weight gives a value of 0
       if (redeemAmount == 0) continue;
 
       // Join the redeem queue for the token
@@ -304,7 +304,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   // Internal Functions
 
   /**
-   * @dev Creates a new Redeem ticket for the given token, based on the calulated redeem amount
+   * @dev Creates a new Redeem ticket for the given token, based on the calculated redeem amount
    * @param token Address of the token
    * @param user Address of the user owning the ticket
    * @param amount Amount to be redeemed
@@ -385,7 +385,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   /**
    * @notice Sets a new Redeem Fee
-   * @param newRedeemFee Raiot (BPS) for the Redeem Fee
+   * @param newRedeemFee Ratio (BPS) for the Redeem Fee
    */
   function setRedeemFee(uint256 newRedeemFee) external onlyOwner {
     if (newRedeemFee == 0 || newRedeemFee > 1000) revert Errors.InvalidParameter();

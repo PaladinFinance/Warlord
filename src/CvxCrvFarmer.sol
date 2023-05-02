@@ -17,7 +17,7 @@ import "./BaseFarmer.sol";
 /**
  * @title Warlord cvxCRV Farmer contract
  * @author Paladin
- * @notice Contract reciving cvxCRV or CRV to farm cvxCRV rewards
+ * @notice Contract receiving cvxCRV or CRV to farm cvxCRV rewards
  */
 contract WarCvxCrvFarmer is WarBaseFarmer {
   using SafeERC20 for IERC20;

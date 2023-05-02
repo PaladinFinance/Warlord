@@ -68,7 +68,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   address public incentivesClaimer;
 
   /**
-   * @notice Ratio of fees taken on havested rewards
+   * @notice Ratio of fees taken on harvested rewards
    */
   uint256 public feeRatio = 500;
   /**
@@ -122,7 +122,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    */
   event SetSwapper(address oldSwapper, address newSwapper);
   /**
-   * @notice Event emitted when the Fee Recevier address is updated
+   * @notice Event emitted when the Fee Receiver address is updated
    */
   event SetFeeReceiver(address oldFeeReceiver, address newFeeReceiver);
   /**
@@ -454,7 +454,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   // Internal functions
 
   /**
-   * @dev Processes a token based on their distribution/associted contract & take a fee on the amount processed
+   * @dev Processes a token based on their distribution/associated contract & take a fee on the amount processed
    * @param token Address of the token to process
    */
   function _processReward(address token) internal {

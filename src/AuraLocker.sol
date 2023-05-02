@@ -49,7 +49,7 @@ contract WarAuraLocker is IncentivizedLocker {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegatee)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegatee)
   {
-    // constructor delegating only on snapshoht because on chain delegation requires locking first
+    // constructor delegating only on snapshot because on chain delegation requires locking first
     registry.setDelegate("aurafinance.eth", _delegatee);
   }
 

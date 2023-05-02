@@ -15,7 +15,7 @@ import {Errors} from "utils/Errors.sol";
 /**
  * @title Harvestable contract
  * @author Paladin
- * @notice Contract haversting reward tokens to send to the Controller
+ * @notice Contract harvesting reward tokens to send to the Controller
  */
 abstract contract Harvestable is IHarvestable, Owner {
   /**

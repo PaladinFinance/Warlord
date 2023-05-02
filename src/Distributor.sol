@@ -254,11 +254,11 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
 
     // Here we want to account for the current started months
     // so we add 1 month to the remaining duration
-    uint256 reaminingMonths = ((endLockDate - distribution.timestamp) + MONTH) / MONTH;
+    uint256 remainingMonths = ((endLockDate - distribution.timestamp) + MONTH) / MONTH;
 
     // Remove rewards from the amount based on the lock remaining duration
     // (the more the Lock is close to the end, the less rewards the user gets)
-    userAmount = (baseAmount * reaminingMonths) / MAX_NUMBER_MONTHS;
+    userAmount = (baseAmount * remainingMonths) / MAX_NUMBER_MONTHS;
     undistributedAmount = baseAmount - userAmount;
   }
 

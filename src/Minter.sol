@@ -35,7 +35,7 @@ contract WarMinter is Owner, ReentrancyGuard {
    */
   WarToken public immutable war;
   /**
-   * @notice Address of the contract calulating the mint amounts
+   * @notice Address of the contract calculating the mint amounts
    */
   IRatios public immutable ratios;
   /**
@@ -83,7 +83,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   }
 
   /**
-   * @dev Pulls tokens to deposit in the associted Locker & mints WAR based on the deposited amount
+   * @dev Pulls tokens to deposit in the associated Locker & mints WAR based on the deposited amount
    * @param vlToken Address of the token to deposit
    * @param amount Amount to deposit
    * @param receiver Address to receive the minted WAR
@@ -111,7 +111,7 @@ contract WarMinter is Owner, ReentrancyGuard {
   }
 
   /**
-   * @dev Pulls multiple tokens to deposit in the associted Locker & mints WAR based on the deposited amounts
+   * @dev Pulls multiple tokens to deposit in the associated Locker & mints WAR based on the deposited amounts
    * @param vlTokens List of address of tokens to deposit
    * @param amounts List of amounts to deposit
    * @param receiver Address to receive the minted WAR

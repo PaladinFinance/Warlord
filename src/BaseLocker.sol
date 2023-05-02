@@ -187,7 +187,7 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
   }
 
   /**
-   * @notice Sutdowns the contract
+   * @notice Shutdowns the contract
    */
   function shutdown() external onlyOwner whenPaused {
     isShutdown = true;

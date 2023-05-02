@@ -67,7 +67,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    *   rewardPerToken: current reward per token value
    *   lastUpdate: last state update timestamp
    *   distributionEndTimestamp: timestamp of the end of the current distribution
-   *   ratePerSecond: current disitrbution rate per second
+   *   ratePerSecond: current distribution rate per second
    *   currentRewardAmount: current amount of rewards in the distribution
    *   queuedRewardAmount: current amount of reward queued for the distribution
    *   userStates: users reward state for the reward token
@@ -169,7 +169,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
 
   event SetRewardFarmer(address indexed rewardToken, address indexed farmer);
 
-  // Modifers
+  // Modifiers
 
   /**
    * @notice Check that the caller is allowed to deposit rewards
@@ -222,7 +222,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
    * @notice Get the current amount of rewards accrued by an user for a given reward token
    * @param reward Address of the reward token
    * @param user Address of the user
-   * @return uint256 : amount of rewards accured
+   * @return uint256 : amount of rewards accrued
    */
   function getUserAccruedRewards(address reward, address user) external view returns (uint256) {
     return rewardStates[reward].userStates[user].accruedRewards
@@ -362,7 +362,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   // Reward Managers functions
 
   /**
-   * @notice Add rewards to the disitribution queue
+   * @notice Add rewards to the distribution queue
    * @dev Set the amount of reward in the queue & push it to distribution if reaching the ratio
    * @param rewardToken Address of the reward token
    * @param amount Amount to queue
@@ -392,7 +392,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
     // Get the total queued amount (previous queued amount + new amount)
     uint256 totalQueued = amount + state.queuedRewardAmount;
 
-    // If there is no current disitrbution (previous is over or new reward token):
+    // If there is no current distribution (previous is over or new reward token):
     // Start the new distribution directly without queueing the rewards
     if (block.timestamp >= state.distributionEndTimestamp) {
       _updateRewardDistribution(rewardToken, state, totalQueued);
@@ -401,8 +401,8 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
       return true;
     }
 
-    // Calculate the reamining duration for the current distribution
-    // and the ratio of queued rewards compared to total rewards (queued + reamining in current distribution)
+    // Calculate the remaining duration for the current distribution
+    // and the ratio of queued rewards compared to total rewards (queued + remaining in current distribution)
     // state.distributionEndTimestamp - block.timestamp => remaining time in the current distribution
     uint256 currentRemainingAmount = state.ratePerSecond * (state.distributionEndTimestamp - block.timestamp);
     uint256 queuedAmountRatio = (totalQueued * MAX_BPS) / (totalQueued + currentRemainingAmount);
@@ -419,7 +419,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @dev Update the disitrubtion parameters for a given reward token
+   * @dev Update the distribution parameters for a given reward token
    * @param rewardToken Address of the reward token
    * @param state State of the reward token
    * @param rewardAmount Total amount ot distribute
@@ -498,7 +498,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
 
     if (userStakedAmount == 0) return 0;
 
-    // If the user has a previous deposit (scaled balance is not null), calcualte the
+    // If the user has a previous deposit (scaled balance is not null), calculate the
     // earned rewards based on the increase of the rewardPerToken value
     return (userStakedAmount * (currentRewardPerToken - userState.lastRewardPerToken)) / UNIT;
   }
@@ -664,7 +664,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Add an address to the lsit of allowed reward depositors
+   * @notice Add an address to the list of allowed reward depositors
    * @param depositor Address to deposit rewards
    */
   function addRewardDepositor(address depositor) external onlyOwner {
@@ -677,7 +677,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   }
 
   /**
-   * @notice Remove an address from the lsit of allowed reward depositors
+   * @notice Remove an address from the list of allowed reward depositors
    * @param depositor Address to deposit rewards
    */
   function removeRewardDepositor(address depositor) external onlyOwner {
