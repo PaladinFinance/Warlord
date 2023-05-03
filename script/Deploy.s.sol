@@ -21,7 +21,6 @@ import {WarMinter} from "src/Minter.sol";
 import {WarRedeemer} from "src/Redeemer.sol";
 
 // Infrastructure
-import {Harvestable} from "src/Harvestable.sol";
 import {WarController} from "src/Controller.sol";
 import {HolyPaladinDistributor} from "src/Distributor.sol";
 import {WarRatios} from "src/Ratios.sol";
