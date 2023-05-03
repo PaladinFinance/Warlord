@@ -21,6 +21,7 @@ import {WarMinter} from "src/Minter.sol";
 import {WarRedeemer} from "src/Redeemer.sol";
 
 // Infrastructure
+import {Harvestable} from "src/Harvestable.sol";
 import {WarController} from "src/Controller.sol";
 import {HolyPaladinDistributor} from "src/Distributor.sol";
 import {WarRatios} from "src/Ratios.sol";
@@ -123,6 +124,22 @@ contract Deployment is Script, MainnetTest {
     staker.addRewardDepositor(address(controller));
     staker.addRewardDepositor(swapper);
 
+    // Harvestable config
+    auraBalFarmer.addReward(address(aura));
+    auraBalFarmer.addReward(address(bbAUsd));
+    auraBalFarmer.addReward(address(bal));
+
+    cvxCrvFarmer.addReward(address(crv));
+    cvxCrvFarmer.addReward(address(threeCrv));
+    cvxCrvFarmer.addReward(address(cvx));
+
+    cvxLocker.addReward(address(cvxCrv));
+    cvxLocker.addReward(address(cvxFxs));
+    cvxLocker.addReward(address(fxs));
+
+    auraLocker.addReward(address(auraBal));
+
+    // Zap
     zap = new WarZap(address(minter), address(staker), address(war));
   }
 }
