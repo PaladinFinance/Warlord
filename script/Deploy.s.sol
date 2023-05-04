@@ -109,8 +109,8 @@ contract Deployment is Script, MainnetTest {
     controller.setLocker(address(aura), address(auraLocker));
     controller.setLocker(address(cvx), address(cvxLocker));
 
-    controller.setFarmer(address(auraBal), address(auraLocker));
-    controller.setFarmer(address(cvxCrv), address(cvxLocker));
+    controller.setFarmer(address(auraBal), address(auraBalFarmer));
+    controller.setFarmer(address(cvxCrv), address(cvxCrvFarmer));
 
     // Redeemer config
     redeemer.setLocker(address(aura), address(auraLocker));
