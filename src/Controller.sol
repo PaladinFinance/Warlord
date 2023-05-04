@@ -458,9 +458,15 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @param token Address of the token to process
    */
   function _processReward(address token) internal {
+    // If the token address is the zero address, skip
+    if (token == address(0)) return;
+
     // Load the token & get the amount to process
     IERC20 _token = IERC20(token);
     uint256 currentBalance = _token.balanceOf(address(this));
+
+    // If the controller doesn't have any, skip
+    if (currentBalance == 0) return;
 
     // Calculate the amount of fees to take
     uint256 feeAmount = (currentBalance * feeRatio) / MAX_BPS;
@@ -476,7 +482,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       _token.safeIncreaseAllowance(address(minter), processAmount);
       minter.mint(token, processAmount);
 
-      // 1 . Send the WAR to be distributed via the Staker
+      // 2 . Send the WAR to be distributed via the Staker
       IERC20 _war = IERC20(war);
       uint256 warBalance = _war.balanceOf(address(this));
       _war.safeTransfer(address(staker), warBalance);
@@ -649,7 +655,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (tokenLockers[token] == address(0)) {
       // if the token didn't have a previous locker
       // append the new locker to the list
-      lockers.push(locker);
+      lockers.push(locker); // TODO outside of if else 
     } else {
       // if the token has already been assigned to another locker
       // remove the old locker without leaving holes in the array
@@ -673,7 +679,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
         }
       }
       // append the new locker to the list
-      lockers.push(locker);
+      lockers.push(locker);// TODO outside of if else
     }
 
     tokenLockers[token] = locker;
@@ -693,7 +699,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (tokenFarmers[token] == address(0)) {
       // if the token didn't have a previous farmer
       // append the new farmer to the list
-      farmers.push(farmer);
+      farmers.push(farmer);// TODO outside of if else
     } else {
       // if the token has already been assigned to another farmer
       // remove the old farmer without leaving holes in the array
@@ -718,7 +724,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       }
 
       // append the new farmer to the list
-      farmers.push(farmer);
+      farmers.push(farmer);// TODO outside of if else
     }
 
     tokenFarmers[token] = farmer;
