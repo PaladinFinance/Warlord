@@ -24,10 +24,18 @@ contract ControllerTest is WarlordTest {
   event SetDistributionToken(address indexed token, bool distribution);
 
   IIncentivizedLocker dummyLocker;
+  address[] queueableRewards;
+
+  function popoulateRewards() public {
+    queueableRewards.push(address(war));
+    queueableRewards.push(address(pal));
+    queueableRewards.push(address(weth));
+    queueableRewards.push(address(cvxFxs));
+  }
 
   function setUp() public virtual override {
     WarlordTest.setUp();
-
+    popoulateRewards();
     init();
   }
 
@@ -58,6 +66,7 @@ contract ControllerTest is WarlordTest {
 contract UnexposedControllerTest is ControllerTest {
   function setUp() public virtual override {
     WarlordTest.setUp();
+    popoulateRewards();
   }
 }
 

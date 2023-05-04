@@ -28,8 +28,16 @@ contract Process is UnexposedControllerTest {
     return (balance * controller.feeRatio()) / 10_000;
   }
 
+  function assertFee(address token, uint256 amount) public {
+    uint256 fee = computeFee(amount);
+    uint256 balance = IERC20(token).balanceOf(protocolFeeReceiver);
+    assertGt(balance, 0, "The fee taken should always be non zero");
+    assertEqDecimal(balance, fee, 18, "Fee is sent to the correct receiver");
+  }
+
+  // TODO test with initial amounts that are non zeor
   function testLocker(uint256 amount) public {
-    vm.assume(amount < 1e33);
+    vm.assume(amount > 1e5 && amount < 1e33);
     uint256 fee = computeFee(amount);
 
     address token = randomVlToken(amount);
@@ -41,15 +49,16 @@ contract Process is UnexposedControllerTest {
 
     uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
     assertEqDecimal(warDelta, amount - fee, 18, "Fee should have taken from queued amount");
+    assertFee(token, amount);
   }
 
-  function testFarmer(/* uint256 amount */) public {
-    uint256 amount = 4984;
+  function testFarmer(uint256 amount) public {
+    vm.assume(amount > 1e5 && amount < 1e50);
+
     uint256 fee = computeFee(amount);
 
     address token = randomFarmableToken(amount);
     address farmer = controller.tokenFarmers(token);
-    console.log(farmer);
 
     deal(token, address(controller), amount);
 
@@ -57,12 +66,40 @@ contract Process is UnexposedControllerTest {
 
     controller.process(token);
 
-    uint256 stakeDelta = IERC20(token).balanceOf(farmer) - initialStakedAmount;
-    console.log(stakeDelta);
-    // assertEqDecimal(stakeDelta, amount - fee, 18, "Fee should have taken from queued amount");
+    uint256 stakeDelta = convexCvxCrvStaker.balanceOf(farmer) - initialStakedAmount;
+    assertEqDecimal(stakeDelta, amount - fee, 18, "Fee should have taken from queued amount");
+    assertFee(token, amount);
   }
-  function testDirectDistribution() public {
+
+  function testDirectDistribution(uint256 amount) public {
+    vm.assume(amount > 1e5 && amount < 1e50);
+
+    uint256 fee = computeFee(amount);
+
+    address token = queueableRewards[amount % queueableRewards.length];
+    deal(token, address(controller), amount);
+
+    uint256 initialQueuedReward = war.balanceOf(address(staker));
+
+    controller.process(token);
+
+    uint256 rewardDelta = war.balanceOf(address(staker)) - initialQueuedReward;
+    assertEqDecimal(rewardDelta, amount - fee, 18, "Fee should have taken from queued amount");
+    assertFee(token, amount);
   }
-  function testSwapToken() public {
+
+  function testSwapToken(/*uint256 amount*/) public {
+    // vm.assume();
+
+    uint256 amount = 403785;
+    MockERC20 mock = new MockERC20();
+
+    deal(address(mock), address(controller), amount); 
+
+    uint256 initialSwapperAmount = controller.swapperAmounts(address(mock));
+
+    controller.process(address(mock));
+
+    uint256 swapperAmountDelta = controller.swapperAmounts(address(mock)) - initialSwapperAmount;
   }
 }
