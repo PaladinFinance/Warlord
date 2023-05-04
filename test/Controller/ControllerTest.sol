@@ -9,6 +9,8 @@ import {WarMinter} from "src/Minter.sol";
 import "src/Controller.sol";
 import "src/IncentivizedLocker.sol";
 
+
+ 
 contract ControllerTest is WarlordTest {
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);
   event SetMinter(address oldMinter, address newMinter);
@@ -50,6 +52,12 @@ contract ControllerTest is WarlordTest {
       vm.store(target, bytes32(i), targetMemory[i]);
     }
     return IncentivizedLocker(target);
+  }
+}
+
+contract UnexposedControllerTest is ControllerTest {
+  function setUp() public virtual override {
+    WarlordTest.setUp();
   }
 }
 
