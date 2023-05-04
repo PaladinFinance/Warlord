@@ -14,8 +14,7 @@ contract Process is UnexposedControllerTest {
 
   function testZeroAddress() public {
     // TODO vm.expectCall when new version available
-    IERC20 mock = IERC20(address(new MockERC20()));
-    vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 0);
+    // vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 0);
     controller.process(zero);
   }
 
@@ -29,8 +28,8 @@ contract Process is UnexposedControllerTest {
     return (balance * controller.feeRatio()) / 10_000;
   }
 
-  function testLocker(/*uint256 amount*/) public {
-    uint256 amount = 10000000;
+  function testLocker(uint256 amount) public {
+    vm.assume(amount < 1e33);
     uint256 fee = computeFee(amount);
 
     address token = randomVlToken(amount);
@@ -39,13 +38,28 @@ contract Process is UnexposedControllerTest {
     uint256 initialQueuedWar = war.balanceOf(address(staker));
 
     controller.process(token);
-    console.log(controller.tokenLockers(address(cvx)));
 
     uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
     assertEqDecimal(warDelta, amount - fee, 18, "Fee should have taken from queued amount");
   }
 
-  function testFarmer() public {
+  function testFarmer(/* uint256 amount */) public {
+    uint256 amount = 4984;
+    uint256 fee = computeFee(amount);
+
+    address token = randomFarmableToken(amount);
+    address farmer = controller.tokenFarmers(token);
+    console.log(farmer);
+
+    deal(token, address(controller), amount);
+
+    uint256 initialStakedAmount = IERC20(token).balanceOf(farmer);
+
+    controller.process(token);
+
+    uint256 stakeDelta = IERC20(token).balanceOf(farmer) - initialStakedAmount;
+    console.log(stakeDelta);
+    // assertEqDecimal(stakeDelta, amount - fee, 18, "Fee should have taken from queued amount");
   }
   function testDirectDistribution() public {
   }
