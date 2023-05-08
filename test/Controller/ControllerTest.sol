@@ -9,8 +9,6 @@ import {WarMinter} from "src/Minter.sol";
 import "src/Controller.sol";
 import "src/IncentivizedLocker.sol";
 
-
- 
 contract ControllerTest is WarlordTest {
   event PullTokens(address indexed swapper, address indexed token, uint256 amount);
   event SetMinter(address oldMinter, address newMinter);
