@@ -24,10 +24,6 @@ contract Process is UnexposedControllerTest {
     controller.process(address(mock));
   }
 
-  function computeFee(uint256 balance) public view returns (uint256) {
-    return (balance * controller.feeRatio()) / 10_000;
-  }
-
   function assertFee(address token, uint256 amount) public {
     uint256 fee = computeFee(amount);
     uint256 balance = IERC20(token).balanceOf(protocolFeeReceiver);

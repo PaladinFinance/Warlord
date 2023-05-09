@@ -66,6 +66,10 @@ contract UnexposedControllerTest is ControllerTest {
     WarlordTest.setUp();
     popoulateRewards();
   }
+
+  function computeFee(uint256 balance) public view returns (uint256) {
+    return (balance * controller.feeRatio()) / 10_000;
+  }
 }
 
 contract Exposed_Controller is WarController {
