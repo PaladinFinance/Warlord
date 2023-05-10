@@ -46,27 +46,22 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Address of the WAR token
    */
   address public immutable war;
-
   /**
    * @notice Address of the Minter contract
    */
   IMinter public minter;
-
   /**
    * @notice Address of the Staker contract
    */
   IStaker public staker;
-
   /**
    * @notice Address of the Swap manager
    */
   address public swapper;
-
   /**
    * @notice Address of the Incentives Claimer
    */
   address public incentivesClaimer;
-
   /**
    * @notice Ratio of fees taken on harvested rewards
    */
@@ -75,7 +70,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Address to receive the fees
    */
   address public feeReceiver;
-
   /**
    * @notice List of Lockers contract
    */
@@ -97,7 +91,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Tokens set for pure distribution (and that does not have a Locker or a Farmer contract)
    */
   mapping(address => bool) public distributionTokens;
-
   /**
    * @notice Amounts of tokens available for swaps to WETH
    */
