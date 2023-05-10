@@ -20,6 +20,7 @@ contract ControllerTest is WarlordTest {
   event SetLocker(address indexed token, address locker);
   event SetFarmer(address indexed token, address famer);
   event SetDistributionToken(address indexed token, bool distribution);
+  event SetHarvestable(address harvestable, bool enabled);
 
   IIncentivizedLocker dummyLocker;
   address[] queueableRewards;
