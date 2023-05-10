@@ -23,6 +23,7 @@ library Errors {
   error ListedLocker();
   error ListedFarmer();
   error InvalidFeeRatio();
+  error HarvestNotAllowed();
 
   // Locker
   error NoWarLocker(); // _locker[token] == 0x0
