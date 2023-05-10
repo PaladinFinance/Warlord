@@ -98,7 +98,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Tokens that the controller can harvest
    */
-  mapping(address => bool) harvestable;
+  mapping(address => bool) public harvestable;
 
   // Events
 
