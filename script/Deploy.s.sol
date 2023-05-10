@@ -117,6 +117,11 @@ contract Deployment is Script, MainnetTest {
     controller.setDistributionToken(address(pal), true);
     controller.setDistributionToken(address(cvxFxs), true);
 
+    controller.setHarvestableToken(address(auraBalFarmer), true);
+    controller.setHarvestableToken(address(cvxCrvFarmer), true);
+    controller.setHarvestableToken(address(auraLocker), true);
+    controller.setHarvestableToken(address(cvxLocker), true);
+
     // Redeemer config
     redeemer.setLocker(address(aura), address(auraLocker));
     redeemer.setLocker(address(cvx), address(cvxLocker));
