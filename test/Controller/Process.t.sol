@@ -13,14 +13,16 @@ contract Process is UnexposedControllerTest {
   }
 
   function testZeroAddress() public {
-    // TODO vm.expectCall when new version available
-    // vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 0);
+    IERC20 mock = IERC20(address(new MockERC20()));
+
+    vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 0);
     controller.process(zero);
   }
 
   function testZeroBalance() public {
-    // TODO vm.expectCall when new version available
     IERC20 mock = IERC20(address(new MockERC20()));
+    vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 1);
+    vm.expectCall(address(mock), abi.encodeCall(mock.transfer, (protocolFeeReceiver, 0)), 0); 
     controller.process(address(mock));
   }
 
@@ -31,7 +33,7 @@ contract Process is UnexposedControllerTest {
     assertEqDecimal(balance, fee, 18, "Fee is sent to the correct receiver");
   }
 
-  // TODO test with initial amounts that are non zeor
+  // TODO test with initial amounts that are non zero
   function testLocker(uint256 amount) public {
     vm.assume(amount > 1e5 && amount < 1e33);
     uint256 fee = computeFee(amount);
