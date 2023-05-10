@@ -657,11 +657,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
     if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
 
-    if (tokenLockers[token] == address(0)) {
-      // if the token didn't have a previous locker
-      // append the new locker to the list
-      lockers.push(locker); // TODO outside of if else
-    } else {
+    if (tokenLockers[token] != address(0)) {
       // if the token has already been assigned to another locker
       // remove the old locker without leaving holes in the array
       address oldLocker = tokenLockers[token];
@@ -683,9 +679,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
-      // append the new locker to the list
-      lockers.push(locker); // TODO outside of if else
     }
+
+    // append the new locker to the list
+    lockers.push(locker);
 
     tokenLockers[token] = locker;
 
@@ -701,11 +698,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (token == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
     if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
 
-    if (tokenFarmers[token] == address(0)) {
-      // if the token didn't have a previous farmer
-      // append the new farmer to the list
-      farmers.push(farmer); // TODO outside of if else
-    } else {
+    if (tokenFarmers[token] != address(0)) {
       // if the token has already been assigned to another farmer
       // remove the old farmer without leaving holes in the array
       address oldFarmer = tokenFarmers[token];
@@ -727,10 +720,9 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
-
-      // append the new farmer to the list
-      farmers.push(farmer); // TODO outside of if else
     }
+    // append the new farmer to the list
+    farmers.push(farmer); 
 
     tokenFarmers[token] = farmer;
 
