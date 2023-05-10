@@ -15,4 +15,3 @@ contract PullMultipleToken is UnexposedControllerTest {
     controller.pullMultipleTokens(new address[](0));
   }
 }
- 

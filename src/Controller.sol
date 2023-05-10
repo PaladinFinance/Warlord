@@ -191,7 +191,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   // State changing functions
   function _harvest(address target) internal {
     if (!harvestable[target]) revert Errors.HarvestNotAllowed();
-    IHarvestable(target).harvest(); 
+    IHarvestable(target).harvest();
   }
 
   /**
@@ -722,7 +722,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       }
     }
     // append the new farmer to the list
-    farmers.push(farmer); 
+    farmers.push(farmer);
 
     tokenFarmers[token] = farmer;
 
