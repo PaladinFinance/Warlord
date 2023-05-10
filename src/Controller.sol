@@ -95,6 +95,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Amounts of tokens available for swaps to WETH
    */
   mapping(address => uint256) public swapperAmounts;
+  /**
+   * @notice Tokens that the controller can harvest
+   */
+  mapping(address => bool) harvestable;
 
   // Events
 
@@ -138,6 +142,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Event emitted when a token is set for distribution
    */
   event SetDistributionToken(address indexed token, bool distribution);
+  /**
+   * @notice Event emitted when a contract harvestability is updated
+   */
+  event SetHarvestable(address harvestable, bool enabled);
 
   // Modifiers
 
@@ -181,13 +189,17 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   }
 
   // State changing functions
+  function _harvest(address target) internal {
+    if (!harvestable[target]) revert Errors.HarvestNotAllowed();
+    IHarvestable(target).harvest(); 
+  }
 
   /**
    * @notice Harvests rewards from a given Harvestable contract
    * @param target Address of the contract to harvest from
    */
   function harvest(address target) external nonReentrant whenNotPaused {
-    IHarvestable(target).harvest();
+    _harvest(target);
   }
 
   /**
@@ -199,7 +211,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (length == 0) revert Errors.EmptyArray();
 
     for (uint256 i; i < length;) {
-      IHarvestable(targets[i]).harvest();
+      _harvest(targets[i]);
 
       unchecked {
         i++;
@@ -218,7 +230,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
     // Harvest from all listed Lockers
     for (uint256 i; i < lockersLength;) {
-      IHarvestable(_lockers[i]).harvest();
+      _harvest(_lockers[i]);
 
       unchecked {
         i++;
@@ -227,7 +239,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
     // Harvest from all listed Farmers
     for (uint256 i; i < farmersLength;) {
-      IHarvestable(_farmers[i]).harvest();
+      _harvest(_farmers[i]);
 
       unchecked {
         i++;
@@ -738,5 +750,18 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     distributionTokens[token] = distribution;
 
     emit SetDistributionToken(token, distribution);
+  }
+
+  /**
+   * @notice Enable/disable the harvest function to be called on the token
+   * @param _harvestable Address of the IHarvestable contract
+   * @param enabled True if the contract should be harvested
+   */
+  function setHarvestableToken(address _harvestable, bool enabled) external onlyOwner {
+    if (_harvestable == address(0)) revert Errors.ZeroAddress();
+
+    harvestable[_harvestable] = enabled;
+
+    emit SetHarvestable(_harvestable, enabled);
   }
 }
