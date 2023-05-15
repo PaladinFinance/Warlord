@@ -47,6 +47,7 @@ library Errors {
   // MintRatio
   error ZeroMintAmount();
   error SupplyAlreadySet();
+  error RatioAlreadySet();
 
   // Harvestable
   error NotRewardToken();

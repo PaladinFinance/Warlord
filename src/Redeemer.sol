@@ -75,7 +75,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Address of the contract calculating the burn amounts
    */
-  IRatios public immutable ratios;
+  IRatios public ratios;
 
   /**
    * @notice Address fo receive the redeem fees
@@ -368,6 +368,19 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     lockerTokens[warLocker] = token;
 
     emit SetWarLocker(token, warLocker);
+  }
+
+  /**
+   * @notice Sets the Ratio contract address
+   * @param newRatios Address of the new Ratio contract
+   */
+  function setRatios(address newRatios) external onlyOwner {
+    if (newRatios == address(0)) revert Errors.ZeroAddress();
+
+    address oldRatios = address(ratios);
+    ratios = IRatios(newRatios);
+
+    emit MintRatioUpdated(oldRatios, newRatios);
   }
 
   /**
