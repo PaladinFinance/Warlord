@@ -21,6 +21,7 @@ contract SetLocker is ControllerTest {
       1,
       "the lenght of the array with locker should be one after adding new token"
     );
+    assertTrue(controller.harvestable(locker), "The locker should have been whitelisted as harvestable");
   }
 
   struct TokenWithLocker {
@@ -69,6 +70,10 @@ contract SetLocker is ControllerTest {
     uint256 indexOldLocker = uint256(uint160(newLocker)) % assignedLength;
     address tokenWithNewLocker = tokens[indexOldLocker];
 
+    address oldLocker = controller.tokenLockers(tokenWithNewLocker);
+
+    assertTrue(controller.harvestable(oldLocker), "The old locker should be whitelisted as harvestable");
+
     vm.prank(admin);
     controller.setLocker(tokenWithNewLocker, newLocker);
     uint256 newLockerIndex = expose(controller).getLockersLength();
@@ -78,6 +83,8 @@ contract SetLocker is ControllerTest {
     assertEq(
       controller.tokenLockers(tokenWithNewLocker), newLocker, "new locker for that token should be the assigned one"
     );
+    assertTrue(controller.harvestable(newLocker), "The new locker should have been whitelisted as harvestable");
+    assertFalse(controller.harvestable(oldLocker), "The old locker should have been blacklisted as harvestable");
   }
 
   function testOnlyOwner(address token, address locker) public {
