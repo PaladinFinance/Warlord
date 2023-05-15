@@ -96,7 +96,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    */
   mapping(address => uint256) public swapperAmounts;
   /**
-   * @notice Tokens that the controller can harvest
+   * @notice Contracts that the controller can harvest
    */
   mapping(address => bool) public harvestable;
 
@@ -746,14 +746,14 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
   /**
    * @notice Enable/disable the harvest function to be called on the token
-   * @param _harvestable Address of the IHarvestable contract
+   * @param target Address of the IHarvestable contract
    * @param enabled True if the contract should be harvested
    */
-  function setHarvestableToken(address _harvestable, bool enabled) external onlyOwner {
-    if (_harvestable == address(0)) revert Errors.ZeroAddress();
+  function setHarvestableToken(address target, bool enabled) external onlyOwner {
+    if (target == address(0)) revert Errors.ZeroAddress();
 
-    harvestable[_harvestable] = enabled;
+    harvestable[target] = enabled;
 
-    emit SetHarvestable(_harvestable, enabled);
+    emit SetHarvestable(target, enabled);
   }
 }
