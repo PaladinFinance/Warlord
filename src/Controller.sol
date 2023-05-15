@@ -661,6 +661,8 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       // if the token has already been assigned to another locker
       // remove the old locker without leaving holes in the array
       address oldLocker = tokenLockers[token];
+      // disable the previously harvestable locker
+      harvestable[oldLocker] = false;
       address[] memory _lockers = lockers;
       uint256 length = _lockers.length;
       uint256 lastIndex = length - 1;
@@ -683,8 +685,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
     // append the new locker to the list
     lockers.push(locker);
-
+    // link the token to the associated locker
     tokenLockers[token] = locker;
+    // whitelist the locker so that the controller can harvest it
+    harvestable[locker] = true;
 
     emit SetLocker(token, locker);
   }
@@ -702,6 +706,8 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       // if the token has already been assigned to another farmer
       // remove the old farmer without leaving holes in the array
       address oldFarmer = tokenFarmers[token];
+      // disable the previously harvestable farmer
+      harvestable[oldFarmer] = false;
       address[] memory _farmers = farmers;
       uint256 length = _farmers.length;
       uint256 lastIndex = length - 1;
@@ -723,8 +729,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     }
     // append the new farmer to the list
     farmers.push(farmer);
-
+    // link the token to the associated farmer
     tokenFarmers[token] = farmer;
+    // whitelist the farmer so that the controller can harvest it
+    harvestable[farmer] = true;
 
     emit SetFarmer(token, farmer);
   }
