@@ -82,6 +82,8 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    */
   address public feeReceiver;
 
+  address[] public tokens;
+
   /**
    * @notice Address of the Locker set for each token
    */
@@ -228,21 +230,16 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   /**
    * @notice Joins the redeem queue for each token & burns the given amount of WAR token
-   * @param tokens List of tokens to redeem
-   * @param weights Weight (BPS) of redeem for each token
    * @param amount Amount of WAR to burn
    */
-  function joinQueue(address[] calldata tokens, uint256[] calldata weights, uint256 amount)
+  function joinQueue(uint256 amount)
     external
     nonReentrant
     whenNotPaused
   {
-    uint256 tokensLength = tokens.length;
-    if (tokensLength == 0) revert Errors.EmptyArray();
+    address[] memory _tokens = tokens;
+    uint256 tokensLength = _tokens.length;
     if (amount == 0) revert Errors.ZeroValue();
-    if (weights.length != tokensLength) revert Errors.DifferentSizeArrays(tokensLength, weights.length);
-
-    uint256 totalWeight;
 
     // Pull the WAR token to burn
     IERC20(war).safeTransferFrom(msg.sender, address(this), amount);
@@ -256,28 +253,26 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     WarToken(war).burn(address(this), burnAmount);
 
     for (uint256 i; i < tokensLength;) {
-      if (lockers[tokens[i]] == address(0)) revert Errors.NotListedLocker();
+      if (lockers[_tokens[i]] == address(0)) revert Errors.NotListedLocker();
 
-      totalWeight += weights[i];
-      if (totalWeight > MAX_BPS) revert Errors.InvalidWeightSum();
+      uint256 weight = _getTokenWeight(_tokens[i]);
 
       // Calculate the amount of WAR burned for each token in the list
       // based on the given weights
-      uint256 warAmount = (burnAmount * weights[i]) / MAX_BPS;
+      uint256 warAmount = (burnAmount * weight) / MAX_BPS;
       // Get the amount of token to redeem based on the WAR amount
-      uint256 redeemAmount = ratios.getBurnAmount(tokens[i], warAmount);
+      uint256 redeemAmount = ratios.getBurnAmount(_tokens[i], warAmount);
 
       // Not need for a ticket if the weight gives a value of 0
       if (redeemAmount == 0) continue;
 
       // Join the redeem queue for the token
-      _joinQueue(tokens[i], msg.sender, redeemAmount);
+      _joinQueue(_tokens[i], msg.sender, redeemAmount);
 
       unchecked {
         ++i;
       }
     }
-    if (totalWeight != MAX_BPS) revert Errors.InvalidWeightSum();
   }
 
   /**
@@ -302,6 +297,14 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   }
 
   // Internal Functions
+
+  function _getTokenWeight(address token) internal view returns (uint256) {
+    uint256 totalWarSupply = WarToken(war).totalSupply();
+    uint256 tokenBalance = IWarLocker(lockers[token]).getCurrentLockedTokens();
+    uint256 tokenRatio = ratios.getTokenRatio(token);
+
+    return (((tokenBalance * tokenRatio) / UNIT) * MAX_BPS) / totalWarSupply;
+  }
 
   /**
    * @dev Creates a new Redeem ticket for the given token, based on the calculated redeem amount
@@ -363,6 +366,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != token) revert Errors.MismatchingLocker(expectedToken, token);
+
+    if(lockers[token] == address(0)) {
+      // New token listed
+      tokens.push(token);
+    }
 
     lockers[token] = warLocker;
     lockerTokens[warLocker] = token;

@@ -61,6 +61,11 @@ contract WarAuraLocker is IncentivizedLocker {
     return address(aura);
   }
 
+  function getCurrentLockedTokens() external view override returns (uint256) {
+    (uint256 totalBalance,,,) = vlAura.lockedBalances(address(this));
+    return totalBalance;
+  }
+
   /**
    * @dev Locks the tokens in the vlToken contract
    * @param amount Amount to lock

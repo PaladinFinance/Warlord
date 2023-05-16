@@ -75,6 +75,8 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
     delegate = _delegatee;
   }
 
+  function getCurrentLockedTokens() external view virtual returns (uint256);
+
   /**
    * @notice Updates the Controller contract
    * @param _controller Address of the Controller contract
