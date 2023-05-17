@@ -11,6 +11,7 @@ contract AddTokenWithSupply is RatiosTest {
     vm.prank(admin);
     ratios.addTokenWithSupply(token, maxSupply);
     assertEq(ratios.warPerToken(token), MAX_WAR_SUPPLY_PER_TOKEN * UNIT / maxSupply);
+    assertEq(ratios.getTokenRatio(token), MAX_WAR_SUPPLY_PER_TOKEN * UNIT / maxSupply);
   }
 
   function testBaseTokens() public {

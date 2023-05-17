@@ -13,6 +13,9 @@ contract MainnetTest is BaseTest {
   uint256 constant CVX_MAX_SUPPLY = 100_000_000e18;
   uint256 constant AURA_MAX_SUPPLY = 100_000_000e18;
 
+  uint256 constant CVX_MINT_RATIO = 1e18;
+  uint256 constant AURA_MINT_RATIO = 0.5e18;
+
   IERC20 constant weth = IERC20(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
   // Curve

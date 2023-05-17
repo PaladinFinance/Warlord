@@ -24,6 +24,7 @@ import {WarRedeemer} from "src/Redeemer.sol";
 import {WarController} from "src/Controller.sol";
 import {HolyPaladinDistributor} from "src/Distributor.sol";
 import {WarRatios} from "src/Ratios.sol";
+import {WarRatiosV2} from "src/RatiosV2.sol";
 import {WarStaker} from "src/Staker.sol";
 
 contract Deployment is Script, MainnetTest {
@@ -45,7 +46,7 @@ contract Deployment is Script, MainnetTest {
   address distributionManager = makeAddr("distributionManager");
 
   // Initial values
-  uint256 constant REDEMPTION_FEE = 500;
+  uint256 constant REDEMPTION_FEE = 200;
 
   // Token
   WarToken war;
@@ -67,6 +68,7 @@ contract Deployment is Script, MainnetTest {
   WarController controller;
   HolyPaladinDistributor distributor;
   WarRatios ratios;
+  WarRatiosV2 ratiosV2;
   WarStaker staker;
 
   function run() public {
@@ -81,6 +83,7 @@ contract Deployment is Script, MainnetTest {
   function deploy() public {
     war = new WarToken();
     ratios = new WarRatios();
+    ratiosV2 = new WarRatiosV2();
     minter = new WarMinter(address(war), address(ratios));
     redeemer = new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
 
@@ -97,10 +100,12 @@ contract Deployment is Script, MainnetTest {
     // CVX mint config
     minter.setLocker(address(cvx), address(cvxLocker));
     ratios.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
+    ratiosV2.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
 
     // AURA mint config
     minter.setLocker(address(aura), address(auraLocker));
     ratios.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
+    ratiosV2.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
 
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));

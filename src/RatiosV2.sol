@@ -13,11 +13,11 @@ import {Errors} from "utils/Errors.sol";
 import {Owner} from "utils/Owner.sol";
 
 /**
- * @title Warlord WAR minting ratios contract
+ * @title Warlord WAR minting ratios contract V2
  * @author Paladin
  * @notice Calculate the amounts of WAR to mint or burn
  */
-contract WarRatios is IRatios, Owner {
+contract WarRatiosV2 is IRatios, Owner {
   /**
    * @notice 1e18 scale
    */

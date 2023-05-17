@@ -322,6 +322,8 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   function _getTokenWeight(address token) internal view returns (uint256) {
     uint256 totalWarSupply = WarToken(war).totalSupply();
+    if(totalWarSupply == 0) return 0;
+    
     uint256 tokenBalance = IWarLocker(lockers[token]).getCurrentLockedTokens();
     uint256 queuedAmount = queuedForWithdrawal(token);
     tokenBalance = tokenBalance > queuedAmount ? tokenBalance - queuedAmount : 0;
