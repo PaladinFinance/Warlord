@@ -65,6 +65,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     bool redeemed;
   }
 
+  struct TokenWeight {
+    address token;
+    uint256 weight;
+  }
+
   // Storage
 
   /**
@@ -212,6 +217,15 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     }
 
     return activeRedeemTickets;
+  }
+
+  function getTokenWeights() external view returns(TokenWeight[] memory) {
+    uint256 length = tokens.length;
+    TokenWeight[] memory _tokens = new TokenWeight[](length);
+    for (uint256 i; i < length; i++) {
+      _tokens[i] = TokenWeight(tokens[i], _getTokenWeight(tokens[i]));
+    }
+    return _tokens;
   }
 
   // State Changing Functions
