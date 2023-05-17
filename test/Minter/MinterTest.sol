@@ -38,6 +38,8 @@ contract MinterTest is MainnetTest {
   IWarLocker cvxLocker;
   IRatios ratios;
 
+  event MintRatioUpdated(address oldMintRatio, address newMintRatio);
+
   function setUp() public override {
     MainnetTest.setUp();
     fork();

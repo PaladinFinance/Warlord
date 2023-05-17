@@ -32,6 +32,10 @@ contract WarRatios is IRatios, Owner {
    */
   mapping(address => uint256) public warPerToken;
 
+  function getTokenRatio(address token) external view returns (uint256) {
+    return warPerToken[token];
+  }
+
   /**
    * @notice Adds a new token and sets the ratio of WAR to mint per token
    * @param token Address of the token
