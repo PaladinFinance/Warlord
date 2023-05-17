@@ -89,4 +89,5 @@ contract DummyIncentivizedLocker is IncentivizedLocker {
   function _processUnlock() internal override {}
   function _setDelegate(address _delegatee) internal override {}
   function token() external view returns (address none) {}
+  function getCurrentLockedTokens() external override pure returns (uint256) {return 0;}
 }

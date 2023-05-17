@@ -26,6 +26,10 @@ contract DummyLocker is IWarLocker {
     address[] memory tokens = new address[](1);
     return tokens;
   }
+
+  function getCurrentLockedTokens() external pure override returns (uint256) {
+    return 324089;
+  }
 }
 
 contract MinterTest is MainnetTest {
