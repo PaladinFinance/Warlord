@@ -41,6 +41,5 @@ contract SendTokens is CvxCrvFarmerTest {
 
     vm.prank(address(warStaker));
     cvxCrvFarmer.sendTokens(alice, amount);
-
   }
 }

@@ -36,7 +36,22 @@ contract ClaimDelegationRewards is VotiumTest {
     controller.claimVotiumRewards(address(l), distributor, claimParams);
   }
 
-  // TODO
-  function testWhenNotPaused() public {}
-  function testOnlyIncentivesClaimer() public {}
+  function testWhenNotPaused(address locker, address distributor, IVotiumDistributor.claimParam[] memory claimParams)
+    public
+  {
+    vm.prank(admin);
+    controller.pause();
+
+    vm.expectRevert("Pausable: paused");
+    controller.claimVotiumRewards(locker, distributor, claimParams);
+  }
+
+  function testOnlyIncentivesClaimer(
+    address locker,
+    address distributor,
+    IVotiumDistributor.claimParam[] memory claimParams
+  ) public {
+    vm.expectRevert(Errors.CallerNotAllowed.selector);
+    controller.claimVotiumRewards(locker, distributor, claimParams);
+  }
 }

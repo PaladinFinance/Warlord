@@ -61,7 +61,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     uint256 id;
     uint256 amount;
     uint256 redeemIndex;
-    address token; 
+    address token;
     bool redeemed;
   }
 

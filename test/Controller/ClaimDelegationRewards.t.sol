@@ -31,7 +31,24 @@ contract ClaimDelegationRewards is DelegationAddressTest {
     controller.claimDelegationRewards(address(l), distributor, claimParams);
   }
 
-  // TODO
-  function testWhenNotPaused() public {}
-  function testOnlyIncentivesClaimer() public {}
+  function testWhenNotPaused(
+    address locker,
+    address distributor,
+    IDelegationDistributor.ClaimParams[] memory claimParams
+  ) public {
+    vm.prank(admin);
+    controller.pause();
+
+    vm.expectRevert("Pausable: paused");
+    controller.claimDelegationRewards(locker, distributor, claimParams);
+  }
+
+  function testOnlyIncentivesClaimer(
+    address locker,
+    address distributor,
+    IDelegationDistributor.ClaimParams[] memory claimParams
+  ) public {
+    vm.expectRevert(Errors.CallerNotAllowed.selector);
+    controller.claimDelegationRewards(locker, distributor, claimParams);
+  }
 }

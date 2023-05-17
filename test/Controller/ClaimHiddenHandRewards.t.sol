@@ -35,7 +35,22 @@ contract ClaimDelegationRewards is HiddenHandTest {
     controller.claimHiddenHandRewards(address(l), distributor, claimParams);
   }
 
-  // TODO
-  function testWhenNotPaused() public {}
-  function testOnlyIncentivesClaimer() public {}
+  function testWhenNotPaused(address locker, address distributor, IHiddenHandDistributor.Claim[] memory claimParams)
+    public
+  {
+    vm.prank(admin);
+    controller.pause();
+
+    vm.expectRevert("Pausable: paused");
+    controller.claimHiddenHandRewards(locker, distributor, claimParams);
+  }
+
+  function testOnlyIncentivesClaimer(
+    address locker,
+    address distributor,
+    IHiddenHandDistributor.Claim[] memory claimParams
+  ) public {
+    vm.expectRevert(Errors.CallerNotAllowed.selector);
+    controller.claimHiddenHandRewards(locker, distributor, claimParams);
+  }
 }
