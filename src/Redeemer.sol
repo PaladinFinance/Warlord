@@ -65,6 +65,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     bool redeemed;
   }
 
+  /**
+   * @notice TokenWeight struct
+   *   token: token which backs the war token
+   *   weight: the percentage of the backing in BPS
+   */
   struct TokenWeight {
     address token;
     uint256 weight;
@@ -83,10 +88,13 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   IRatios public ratios;
 
   /**
-   * @notice Address fo receive the redeem fees
+   * @notice Address of receive the redeem fees
    */
   address public feeReceiver;
 
+  /**
+   * @notice Addresses of the tokens in the lockers
+   */
   address[] public tokens;
 
   /**
@@ -101,9 +109,9 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   mapping(address => address) public lockerTokens;
 
   /**
-   * @notice Ratio of fees taken when redeeming
+   * @notice Ratio of fees in BPS taken when redeeming
    */
-  uint256 public redeemFee; // 5% in BPS
+  uint256 public redeemFee; 
 
   /**
    * @notice Indexes struct for each token
