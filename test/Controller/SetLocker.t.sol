@@ -28,27 +28,9 @@ contract SetLocker is ControllerTest {
     address locker;
   }
 
-  function generateTokenWithLocker(uint256 seed1, uint256 seed2, uint256 size)
-    public
-    pure
-    returns (TokenWithLocker[] memory dummyLocks)
-  {
-    vm.assume(seed1 < 1e70);
-    vm.assume(seed2 < 1e70);
-    address[] memory tokens = generateAddressArrayFromHash(seed1, size);
-    address[] memory lockers = generateAddressArrayFromHash(seed2, size);
-    dummyLocks = new TokenWithLocker[](size);
-    for (uint256 i; i < size; ++i) {
-      dummyLocks[i].token = tokens[i];
-      dummyLocks[i].locker = lockers[i];
-    }
-  }
-
-  function testNewLockerWithReplacement(uint256 seed1, uint256 seed2, uint256 size, address newLocker) public {
+  function testNewLockerWithReplacement(TokenWithLocker[] memory initialLockers, address newLocker) public {
     vm.assume(newLocker != zero);
-    vm.assume(size <= 100);
-
-    TokenWithLocker[] memory initialLockers = generateTokenWithLocker(seed1, seed2, size);
+    vm.assume(initialLockers.length <= 100);
 
     vm.startPrank(admin);
     for (uint256 i; i < initialLockers.length; ++i) {
