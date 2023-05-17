@@ -40,7 +40,7 @@ contract QueueForWithdrawal is RedeemerTest {
     vm.startPrank(alice);
     war.approve(address(redeemer), amount);
 
-    redeemer.joinQueue(tokens, weights, amount);
+    redeemer.joinQueue(amount); // TODO naive correction
 
     vm.stopPrank();
 
@@ -61,7 +61,7 @@ contract QueueForWithdrawal is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), redeemAmount);
-    redeemer.joinQueue(tokens, weights, redeemAmount);
+    redeemer.joinQueue(amount); // TODO naive correction
     vm.stopPrank();
 
     uint256 prevQueued = redeemer.queuedForWithdrawal(otherToken);
@@ -82,7 +82,7 @@ contract QueueForWithdrawal is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), redeemAmount);
-    redeemer.joinQueue(tokens, weights, redeemAmount);
+    redeemer.joinQueue(redeemAmount); // TODO naive correction
     vm.stopPrank();
 
     uint256 prevQueued = redeemer.queuedForWithdrawal(otherToken);

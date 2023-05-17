@@ -20,7 +20,7 @@ contract Redeem is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount);
-    redeemer.joinQueue(tokens, weights, warAmount);
+    redeemer.joinQueue(warAmount); // TODO naive correction
     vm.stopPrank();
   }
 
@@ -68,7 +68,7 @@ contract Redeem is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount2);
-    redeemer.joinQueue(tokens, weights, warAmount2);
+    redeemer.joinQueue(warAmount2); // TODO naive correction
     vm.stopPrank();
 
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
@@ -128,12 +128,12 @@ contract Redeem is RedeemerTest {
 
     vm.startPrank(bob);
     war.approve(address(redeemer), warAmount2);
-    redeemer.joinQueue(tokens, weights, warAmount2);
+    redeemer.joinQueue(warAmount2); // TODO naive correction
     vm.stopPrank();
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount3);
-    redeemer.joinQueue(tokens, weights, warAmount3);
+    redeemer.joinQueue(warAmount3); // TODO naive correction
     vm.stopPrank();
 
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);

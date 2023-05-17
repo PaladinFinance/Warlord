@@ -24,7 +24,7 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
     war.approve(address(redeemer), type(uint256).max);
 
     vm.prank(alice);
-    redeemer.joinQueue(tokens, weights, warAmount);
+    redeemer.joinQueue(warAmount); // TODO naive correction
 
     uint256 neededAmount = redeemer.queuedForWithdrawal(address(cvx));
 
@@ -35,10 +35,10 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
     redeemer.notifyUnlock(address(cvx), neededAmount);
 
     vm.prank(alice);
-    redeemer.joinQueue(tokens, weights, warAmount2);
+    redeemer.joinQueue(warAmount2); // TODO naive correction
 
     vm.prank(alice);
-    redeemer.joinQueue(tokens, weights, warAmount3);
+    redeemer.joinQueue(warAmount3); // TODO naive correction
   }
 
   function testDefaultBehavior() public {

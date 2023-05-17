@@ -37,7 +37,7 @@ contract JoinQueue is RedeemerTest {
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
     vm.prank(alice);
-    redeemer.joinQueue(tokens, weights, amount);
+    redeemer.joinQueue(amount); // TODO naive correction
 
     assertEq(war.balanceOf(alice), prevWarBalance - amount);
     assertEq(war.balanceOf(redemptionFeeReceiver), prevWarBalanceFee + expectedFeeAmount);
@@ -84,7 +84,7 @@ contract JoinQueue is RedeemerTest {
       );
     }
 
-    redeemer.joinQueue(tokens, weights, amount);
+    redeemer.joinQueue(amount); // TODO naive correction
 
     vm.stopPrank();
 
@@ -150,7 +150,7 @@ contract JoinQueue is RedeemerTest {
     vm.expectEmit(true, true, false, true);
     emit NewRedeemTicket(address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx);
 
-    redeemer.joinQueue(tokens, weights, amount);
+    redeemer.joinQueue(amount); // TODO naive correction
 
     vm.stopPrank();
 
@@ -181,11 +181,12 @@ contract JoinQueue is RedeemerTest {
     vm.startPrank(alice);
 
     vm.expectRevert(Errors.ZeroValue.selector);
-    redeemer.joinQueue(tokens, weights, 0);
+    redeemer.joinQueue(0); // TODO naive correction
 
     vm.stopPrank();
   }
 
+  /* TODO no arrays anymore?
   function testEmptyArray() public {
     address[] memory tokens = new address[](0);
     uint256[] memory weights = new uint256[](2);
@@ -199,7 +200,9 @@ contract JoinQueue is RedeemerTest {
 
     vm.stopPrank();
   }
+  */ 
 
+  /* TODO no arrays anymore?
   function testArrayLengthMismatch() public {
     address[] memory tokens = new address[](2);
     tokens[0] = address(cvx);
@@ -210,11 +213,13 @@ contract JoinQueue is RedeemerTest {
     vm.startPrank(alice);
 
     vm.expectRevert(abi.encodeWithSelector(Errors.DifferentSizeArrays.selector, tokens.length, weights.length));
-    redeemer.joinQueue(tokens, weights, 100e18);
+    redeemer.joinQueue(tokens, weights, 100e18); 
 
     vm.stopPrank();
   }
+  */
 
+  /* TODO no weights anymore
   function testWeightOverflow(uint256 amount) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
@@ -233,7 +238,9 @@ contract JoinQueue is RedeemerTest {
 
     vm.stopPrank();
   }
+  */
 
+  /* TODO no weights anymore
   function testWeightsInvalid(uint256 amount) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
@@ -252,7 +259,9 @@ contract JoinQueue is RedeemerTest {
 
     vm.stopPrank();
   }
+  */ 
 
+  /* TODO no weights anymore
   function testWeightsInvalid2(uint256 amount) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
@@ -269,7 +278,9 @@ contract JoinQueue is RedeemerTest {
 
     vm.stopPrank();
   }
+  */ 
 
+  /* TODO no choice anymore ? 
   function testTokenNotListed(address token) public {
     vm.assume(token != address(cvx) && token != address(aura));
     vm.assume(token != address(0));
@@ -287,21 +298,14 @@ contract JoinQueue is RedeemerTest {
     redeemer.joinQueue(tokens, weights, 10e18);
 
     vm.stopPrank();
-  }
+  } */
 
   function testWhenNotPaused(uint256 amount) public {
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 5000;
-    weights[1] = 5000;
-
     vm.prank(admin);
     redeemer.pause();
 
     vm.expectRevert("Pausable: paused");
 
-    redeemer.joinQueue(tokens, weights, amount);
+    redeemer.joinQueue(amount);
   }
 }
