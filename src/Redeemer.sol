@@ -103,7 +103,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Ratio of fees taken when redeeming
    */
-  uint256 public redeemFee = 500; // 5% in BPS
+  uint256 public redeemFee; // 5% in BPS
 
   /**
    * @notice Indexes struct for each token
