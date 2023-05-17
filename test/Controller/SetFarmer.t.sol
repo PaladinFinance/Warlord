@@ -21,6 +21,7 @@ contract SetFarmer is ControllerTest {
       1,
       "the lenght of the array with farmers should be one after adding new token"
     );
+    assertTrue(controller.harvestable(farmer), "The farmer should have been whitelisted as harvestable");
   }
 
   struct TokenWithFarmer {
@@ -51,6 +52,10 @@ contract SetFarmer is ControllerTest {
     uint256 indexOldFarmer = uint256(uint160(newFarmer)) % assignedLength;
     address tokenWithNewFarmer = tokens[indexOldFarmer];
 
+    address oldFarmer = controller.tokenFarmers(tokenWithNewFarmer);
+
+    assertTrue(controller.harvestable(oldFarmer), "The old farmer should be whitelisted as harvestable");
+
     vm.prank(admin);
     controller.setFarmer(tokenWithNewFarmer, newFarmer);
     uint256 newFarmerIndex = expose(controller).getFarmersLength();
@@ -60,6 +65,8 @@ contract SetFarmer is ControllerTest {
     assertEq(
       controller.tokenFarmers(tokenWithNewFarmer), newFarmer, "new farmer for that token should be the assigned one"
     );
+    assertTrue(controller.harvestable(newFarmer), "The new farmer should have been whitelisted as harvestable");
+    assertFalse(controller.harvestable(oldFarmer), "The old farmer should have been blacklisted as harvestable");
   }
 
   function testOnlyOwner(address token, address farmer) public {

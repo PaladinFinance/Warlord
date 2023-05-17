@@ -46,27 +46,22 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Address of the WAR token
    */
   address public immutable war;
-
   /**
    * @notice Address of the Minter contract
    */
   IMinter public minter;
-
   /**
    * @notice Address of the Staker contract
    */
   IStaker public staker;
-
   /**
    * @notice Address of the Swap manager
    */
   address public swapper;
-
   /**
    * @notice Address of the Incentives Claimer
    */
   address public incentivesClaimer;
-
   /**
    * @notice Ratio of fees taken on harvested rewards
    */
@@ -75,7 +70,6 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Address to receive the fees
    */
   address public feeReceiver;
-
   /**
    * @notice List of Lockers contract
    */
@@ -97,11 +91,14 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Tokens set for pure distribution (and that does not have a Locker or a Farmer contract)
    */
   mapping(address => bool) public distributionTokens;
-
   /**
    * @notice Amounts of tokens available for swaps to WETH
    */
   mapping(address => uint256) public swapperAmounts;
+  /**
+   * @notice Contracts that the controller can harvest
+   */
+  mapping(address => bool) public harvestable;
 
   // Events
 
@@ -145,6 +142,10 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @notice Event emitted when a token is set for distribution
    */
   event SetDistributionToken(address indexed token, bool distribution);
+  /**
+   * @notice Event emitted when a contract harvestability is updated
+   */
+  event SetHarvestable(address harvestable, bool enabled);
 
   // Modifiers
 
@@ -188,13 +189,17 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
   }
 
   // State changing functions
+  function _harvest(address target) internal {
+    if (!harvestable[target]) revert Errors.HarvestNotAllowed();
+    IHarvestable(target).harvest();
+  }
 
   /**
    * @notice Harvests rewards from a given Harvestable contract
    * @param target Address of the contract to harvest from
    */
   function harvest(address target) external nonReentrant whenNotPaused {
-    IHarvestable(target).harvest();
+    _harvest(target);
   }
 
   /**
@@ -206,7 +211,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (length == 0) revert Errors.EmptyArray();
 
     for (uint256 i; i < length;) {
-      IHarvestable(targets[i]).harvest();
+      _harvest(targets[i]);
 
       unchecked {
         i++;
@@ -225,7 +230,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
     // Harvest from all listed Lockers
     for (uint256 i; i < lockersLength;) {
-      IHarvestable(_lockers[i]).harvest();
+      _harvest(_lockers[i]);
 
       unchecked {
         i++;
@@ -234,7 +239,7 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
 
     // Harvest from all listed Farmers
     for (uint256 i; i < farmersLength;) {
-      IHarvestable(_farmers[i]).harvest();
+      _harvest(_farmers[i]);
 
       unchecked {
         i++;
@@ -655,14 +660,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (token == address(0) || locker == address(0)) revert Errors.ZeroAddress();
     if (tokenFarmers[token] != address(0)) revert Errors.ListedFarmer();
 
-    if (tokenLockers[token] == address(0)) {
-      // if the token didn't have a previous locker
-      // append the new locker to the list
-      lockers.push(locker); // TODO outside of if else
-    } else {
+    if (tokenLockers[token] != address(0)) {
       // if the token has already been assigned to another locker
       // remove the old locker without leaving holes in the array
       address oldLocker = tokenLockers[token];
+      // disable the previously harvestable locker
+      harvestable[oldLocker] = false;
       address[] memory _lockers = lockers;
       uint256 length = _lockers.length;
       uint256 lastIndex = length - 1;
@@ -681,11 +684,14 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
-      // append the new locker to the list
-      lockers.push(locker); // TODO outside of if else
     }
 
+    // append the new locker to the list
+    lockers.push(locker);
+    // link the token to the associated locker
     tokenLockers[token] = locker;
+    // whitelist the locker so that the controller can harvest it
+    harvestable[locker] = true;
 
     emit SetLocker(token, locker);
   }
@@ -699,14 +705,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     if (token == address(0) || farmer == address(0)) revert Errors.ZeroAddress();
     if (tokenLockers[token] != address(0)) revert Errors.ListedLocker();
 
-    if (tokenFarmers[token] == address(0)) {
-      // if the token didn't have a previous farmer
-      // append the new farmer to the list
-      farmers.push(farmer); // TODO outside of if else
-    } else {
+    if (tokenFarmers[token] != address(0)) {
       // if the token has already been assigned to another farmer
       // remove the old farmer without leaving holes in the array
       address oldFarmer = tokenFarmers[token];
+      // disable the previously harvestable farmer
+      harvestable[oldFarmer] = false;
       address[] memory _farmers = farmers;
       uint256 length = _farmers.length;
       uint256 lastIndex = length - 1;
@@ -725,12 +729,13 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
           ++i;
         }
       }
-
-      // append the new farmer to the list
-      farmers.push(farmer); // TODO outside of if else
     }
-
+    // append the new farmer to the list
+    farmers.push(farmer);
+    // link the token to the associated farmer
     tokenFarmers[token] = farmer;
+    // whitelist the farmer so that the controller can harvest it
+    harvestable[farmer] = true;
 
     emit SetFarmer(token, farmer);
   }
@@ -748,5 +753,18 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     distributionTokens[token] = distribution;
 
     emit SetDistributionToken(token, distribution);
+  }
+
+  /**
+   * @notice Enable/disable the harvest function to be called on the token
+   * @param target Address of the IHarvestable contract
+   * @param enabled True if the contract should be harvested
+   */
+  function setHarvestableToken(address target, bool enabled) external onlyOwner {
+    if (target == address(0)) revert Errors.ZeroAddress();
+
+    harvestable[target] = enabled;
+
+    emit SetHarvestable(target, enabled);
   }
 }
