@@ -35,7 +35,7 @@ contract SetLocker is ControllerTest {
     vm.startPrank(admin);
     for (uint256 i; i < initialLockers.length; ++i) {
       vm.assume(newLocker != initialLockers[i].locker);
-      if (initialLockers[i].token == zero || initialLockers[i].locker == zero) continue;
+      vm.assume(initialLockers[i].token != zero && initialLockers[i].locker != zero);
       controller.setLocker(initialLockers[i].token, initialLockers[i].locker);
     }
     vm.stopPrank();

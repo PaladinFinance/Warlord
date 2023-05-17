@@ -35,7 +35,7 @@ contract SetFarmer is ControllerTest {
     vm.startPrank(admin);
     for (uint256 i; i < initialFarmers.length; ++i) {
       vm.assume(newFarmer != initialFarmers[i].farmer);
-      if (initialFarmers[i].token == zero || initialFarmers[i].farmer == zero) continue;
+      vm.assume(initialFarmers[i].token != zero && initialFarmers[i].farmer != zero);
       controller.setFarmer(initialFarmers[i].token, initialFarmers[i].farmer);
     }
     vm.stopPrank();
