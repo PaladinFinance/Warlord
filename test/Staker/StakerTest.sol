@@ -128,7 +128,6 @@ contract StakerTest is WarlordTest {
   }
 
   function randomQueueableReward(uint256 seed) public returns (address sender, address reward) {
-    // TODO is this method still useful now that I have fuzzRewards ?
     address[] memory controllerRewards = new address[](2);
     controllerRewards[0] = address(pal);
     controllerRewards[1] = address(war);
