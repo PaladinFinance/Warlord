@@ -475,6 +475,9 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
     // Send the fees
     _sendFees(token, feeAmount);
 
+    // Storing tokenFarmer to save on gas
+    address tokenFarmer = tokenFarmers[token];
+
     if (tokenLockers[token] != address(0)) {
       // If the token is associated to a Locker:
       // 1 . Mint WAR with the token
@@ -487,13 +490,12 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
       uint256 warBalance = _war.balanceOf(address(this));
       _war.safeTransfer(address(staker), warBalance);
       staker.queueRewards(war, warBalance);
-    } else if (tokenFarmers[token] != address(0)) {
+    } else if (tokenFarmer != address(0)) {
       // If the token is associated to a Farmer:
       // Send the token in the Farmer
-      address _farmer = tokenFarmers[token];
-      if (_token.allowance(address(this), _farmer) != 0) _token.safeApprove(_farmer, 0);
-      _token.safeIncreaseAllowance(_farmer, processAmount);
-      IFarmer(_farmer).stake(token, processAmount);
+      if (_token.allowance(address(this), tokenFarmer) != 0) _token.safeApprove(tokenFarmer, 0);
+      _token.safeIncreaseAllowance(tokenFarmer, processAmount);
+      IFarmer(tokenFarmer).stake(token, processAmount);
     } else if (distributionTokens[token]) {
       // If the token is set for direct distribution:
       // Send the token to be distributed via the Staker
@@ -564,10 +566,11 @@ contract WarController is ReentrancyGuard, Pausable, Owner {
    * @param newMinter Address of the Minter
    */
   function setMinter(address newMinter) external onlyOwner {
-    if (newMinter == address(0)) revert Errors.ZeroAddress();
-    if (newMinter == address(minter)) revert Errors.AlreadySet();
-
     address oldMinter = address(minter);
+
+    if (newMinter == address(0)) revert Errors.ZeroAddress();
+    if (newMinter == oldMinter) revert Errors.AlreadySet();
+
     minter = IMinter(newMinter);
 
     emit SetMinter(oldMinter, newMinter);
