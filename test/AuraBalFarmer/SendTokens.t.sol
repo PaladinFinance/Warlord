@@ -33,7 +33,13 @@ contract SendTokens is AuraBalFarmerTest {
     assertEq(auraBalStaker.balanceOf(address(auraBalFarmer)), initialBalance - amount);
   }
 
-  function testUnstakingMoreThanBalance() public {
-    // TODO implementation
+  function testUnstakingMoreThanBalance(uint256 amount) public {
+    uint256 initialBalance = auraBalStaker.balanceOf(address(auraBalFarmer));
+    vm.assume(amount > initialBalance);
+
+    vm.expectRevert(Errors.UnstakingMoreThanBalance.selector);
+
+    vm.prank(address(warStaker));
+    auraBalFarmer.sendTokens(alice, amount);
   }
 }

@@ -14,15 +14,33 @@ contract SendTokens is CvxCrvFarmerTest {
   }
 
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 0 && amount <= convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)));
+    // Checkpoint of iniital staked balance of auraBal
+    uint256 initialBalance = convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer));
+
+    // Tokens amount is non-zero and smaller than iniital balance
+    vm.assume(amount > 0 && amount <= initialBalance);
+
+    // Alice doesn't have any token before the transaction
     assertEq(cvxCrv.balanceOf(alice), 0);
-    assertEq(convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)), 200e18);
+
     vm.prank(address(warStaker));
     cvxCrvFarmer.sendTokens(alice, amount);
+
+    // make sure alice received the correct amount
     assertEq(cvxCrv.balanceOf(alice), amount);
+
+    // Check if the amount unstaked is correct
+    assertEq(convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer)), initialBalance - amount);
   }
 
-  function testUnstakingMoreThanBalance() public {
-    // TODO implementation
+  function testUnstakingMoreThanBalance(uint256 amount) public {
+    uint256 initialBalance = convexCvxCrvStaker.balanceOf(address(cvxCrvFarmer));
+    vm.assume(amount > initialBalance);
+
+    vm.expectRevert(Errors.UnstakingMoreThanBalance.selector);
+
+    vm.prank(address(warStaker));
+    cvxCrvFarmer.sendTokens(alice, amount);
+
   }
 }
