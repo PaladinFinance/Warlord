@@ -17,6 +17,7 @@ contract HarvestAndProcess is UnexposedControllerTest {
   function testDefaultBehavior() public {
     for (uint256 i; i < harvestables.length; ++i) {
       vm.expectCall(harvestables[i], abi.encodeCall(IHarvestable(harvestables[i]).harvest, ()), 1);
+      vm.expectCall(harvestables[i], abi.encodeCall(IHarvestable(harvestables[i]).rewardTokens, ()), 1);
       controller.harvestAndProcess(harvestables[i]);
     }
   }
