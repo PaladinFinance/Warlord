@@ -45,7 +45,6 @@ contract HolyPaladinDistributor is ReentrancyGuard, Pausable, Owner {
    *   totalLocked: total locked supply for hPAL
    */
   struct Distribution {
-    // TODO #18
     uint256 blockNumber;
     uint256 timestamp; // uint48/64
     uint256 amount; // uint96
