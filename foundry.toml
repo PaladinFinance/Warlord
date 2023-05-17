@@ -4,6 +4,7 @@ src = 'src'
 out = 'out'
 libs = ['lib']
 optimizer = false 
+gas_reports = ["WarMinter"]
 
 [fmt]
 tab_width = 2
