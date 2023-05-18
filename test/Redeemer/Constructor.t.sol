@@ -8,7 +8,7 @@ contract Constructor is RedeemerTest {
     assertEq(redeemer.war(), address(war), "Redeemer should refer to war token");
     assertEq(address(redeemer.ratios()), address(ratios), "Redeemer should refer to war ratios");
     assertEq(redeemer.feeReceiver(), redemptionFeeReceiver, "Redeemer should refer to the redemption fee receiver");
-    assertEq(redeemer.redeemFee(), 500, "Redemption fee should be 5% at the beginning");
+    assertEq(redeemer.redeemFee(), REDEMPTION_FEE, "Redemption fee should be correct at the beginning");
   }
 
   function testZeroAddressWar() public {

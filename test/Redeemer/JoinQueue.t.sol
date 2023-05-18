@@ -7,28 +7,13 @@ contract JoinQueue is RedeemerTest {
   function setUp() public virtual override {
     RedeemerTest.setUp();
 
-    vm.startPrank(_minter);
-    war.mint(alice, 1000e18);
-    vm.stopPrank();
-
     vm.prank(alice);
     war.approve(address(redeemer), type(uint256).max);
   }
 
-  function testDefaultBehaviorBurn(uint256 weightCvx, uint256 amount) public {
-    vm.assume(weightCvx < 10_000);
+  function testDefaultBehaviorBurn(uint256 amount) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
-    vm.assume(weightCvx > 0);
-
-    uint256 weightAura = 10_000 - weightCvx;
-
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = weightCvx;
-    weights[1] = weightAura;
 
     uint256 prevWarBalance = war.balanceOf(alice);
     uint256 prevWarBalanceFee = war.balanceOf(redemptionFeeReceiver);
@@ -36,26 +21,54 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
+    assertGt(war.balanceOf(alice), amount);
+
     vm.prank(alice);
-    redeemer.joinQueue(amount); // TODO naive correction
+    redeemer.joinQueue(amount);
 
     assertEq(war.balanceOf(alice), prevWarBalance - amount);
     assertEq(war.balanceOf(redemptionFeeReceiver), prevWarBalanceFee + expectedFeeAmount);
     assertEq(war.totalSupply(), prevWarSupply - (amount - expectedFeeAmount));
   }
 
-  function testDefaultBehaviorTickets(uint256 weightCvx, uint256 amount) public {
-    vm.assume(weightCvx < 10_000);
+  function _getTokenIndexes(
+    WarRedeemer.TokenWeight[] memory tokenWeights
+  ) internal pure returns(uint256, uint256) {
+    bool isCvxFirst = tokenWeights[0].token == address(cvx);
+    uint256 cvxIndex = isCvxFirst ? 0 : 1;
+    uint256 auraIndex = isCvxFirst ? 1 : 0;
+
+    return (cvxIndex, auraIndex);
+  }
+
+  function _getTicketIndexes(
+    WarRedeemer.TokenWeight[] memory tokenWeights,
+    uint256 userRedeemTicketsLength,
+    uint256 redeemAmountCvx,
+    uint256 redeemAmountAura
+  ) internal pure returns(uint256, uint256) {
+    bool isCvxFirst = tokenWeights[0].token == address(cvx);
+    
+    // Can be done better
+    uint256 cvxTicketIndex;
+    uint256 auraTicketIndex;
+    if(isCvxFirst) {
+      cvxTicketIndex = userRedeemTicketsLength;
+      auraTicketIndex = redeemAmountCvx > 0 ? userRedeemTicketsLength + 1 : userRedeemTicketsLength;
+    } else {
+      auraTicketIndex = userRedeemTicketsLength;
+      cvxTicketIndex = redeemAmountAura > 0 ? userRedeemTicketsLength + 1 : userRedeemTicketsLength;
+    }
+
+    return (cvxTicketIndex, auraTicketIndex);
+  }
+
+  function testDefaultBehaviorTickets(uint256 amount) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
-    vm.assume(weightCvx > 0);
 
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = weightCvx;
-    weights[1] = 10_000 - weightCvx;
+    WarRedeemer.TokenWeight[] memory tokenWeights = redeemer.getTokenWeights();
+    (uint256 cvxIndex, uint256 auraIndex) = _getTokenIndexes(tokenWeights);
 
     uint256 userRedeemTicketsLength = (redeemer.getUserRedeemTickets(alice)).length;
 
@@ -64,27 +77,26 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    uint256 redeemAmountCvx = ratios.getBurnAmount(address(cvx), ((amount - expectedFeeAmount) * weightCvx) / 10_000);
-    uint256 redeemAmountAura =
-      ratios.getBurnAmount(address(aura), ((amount - expectedFeeAmount) * (10_000 - weightCvx)) / 10_000);
+    uint256 redeemAmountCvx = ratios.getBurnAmount(address(cvx), ((amount - expectedFeeAmount) * tokenWeights[cvxIndex].weight) / UNIT);
+    uint256 redeemAmountAura = ratios.getBurnAmount(address(aura), ((amount - expectedFeeAmount) * tokenWeights[auraIndex].weight) / UNIT);
 
-    uint256 cvxTicketIndex = userRedeemTicketsLength;
-    uint256 auraTicketIndex = redeemAmountCvx > 0 ? userRedeemTicketsLength + 1 : userRedeemTicketsLength;
+    (uint256 cvxTicketIndex, uint256 auraTicketIndex) = _getTicketIndexes(tokenWeights, userRedeemTicketsLength, redeemAmountCvx, redeemAmountAura);
 
     vm.startPrank(alice);
-    if (redeemAmountCvx > 0) {
-      vm.expectEmit(true, true, false, true);
-      emit NewRedeemTicket(address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx);
-    }
-
     if (redeemAmountAura > 0) {
       vm.expectEmit(true, true, false, true);
       emit NewRedeemTicket(
         address(aura), alice, auraTicketIndex, redeemAmountAura, prevAuraQueueIndex + redeemAmountAura
       );
     }
+    if (redeemAmountCvx > 0) {
+      vm.expectEmit(true, true, false, true);
+      emit NewRedeemTicket(
+        address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx
+      );
+    }
 
-    redeemer.joinQueue(amount); // TODO naive correction
+    redeemer.joinQueue(amount);
 
     vm.stopPrank();
 
@@ -124,181 +136,144 @@ contract JoinQueue is RedeemerTest {
     }
   }
 
-  function testOnlyOneToken(uint256 amount) public {
+  function _extraDepostits(uint256 extraCvxDeposit, uint256 extraAuraDeposit) internal {
+    address[] memory lockers;
+    uint256[] memory amounts;
+
+    if(extraCvxDeposit > 0 && extraAuraDeposit > 0) {
+      lockers = new address[](2);
+      lockers[0] = address(cvx);
+      lockers[1] = address(aura);
+      amounts = new uint256[](2);
+      amounts[0] = extraCvxDeposit;
+      amounts[1] = extraAuraDeposit;
+    } else if(extraCvxDeposit > 0) {
+      lockers = new address[](1);
+      lockers[0] = address(cvx);
+      amounts = new uint256[](1);
+      amounts[0] = extraCvxDeposit;
+    } else {
+      lockers = new address[](1);
+      lockers[0] = address(aura);
+      amounts = new uint256[](1);
+      amounts[0] = extraAuraDeposit;
+    }
+
+    vm.startPrank(admin);
+    cvx.approve(address(minter), type(uint256).max);
+    aura.approve(address(minter), type(uint256).max);
+
+    minter.mintMultiple(lockers, amounts, bob);
+    vm.stopPrank();
+
+  }
+
+  struct TestVars {
+    uint256 cvxIndex;
+    uint256 auraIndex;
+    uint256 userRedeemTicketsLength;
+    uint256 prevCvxQueueIndex;
+    uint256 prevAuraQueueIndex;
+    uint256 expectedFeeAmount;
+    uint256 redeemAmountCvx;
+    uint256 redeemAmountAura;
+    uint256 cvxTicketIndex;
+    uint256 auraTicketIndex;
+  }
+
+  function testTicketsWithDifferentWeights(
+    uint256 amount,
+    uint256 extraCvxDeposit,
+    uint256 extraAuraDeposit
+  ) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
+    vm.assume(extraCvxDeposit <= 5_000e18);
+    vm.assume(extraAuraDeposit <= 5_000e18);
+    vm.assume(extraCvxDeposit > 0 && extraAuraDeposit > 0);
 
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 10_000;
+    TestVars memory vars;
 
-    uint256 userRedeemTicketsLength = (redeemer.getUserRedeemTickets(alice)).length;
+    _extraDepostits(extraCvxDeposit, extraAuraDeposit);
 
-    (uint256 prevCvxQueueIndex,) = redeemer.tokenIndexes(address(cvx));
+    WarRedeemer.TokenWeight[] memory tokenWeights = redeemer.getTokenWeights();
+    (vars.cvxIndex, vars.auraIndex) = _getTokenIndexes(tokenWeights);
 
-    uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
+    vars.userRedeemTicketsLength = (redeemer.getUserRedeemTickets(alice)).length;
 
-    uint256 burnAmountForCvx = ((amount - expectedFeeAmount) * 10_000) / 10_000;
+    (vars.prevCvxQueueIndex,) = redeemer.tokenIndexes(address(cvx));
+    (vars.prevAuraQueueIndex,) = redeemer.tokenIndexes(address(aura));
 
-    uint256 redeemAmountCvx = ratios.getBurnAmount(address(cvx), burnAmountForCvx);
+    vars.expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    uint256 cvxTicketIndex = userRedeemTicketsLength;
+    vars.redeemAmountCvx = ratios.getBurnAmount(address(cvx), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.cvxIndex].weight) / UNIT);
+    vars.redeemAmountAura = ratios.getBurnAmount(address(aura), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.auraIndex].weight) / UNIT);
+
+    (vars.cvxTicketIndex, vars.auraTicketIndex) = _getTicketIndexes(tokenWeights, vars.userRedeemTicketsLength, vars.redeemAmountCvx, vars.redeemAmountAura);
 
     vm.startPrank(alice);
+    if (vars.redeemAmountAura > 0) {
+      vm.expectEmit(true, true, false, true);
+      emit NewRedeemTicket(
+        address(aura), alice, vars.auraTicketIndex, vars.redeemAmountAura, vars.prevAuraQueueIndex + vars.redeemAmountAura
+      );
+    }
+    if (vars.redeemAmountCvx > 0) {
+      vm.expectEmit(true, true, false, true);
+      emit NewRedeemTicket(
+        address(cvx), alice, vars.cvxTicketIndex, vars.redeemAmountCvx, vars.prevCvxQueueIndex + vars.redeemAmountCvx
+      );
+    }
 
-    vm.expectEmit(true, true, false, true);
-    emit NewRedeemTicket(address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx);
-
-    redeemer.joinQueue(amount); // TODO naive correction
+    redeemer.joinQueue(amount);
 
     vm.stopPrank();
 
     (uint256 newCvxQueueIndex,) = redeemer.tokenIndexes(address(cvx));
+    (uint256 newAuraQueueIndex,) = redeemer.tokenIndexes(address(aura));
 
     WarRedeemer.RedeemTicket[] memory userRedeemTickets = redeemer.getUserRedeemTickets(alice);
+    uint256 newUserRedeemTicketsLength =
+      vars.redeemAmountCvx > 0 && vars.redeemAmountAura > 0 ? vars.userRedeemTicketsLength + 2 : vars.userRedeemTicketsLength + 1;
 
-    assertEq(userRedeemTickets.length, userRedeemTicketsLength + 1);
+    assertEq(userRedeemTickets.length, newUserRedeemTicketsLength);
 
-    assertEq(newCvxQueueIndex, prevCvxQueueIndex + redeemAmountCvx);
+    if (vars.redeemAmountCvx > 0) {
+      assertEq(newCvxQueueIndex, vars.prevCvxQueueIndex + vars.redeemAmountCvx);
 
-    WarRedeemer.RedeemTicket memory newCvxTicket = userRedeemTickets[cvxTicketIndex];
-    assertEq(newCvxTicket.id, cvxTicketIndex);
-    assertEq(newCvxTicket.token, address(cvx));
-    assertEq(newCvxTicket.amount, redeemAmountCvx);
-    assertEq(newCvxTicket.redeemIndex, newCvxQueueIndex);
-    assertEq(newCvxTicket.redeemed, false);
+      WarRedeemer.RedeemTicket memory newCvxTicket = userRedeemTickets[vars.cvxTicketIndex];
+      assertEq(newCvxTicket.id, vars.cvxTicketIndex);
+      assertEq(newCvxTicket.token, address(cvx));
+      assertEq(newCvxTicket.amount, vars.redeemAmountCvx);
+      assertEq(newCvxTicket.redeemIndex, newCvxQueueIndex);
+      assertEq(newCvxTicket.redeemed, false);
+    } else {
+      assertEq(newCvxQueueIndex, vars.prevCvxQueueIndex);
+    }
+
+    if (vars.redeemAmountAura > 0) {
+      assertEq(newAuraQueueIndex, vars.prevAuraQueueIndex + vars.redeemAmountAura);
+
+      WarRedeemer.RedeemTicket memory newAuraTicket = userRedeemTickets[vars.auraTicketIndex];
+      assertEq(newAuraTicket.id, vars.auraTicketIndex);
+      assertEq(newAuraTicket.token, address(aura));
+      assertEq(newAuraTicket.amount, vars.redeemAmountAura);
+      assertEq(newAuraTicket.redeemIndex, newAuraQueueIndex);
+      assertEq(newAuraTicket.redeemed, false);
+    } else {
+      assertEq(newAuraQueueIndex, vars.prevAuraQueueIndex);
+    }
   }
 
-  function testZeroAmount() public {
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 5000;
-    weights[1] = 5000;
 
+  function testZeroAmount() public {
     vm.startPrank(alice);
 
     vm.expectRevert(Errors.ZeroValue.selector);
-    redeemer.joinQueue(0); // TODO naive correction
+    redeemer.joinQueue(0);
 
     vm.stopPrank();
   }
-
-  /* TODO no arrays anymore?
-  function testEmptyArray() public {
-    address[] memory tokens = new address[](0);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 5000;
-    weights[1] = 5000;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(Errors.EmptyArray.selector);
-    redeemer.joinQueue(tokens, weights, 100e18);
-
-    vm.stopPrank();
-  }
-  */ 
-
-  /* TODO no arrays anymore?
-  function testArrayLengthMismatch() public {
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 5000;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(abi.encodeWithSelector(Errors.DifferentSizeArrays.selector, tokens.length, weights.length));
-    redeemer.joinQueue(tokens, weights, 100e18); 
-
-    vm.stopPrank();
-  }
-  */
-
-  /* TODO no weights anymore
-  function testWeightOverflow(uint256 amount) public {
-    vm.assume(amount <= 1000e18);
-    vm.assume(amount > 1e9);
-
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 6000;
-    weights[1] = 5500;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(Errors.InvalidWeightSum.selector);
-    redeemer.joinQueue(tokens, weights, amount);
-
-    vm.stopPrank();
-  }
-  */
-
-  /* TODO no weights anymore
-  function testWeightsInvalid(uint256 amount) public {
-    vm.assume(amount <= 1000e18);
-    vm.assume(amount > 1e9);
-
-    address[] memory tokens = new address[](2);
-    tokens[0] = address(cvx);
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 2000;
-    weights[1] = 5500;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(Errors.InvalidWeightSum.selector);
-    redeemer.joinQueue(tokens, weights, amount);
-
-    vm.stopPrank();
-  }
-  */ 
-
-  /* TODO no weights anymore
-  function testWeightsInvalid2(uint256 amount) public {
-    vm.assume(amount <= 1000e18);
-    vm.assume(amount > 1e9);
-
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 5500;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(Errors.InvalidWeightSum.selector);
-    redeemer.joinQueue(tokens, weights, amount);
-
-    vm.stopPrank();
-  }
-  */ 
-
-  /* TODO no choice anymore ? 
-  function testTokenNotListed(address token) public {
-    vm.assume(token != address(cvx) && token != address(aura));
-    vm.assume(token != address(0));
-
-    address[] memory tokens = new address[](2);
-    tokens[0] = token;
-    tokens[1] = address(aura);
-    uint256[] memory weights = new uint256[](2);
-    weights[0] = 5000;
-    weights[1] = 5000;
-
-    vm.startPrank(alice);
-
-    vm.expectRevert(Errors.NotListedLocker.selector);
-    redeemer.joinQueue(tokens, weights, 10e18);
-
-    vm.stopPrank();
-  } */
 
   function testWhenNotPaused(uint256 amount) public {
     vm.prank(admin);

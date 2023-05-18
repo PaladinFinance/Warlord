@@ -7,26 +7,36 @@ contract Redeem is RedeemerTest {
   function setUp() public virtual override {
     RedeemerTest.setUp();
 
-    vm.startPrank(_minter);
-    war.mint(alice, 1000e18);
-    vm.stopPrank();
-
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 10_000;
-
-    uint256 warAmount = 100e18;
+    uint256 warAmount = 500e18;
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount);
-    redeemer.joinQueue(warAmount); // TODO naive correction
+    redeemer.joinQueue(warAmount);
     vm.stopPrank();
+  }
+
+  function _getUserCvxTicketsIndexes(WarRedeemer.RedeemTicket[] memory userTickets) internal pure returns(uint256[] memory) {
+    uint256 nbTickets = 0;
+    for(uint256 i; i < userTickets.length; i++) {
+      if(userTickets[i].token == address(cvx)) {
+        nbTickets++;
+      }
+    }
+    uint256[] memory indexes = new uint256[](nbTickets);
+    uint256 j;
+    for(uint256 i; i < userTickets.length; i++) {
+      if(userTickets[i].token == address(cvx)) {
+        indexes[j] = i;
+        j++;
+      }
+    }
+    return indexes;
   }
 
   function testDefaultBehavior() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;
@@ -59,11 +69,6 @@ contract Redeem is RedeemerTest {
   }
 
   function testReddemMultipleTickets() public {
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 10_000;
-
     uint256 warAmount2 = 75e18;
 
     vm.startPrank(alice);
@@ -72,8 +77,9 @@ contract Redeem is RedeemerTest {
     vm.stopPrank();
 
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket1 = userTickets[userTickets.length - 2];
-    WarRedeemer.RedeemTicket memory ticket2 = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket1 = userTickets[cvxTicketsIds[0]];
+    WarRedeemer.RedeemTicket memory ticket2 = userTickets[cvxTicketsIds[1]];
 
     uint256[] memory tickets = new uint256[](2);
     tickets[0] = ticket1.id;
@@ -115,11 +121,6 @@ contract Redeem is RedeemerTest {
   }
 
   function testReddemMultipleTicketsWithUserInbetween() public {
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 10_000;
-
     vm.prank(alice);
     war.transfer(bob, 150e18);
 
@@ -128,17 +129,18 @@ contract Redeem is RedeemerTest {
 
     vm.startPrank(bob);
     war.approve(address(redeemer), warAmount2);
-    redeemer.joinQueue(warAmount2); // TODO naive correction
+    redeemer.joinQueue(warAmount2);
     vm.stopPrank();
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount3);
-    redeemer.joinQueue(warAmount3); // TODO naive correction
+    redeemer.joinQueue(warAmount3);
     vm.stopPrank();
 
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket1 = userTickets[userTickets.length - 2];
-    WarRedeemer.RedeemTicket memory ticket2 = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket1 = userTickets[cvxTicketsIds[0]];
+    WarRedeemer.RedeemTicket memory ticket2 = userTickets[cvxTicketsIds[1]];
 
     uint256[] memory tickets = new uint256[](2);
     tickets[0] = ticket1.id;
@@ -181,7 +183,8 @@ contract Redeem is RedeemerTest {
 
   function testInvalidTicketId() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id + 2;
@@ -204,7 +207,8 @@ contract Redeem is RedeemerTest {
 
   function testCannotRedeemYet1() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;
@@ -219,7 +223,8 @@ contract Redeem is RedeemerTest {
 
   function testCannotRedeemYet2() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;
@@ -242,7 +247,8 @@ contract Redeem is RedeemerTest {
 
   function testAlreadyRedeemed() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;
@@ -286,7 +292,8 @@ contract Redeem is RedeemerTest {
 
   function testZeroAddressReceiver() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;
@@ -309,7 +316,8 @@ contract Redeem is RedeemerTest {
 
   function testWhenNotPaused() public {
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);
-    WarRedeemer.RedeemTicket memory ticket = userTickets[userTickets.length - 1];
+    uint256[] memory cvxTicketsIds = _getUserCvxTicketsIndexes(userTickets);
+    WarRedeemer.RedeemTicket memory ticket = userTickets[cvxTicketsIds[0]];
 
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = ticket.id;

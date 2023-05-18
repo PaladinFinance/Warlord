@@ -272,7 +272,6 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
     // Transfer out the fees & burn the rest of the WAR tokens
     IERC20(war).safeTransfer(feeReceiver, feeAmount);
-    WarToken(war).burn(address(this), burnAmount);
 
     for (uint256 i; i < tokensLength;) {
       if (lockers[_tokens[i]] == address(0)) revert Errors.NotListedLocker();
@@ -281,7 +280,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
       // Calculate the amount of WAR burned for each token in the list
       // based on the given weights
-      uint256 warAmount = (burnAmount * weight) / MAX_BPS;
+      uint256 warAmount = (burnAmount * weight) / UNIT;
       // Get the amount of token to redeem based on the WAR amount
       uint256 redeemAmount = ratios.getBurnAmount(_tokens[i], warAmount);
 
@@ -295,6 +294,10 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
         ++i;
       }
     }
+
+    // We burn the WAR at the end to avoid invalid
+    // calculations during weight calculations
+    WarToken(war).burn(address(this), burnAmount);
   }
 
   /**
@@ -329,7 +332,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     tokenBalance = tokenBalance > queuedAmount ? tokenBalance - queuedAmount : 0;
     uint256 tokenRatio = ratios.getTokenRatio(token);
 
-    return (((tokenBalance * tokenRatio) / UNIT) * MAX_BPS) / totalWarSupply;
+    return ((tokenBalance * tokenRatio)) / totalWarSupply;
   }
 
   /**

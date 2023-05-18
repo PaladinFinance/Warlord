@@ -7,38 +7,25 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
   function setUp() public virtual override {
     RedeemerTest.setUp();
 
-    vm.startPrank(_minter);
-    war.mint(alice, 1000e18);
-    vm.stopPrank();
-
-    address[] memory tokens = new address[](1);
-    tokens[0] = address(cvx);
-    uint256[] memory weights = new uint256[](1);
-    weights[0] = 10_000;
-
     uint256 warAmount = 100e18;
     uint256 warAmount2 = 75e18;
-    uint256 warAmount3 = 150e18;
 
     vm.prank(alice);
     war.approve(address(redeemer), type(uint256).max);
 
     vm.prank(alice);
-    redeemer.joinQueue(warAmount); // TODO naive correction
+    redeemer.joinQueue(warAmount);
 
-    uint256 neededAmount = redeemer.queuedForWithdrawal(address(cvx));
+    uint256 neededCvxAmount = redeemer.queuedForWithdrawal(address(cvx));
 
     vm.prank(admin);
-    cvx.transfer(address(redeemer), neededAmount);
+    cvx.transfer(address(redeemer), neededCvxAmount);
 
     vm.prank(address(cvxLocker));
-    redeemer.notifyUnlock(address(cvx), neededAmount);
+    redeemer.notifyUnlock(address(cvx), neededCvxAmount);
 
     vm.prank(alice);
-    redeemer.joinQueue(warAmount2); // TODO naive correction
-
-    vm.prank(alice);
-    redeemer.joinQueue(warAmount3); // TODO naive correction
+    redeemer.joinQueue(warAmount2);
   }
 
   function testDefaultBehavior() public {
@@ -53,7 +40,8 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
       assertEq(prevUserActiveTickets[i].redeemed, false);
     }
 
-    WarRedeemer.RedeemTicket memory redeemedTicket = userTickets[0];
+    uint256 redeemTicketIndex = userTickets[0].token == address(cvx) ? 0 : 1;
+    WarRedeemer.RedeemTicket memory redeemedTicket = userTickets[redeemTicketIndex];
     uint256[] memory tickets = new uint256[](1);
     tickets[0] = redeemedTicket.id;
 
@@ -62,15 +50,21 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
 
     WarRedeemer.RedeemTicket[] memory userActiveTickets = redeemer.getUserActiveRedeemTickets(alice);
 
-    // Since Ticket ID 0 was redeemed, not active anymore
+    uint256 j;
     for (uint256 i; i < userActiveTickets.length; i++) {
+      if(userTickets[j].id == redeemedTicket.id) {
+        unchecked { j++; }
+      }
+      
       assertEq(userActiveTickets[i].id == redeemedTicket.id, false);
 
-      assertEq(userActiveTickets[i].id, userTickets[i + 1].id);
-      assertEq(userActiveTickets[i].token, userTickets[i + 1].token);
-      assertEq(userActiveTickets[i].amount, userTickets[i + 1].amount);
-      assertEq(userActiveTickets[i].redeemIndex, userTickets[i + 1].redeemIndex);
+      assertEq(userActiveTickets[i].id, userTickets[j].id);
+      assertEq(userActiveTickets[i].token, userTickets[j].token);
+      assertEq(userActiveTickets[i].amount, userTickets[j].amount);
+      assertEq(userActiveTickets[i].redeemIndex, userTickets[j].redeemIndex);
       assertEq(userActiveTickets[i].redeemed, false);
+      
+      unchecked { j++; }
     }
   }
 }
