@@ -7,7 +7,7 @@ contract GetMintAmount is RatiosV2Test {
 
   function _defaultBehavior(address token, uint256 maxSupply, uint256 amount) internal {
     vm.assume(amount >= 1e4 && amount <= maxSupply);
-    uint256 mintAmount = ratiosV2.getMintAmount(address(token), amount);
+    uint256 mintAmount = ratios.getMintAmount(address(token), amount);
     assertGt(mintAmount, 0);
 
     uint256 expectedMintAmount = amount * setWarPerToken[token] / UNIT;
@@ -28,22 +28,22 @@ contract GetMintAmount is RatiosV2Test {
 
     address token = makeAddr("otherToken");
     vm.prank(admin);
-    ratiosV2.addTokenWithSupply(token, CVX_MINT_RATIO / 1e4);
+    ratios.addTokenWithSupply(token, CVX_MINT_RATIO / 1e4);
 
-    assertEq(ratiosV2.getMintAmount(token, amount), 0);
+    assertEq(ratios.getMintAmount(token, amount), 0);
   }
 
   function testZeroAddress(uint256 amount) public {
     vm.assume(amount != 0);
 
     vm.expectRevert(Errors.ZeroAddress.selector);
-    ratiosV2.getMintAmount(zero, amount);
+    ratios.getMintAmount(zero, amount);
   }
 
   function testZeroAmount(address token) public {
     vm.assume(token != zero);
 
     vm.expectRevert(Errors.ZeroValue.selector);
-    ratiosV2.getMintAmount(token, 0);
+    ratios.getMintAmount(token, 0);
   }
 }

@@ -21,9 +21,9 @@ contract RatiosV2Test is WarlordTest {
     setWarPerToken[address(aura)] = AURA_MINT_RATIO;
 
     vm.startPrank(admin);
-    ratiosV2 = new WarRatiosV2();
-    ratiosV2.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
-    ratiosV2.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
+    ratios = new WarRatiosV2();
+    ratios.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
+    ratios.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
     vm.stopPrank();
   }
 }

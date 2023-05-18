@@ -17,9 +17,9 @@ contract RatiosTest is WarlordTest {
     fork();
 
     vm.startPrank(admin);
-    ratios = new WarRatios();
-    ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    ratios.addTokenWithSupply(address(aura), auraMaxSupply);
+    oldRatios = new WarRatios();
+    oldRatios.addTokenWithSupply(address(cvx), cvxMaxSupply);
+    oldRatios.addTokenWithSupply(address(aura), auraMaxSupply);
     vm.stopPrank();
   }
 }

@@ -9,8 +9,8 @@ contract GetRedeemAmount is RatiosV2Test {
     vm.assume(initialMintAmount > MINT_PRECISION_LOSS);
     vm.assume(initialMintAmount <= (token == address(aura) ? AURA_MAX_SUPPLY : CVX_MAX_SUPPLY));
 
-    uint256 amountToBurn = ratiosV2.getMintAmount(token, initialMintAmount);
-    uint256 burnedAmount = ratiosV2.getBurnAmount(token, amountToBurn);
+    uint256 amountToBurn = ratios.getMintAmount(token, initialMintAmount);
+    uint256 burnedAmount = ratios.getBurnAmount(token, amountToBurn);
 
     // Precision correction
     initialMintAmount = initialMintAmount / MINT_PRECISION_LOSS * MINT_PRECISION_LOSS;
@@ -25,13 +25,13 @@ contract GetRedeemAmount is RatiosV2Test {
     vm.assume(amount != 0);
 
     vm.expectRevert(Errors.ZeroAddress.selector);
-    ratiosV2.getBurnAmount(zero, amount);
+    ratios.getBurnAmount(zero, amount);
   }
 
   function testZeroAmount(address token) public {
     vm.assume(token != zero);
 
     vm.expectRevert(Errors.ZeroValue.selector);
-    ratiosV2.getBurnAmount(token, 0);
+    ratios.getBurnAmount(token, 0);
   }
 }

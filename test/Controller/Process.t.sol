@@ -45,8 +45,11 @@ contract Process is UnexposedControllerTest {
 
     controller.process(token);
 
+    uint256 expectedMintedAmount = ratios.getMintAmount(token, amount - fee);
+
     uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
-    assertEqDecimal(warDelta, amount - fee, 18, "Fee should have been taken from locked amount");
+    
+    assertEqDecimal(warDelta, expectedMintedAmount, 18, "Fee should have been taken from locked amount");
     assertFee(token, amount);
   }
 

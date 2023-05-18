@@ -190,7 +190,7 @@ contract JoinQueue is RedeemerTest {
     vm.assume(amount > 1e9);
     vm.assume(extraCvxDeposit <= 5_000e18);
     vm.assume(extraAuraDeposit <= 5_000e18);
-    vm.assume(extraCvxDeposit > 0 && extraAuraDeposit > 0);
+    vm.assume(extraCvxDeposit > 1e4 && extraAuraDeposit > 1e4);
 
     TestVars memory vars;
 

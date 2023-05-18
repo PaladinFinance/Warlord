@@ -67,8 +67,8 @@ contract Deployment is Script, MainnetTest {
   // Infrastracture
   WarController controller;
   HolyPaladinDistributor distributor;
-  WarRatios ratios;
-  WarRatiosV2 ratiosV2;
+  WarRatios oldRatios;
+  WarRatiosV2 ratios;
   WarStaker staker;
 
   function run() public {
@@ -82,8 +82,8 @@ contract Deployment is Script, MainnetTest {
 
   function deploy() public {
     war = new WarToken();
-    ratios = new WarRatios();
-    ratiosV2 = new WarRatiosV2();
+    oldRatios = new WarRatios();
+    ratios = new WarRatiosV2();
     minter = new WarMinter(address(war), address(ratios));
     redeemer = new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
 
@@ -99,13 +99,13 @@ contract Deployment is Script, MainnetTest {
 
     // CVX mint config
     minter.setLocker(address(cvx), address(cvxLocker));
-    ratios.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
-    ratiosV2.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
+    oldRatios.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
+    ratios.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
 
     // AURA mint config
     minter.setLocker(address(aura), address(auraLocker));
-    ratios.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
-    ratiosV2.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
+    oldRatios.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
+    ratios.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
 
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));
