@@ -243,7 +243,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    * @param token Address of the token
    * @param amount Amount of token unlocked
    */
-  function notifyUnlock(address token, uint256 amount) external nonReentrant whenNotPaused {
+  function notifyUnlock(address token, uint256 amount) external whenNotPaused {
     if (lockerTokens[msg.sender] == address(0)) revert Errors.NotListedLocker();
 
     // Update the redeem index for the token based on the amount unlocked & sent by the Locker
@@ -371,6 +371,10 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     // Load the ticket & the token
     RedeemTicket storage redeemTicket = userRedeems[user][ticketNumber];
     address token = redeemTicket.token;
+
+    // Process any potential unlock for the Locker to update the redeem index
+    IWarLocker(lockers[token]).processUnlock();
+
     // Check if the token's redeem index is high enough for this redeem
     if (redeemTicket.redeemIndex > tokenIndexes[token].redeemIndex) revert Errors.CannotRedeemYet();
 
