@@ -3,13 +3,13 @@ pragma solidity 0.8.16;
 
 import "./RatiosV2Test.sol";
 
-contract AddTokenWithSupply is RatiosV2Test {
+contract AddToken is RatiosV2Test {
   function testDefaultBehavior(address token, uint256 tokenRatio) public {
     vm.assume(token != zero && token != address(cvx) && token != address(aura));
     vm.assume(tokenRatio > 0);
 
     vm.prank(admin);
-    ratios.addTokenWithSupply(token, tokenRatio);
+    ratios.addToken(token, tokenRatio);
     assertEq(ratios.warPerToken(token), tokenRatio);
     assertEq(ratios.getTokenRatio(token), tokenRatio);
   }
@@ -24,18 +24,18 @@ contract AddTokenWithSupply is RatiosV2Test {
   function testCantAddZeroAddress() public {
     vm.expectRevert(Errors.ZeroAddress.selector);
     vm.prank(admin);
-    ratios.addTokenWithSupply(zero, 500e18);
+    ratios.addToken(zero, 500e18);
   }
 
   function testCantAddZeroSupply() public {
     vm.expectRevert(Errors.ZeroValue.selector);
     vm.prank(admin);
-    ratios.addTokenWithSupply(address(42), 0);
+    ratios.addToken(address(42), 0);
   }
 
   function testCantAddAlreadyExistingToken() public {
     vm.expectRevert(Errors.RatioAlreadySet.selector);
     vm.prank(admin);
-    ratios.addTokenWithSupply(address(cvx), 50e18);
+    ratios.addToken(address(cvx), 50e18);
   }
 }

@@ -37,7 +37,7 @@ contract WarRatiosV2 is IRatios, Owner {
    * @param token Address of the token
    * @param warRatio Amount of WAR minted per token
    */
-  function addTokenWithSupply(address token, uint256 warRatio) external onlyOwner {
+  function addToken(address token, uint256 warRatio) external onlyOwner {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (warRatio == 0) revert Errors.ZeroValue();
     if (warPerToken[token] != 0) revert Errors.RatioAlreadySet();

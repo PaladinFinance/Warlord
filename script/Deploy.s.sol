@@ -99,13 +99,13 @@ contract Deployment is Script, MainnetTest {
 
     // CVX mint config
     minter.setLocker(address(cvx), address(cvxLocker));
-    oldRatios.addTokenWithSupply(address(cvx), CVX_MAX_SUPPLY);
-    ratios.addTokenWithSupply(address(cvx), CVX_MINT_RATIO);
+    oldRatios.addToken(address(cvx), CVX_MAX_SUPPLY);
+    ratios.addToken(address(cvx), CVX_MINT_RATIO);
 
     // AURA mint config
     minter.setLocker(address(aura), address(auraLocker));
-    oldRatios.addTokenWithSupply(address(aura), AURA_MAX_SUPPLY);
-    ratios.addTokenWithSupply(address(aura), AURA_MINT_RATIO);
+    oldRatios.addToken(address(aura), AURA_MAX_SUPPLY);
+    ratios.addToken(address(aura), AURA_MINT_RATIO);
 
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));
     cvxCrvFarmer = new WarCvxCrvFarmer(address(controller), address(staker));

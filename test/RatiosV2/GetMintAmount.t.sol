@@ -28,7 +28,7 @@ contract GetMintAmount is RatiosV2Test {
 
     address token = makeAddr("otherToken");
     vm.prank(admin);
-    ratios.addTokenWithSupply(token, CVX_MINT_RATIO / 1e4);
+    ratios.addToken(token, CVX_MINT_RATIO / 1e4);
 
     assertEq(ratios.getMintAmount(token, amount), 0);
   }

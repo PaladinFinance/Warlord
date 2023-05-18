@@ -41,7 +41,7 @@ contract WarRatios is IRatios, Owner {
    * @param token Address of the token
    * @param maxSupply Max Supply for the token
    */
-  function addTokenWithSupply(address token, uint256 maxSupply) external onlyOwner {
+  function addToken(address token, uint256 maxSupply) external onlyOwner {
     if (token == address(0)) revert Errors.ZeroAddress();
     if (maxSupply == 0) revert Errors.ZeroValue();
     if (warPerToken[token] != 0) revert Errors.SupplyAlreadySet();

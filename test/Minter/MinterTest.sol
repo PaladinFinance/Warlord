@@ -55,8 +55,8 @@ contract MinterTest is MainnetTest {
 
     // Mint ratio set up
     ratios = new WarRatios();
-    ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    ratios.addTokenWithSupply(address(aura), auraMaxSupply);
+    ratios.addToken(address(cvx), cvxMaxSupply);
+    ratios.addToken(address(aura), auraMaxSupply);
 
     minter = new WarMinter(address(war), address(ratios));
     minter.transferOwnership(admin);
