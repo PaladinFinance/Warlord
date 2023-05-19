@@ -73,3 +73,16 @@ function generateNumberArrayFromHash(uint256 seed, uint256 len, uint256 upperBou
     numArray[i] = uint256((keccak256(abi.encode(seed + i)))) % upperBound + 1;
   }
 }
+
+  function generateNumberArrayFromHash2(uint256 seed, uint256 len, uint256 lowerBound, uint256 upperBound)
+  pure
+  returns (uint256[] memory numArray)
+{
+  seed = seed % 1e77;
+  if (len == 0) return new uint256[](0);
+  numArray = new uint256[](len);
+  for (uint256 i; i < len; ++i) {
+    // numArray[i] = uint160(bytes20((keccak256(abi.encode(seed + i)))));
+    numArray[i] = uint256((keccak256(abi.encode(seed + i)))) % (upperBound - lowerBound + 1) + lowerBound;
+  }
+}
