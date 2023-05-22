@@ -11,20 +11,24 @@ contract QueueForWithdrawal is RedeemerTest {
     RedeemerTest.setUp();
   }
 
-  function _getCvxIndex(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns(uint256) {
-    for(uint256 i; i < tokenWeights.length; i++) {
-      if(tokenWeights[i].token == address(cvx)) {
+  function _getCvxIndex(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns (uint256) {
+    for (uint256 i; i < tokenWeights.length; i++) {
+      if (tokenWeights[i].token == address(cvx)) {
         return i;
       }
     }
+    require(false, "Something went wrong");
+    return 0;
   }
 
-  function _getAuraIndex(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns(uint256) {
-    for(uint256 i; i < tokenWeights.length; i++) {
-      if(tokenWeights[i].token == address(aura)) {
+  function _getAuraIndex(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns (uint256) {
+    for (uint256 i; i < tokenWeights.length; i++) {
+      if (tokenWeights[i].token == address(aura)) {
         return i;
       }
     }
+    require(false, "Something went wrong");
+    return 0;
   }
 
   function testJoiningQueue(uint256 amount) public {
@@ -92,7 +96,7 @@ contract QueueForWithdrawal is RedeemerTest {
   function testSuccessiveJoiningQueue(uint256 amount2, uint256 amount3) public {
     vm.assume(amount2 <= 100e18 && amount3 <= 100e18);
     vm.assume(amount2 > 1e9 && amount3 > 1e9);
-    
+
     vm.prank(alice);
     war.transfer(bob, 150e18);
 
@@ -105,7 +109,7 @@ contract QueueForWithdrawal is RedeemerTest {
 
     uint256 totalCvxIncrease;
     uint256 totalAuraIncrease;
-    
+
     totalCvxIncrease += ratios.getBurnAmount(
       address(cvx),
       ((amount - ((amount * redeemer.redeemFee()) / 10_000)) * tokenWeights[_getCvxIndex(tokenWeights)].weight) / UNIT
@@ -121,7 +125,8 @@ contract QueueForWithdrawal is RedeemerTest {
     );
     totalAuraIncrease += ratios.getBurnAmount(
       address(aura),
-      ((amount2 - ((amount2 * redeemer.redeemFee()) / 10_000)) * tokenWeights[_getAuraIndex(tokenWeights)].weight) / UNIT
+      ((amount2 - ((amount2 * redeemer.redeemFee()) / 10_000)) * tokenWeights[_getAuraIndex(tokenWeights)].weight)
+        / UNIT
     );
 
     totalCvxIncrease += ratios.getBurnAmount(
@@ -130,7 +135,8 @@ contract QueueForWithdrawal is RedeemerTest {
     );
     totalAuraIncrease += ratios.getBurnAmount(
       address(aura),
-      ((amount3 - ((amount3 * redeemer.redeemFee()) / 10_000)) * tokenWeights[_getAuraIndex(tokenWeights)].weight) / UNIT
+      ((amount3 - ((amount3 * redeemer.redeemFee()) / 10_000)) * tokenWeights[_getAuraIndex(tokenWeights)].weight)
+        / UNIT
     );
 
     vm.startPrank(alice);

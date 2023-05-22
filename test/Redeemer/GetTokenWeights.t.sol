@@ -7,9 +7,7 @@ contract JoinQueue is RedeemerTest {
   // Because after joining the queue, the weights might change slightly (1 wei diff)
   uint256 constant ACCEPTED_PRECISION_LOSS = 10;
 
-  function _getTokenIndexes(
-    WarRedeemer.TokenWeight[] memory tokenWeights
-  ) internal pure returns(uint256, uint256) {
+  function _getTokenIndexes(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns (uint256, uint256) {
     bool isCvxFirst = tokenWeights[0].token == address(cvx);
     uint256 cvxIndex = isCvxFirst ? 0 : 1;
     uint256 auraIndex = isCvxFirst ? 1 : 0;
@@ -40,14 +38,14 @@ contract JoinQueue is RedeemerTest {
     address[] memory lockers;
     uint256[] memory amounts;
 
-    if(extraCvxDeposit > 0 && extraAuraDeposit > 0) {
+    if (extraCvxDeposit > 0 && extraAuraDeposit > 0) {
       lockers = new address[](2);
       lockers[0] = address(cvx);
       lockers[1] = address(aura);
       amounts = new uint256[](2);
       amounts[0] = extraCvxDeposit;
       amounts[1] = extraAuraDeposit;
-    } else if(extraCvxDeposit > 0) {
+    } else if (extraCvxDeposit > 0) {
       lockers = new address[](1);
       lockers[0] = address(cvx);
       amounts = new uint256[](1);
@@ -65,14 +63,13 @@ contract JoinQueue is RedeemerTest {
 
     minter.mintMultiple(lockers, amounts, bob);
     vm.stopPrank();
-
   }
 
   function testExtraDeposits(uint256 extraCvxDeposit, uint256 extraAuraDeposit) public {
-    vm.assume(extraCvxDeposit <= 5_000e18);
-    vm.assume(extraAuraDeposit <= 5_000e18);
+    vm.assume(extraCvxDeposit <= 5000e18);
+    vm.assume(extraAuraDeposit <= 5000e18);
     vm.assume(extraCvxDeposit > 0 && extraAuraDeposit > 0);
-    
+
     WarRedeemer.TokenWeight[] memory tokenWeights = redeemer.getTokenWeights();
     (uint256 cvxIndex, uint256 auraIndex) = _getTokenIndexes(tokenWeights);
 
@@ -97,7 +94,6 @@ contract JoinQueue is RedeemerTest {
 
     WarRedeemer.TokenWeight[] memory prevTokenWeights = redeemer.getTokenWeights();
 
-
     vm.startPrank(alice);
     war.approve(address(redeemer), type(uint256).max);
     redeemer.joinQueue(amount);
@@ -106,13 +102,12 @@ contract JoinQueue is RedeemerTest {
     WarRedeemer.TokenWeight[] memory newTokenWeights = redeemer.getTokenWeights();
 
     assertEq(
-        newTokenWeights[0].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS,
-        prevTokenWeights[0].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS
+      newTokenWeights[0].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS,
+      prevTokenWeights[0].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS
     );
     assertEq(
-        newTokenWeights[1].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS,
-        prevTokenWeights[1].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS
+      newTokenWeights[1].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS,
+      prevTokenWeights[1].weight / ACCEPTED_PRECISION_LOSS * ACCEPTED_PRECISION_LOSS
     );
   }
-
 }

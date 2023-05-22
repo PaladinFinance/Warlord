@@ -8,8 +8,8 @@ contract RedeemerTest is WarlordTest {
   address _minter = makeAddr("minter");
 
   uint256 constant cvxMintAmount = 500e18;
-  uint256 constant auraMintAmount = 1_000e18;
-  
+  uint256 constant auraMintAmount = 1000e18;
+
   uint256 constant UNIT = 1e18;
 
   function setUp() public virtual override {
@@ -23,8 +23,8 @@ contract RedeemerTest is WarlordTest {
     deal(address(aura), address(admin), 10_000e18);
     deal(address(cvx), address(admin), 10_000e18);
 
-    deal(address(aura), address(alice), 5_000e18);
-    deal(address(cvx), address(alice), 5_000e18);
+    deal(address(aura), address(alice), 5000e18);
+    deal(address(cvx), address(alice), 5000e18);
 
     address[] memory lockers = new address[](2);
     lockers[0] = address(cvx);

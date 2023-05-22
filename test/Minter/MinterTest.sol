@@ -29,7 +29,7 @@ contract DummyLocker is IWarLocker {
   }
 
   function getCurrentLockedTokens() external pure override returns (uint256) {
-    return 324089;
+    return 324_089;
   }
 }
 

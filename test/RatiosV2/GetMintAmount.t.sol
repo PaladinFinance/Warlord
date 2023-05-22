@@ -4,7 +4,6 @@ pragma solidity 0.8.16;
 import "./RatiosV2Test.sol";
 
 contract GetMintAmount is RatiosV2Test {
-
   function _defaultBehavior(address token, uint256 maxSupply, uint256 amount) internal {
     vm.assume(amount >= 1e4 && amount <= maxSupply);
     uint256 mintAmount = ratios.getMintAmount(address(token), amount);

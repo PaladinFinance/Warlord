@@ -15,17 +15,21 @@ contract Redeem is RedeemerTest {
     vm.stopPrank();
   }
 
-  function _getUserCvxTicketsIndexes(WarRedeemer.RedeemTicket[] memory userTickets) internal pure returns(uint256[] memory) {
+  function _getUserCvxTicketsIndexes(WarRedeemer.RedeemTicket[] memory userTickets)
+    internal
+    pure
+    returns (uint256[] memory)
+  {
     uint256 nbTickets = 0;
-    for(uint256 i; i < userTickets.length; i++) {
-      if(userTickets[i].token == address(cvx)) {
+    for (uint256 i; i < userTickets.length; i++) {
+      if (userTickets[i].token == address(cvx)) {
         nbTickets++;
       }
     }
     uint256[] memory indexes = new uint256[](nbTickets);
     uint256 j;
-    for(uint256 i; i < userTickets.length; i++) {
-      if(userTickets[i].token == address(cvx)) {
+    for (uint256 i; i < userTickets.length; i++) {
+      if (userTickets[i].token == address(cvx)) {
         indexes[j] = i;
         j++;
       }

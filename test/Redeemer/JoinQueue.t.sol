@@ -21,6 +21,7 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
+    // TODO shouldn't this be ge it fails with 1e21
     assertGe(war.balanceOf(alice), amount);
 
     vm.prank(alice);
@@ -31,9 +32,7 @@ contract JoinQueue is RedeemerTest {
     assertEq(war.totalSupply(), prevWarSupply - (amount - expectedFeeAmount));
   }
 
-  function _getTokenIndexes(
-    WarRedeemer.TokenWeight[] memory tokenWeights
-  ) internal pure returns(uint256, uint256) {
+  function _getTokenIndexes(WarRedeemer.TokenWeight[] memory tokenWeights) internal pure returns (uint256, uint256) {
     bool isCvxFirst = tokenWeights[0].token == address(cvx);
     uint256 cvxIndex = isCvxFirst ? 0 : 1;
     uint256 auraIndex = isCvxFirst ? 1 : 0;
@@ -46,13 +45,13 @@ contract JoinQueue is RedeemerTest {
     uint256 userRedeemTicketsLength,
     uint256 redeemAmountCvx,
     uint256 redeemAmountAura
-  ) internal pure returns(uint256, uint256) {
+  ) internal pure returns (uint256, uint256) {
     bool isCvxFirst = tokenWeights[0].token == address(cvx);
-    
+
     // Can be done better
     uint256 cvxTicketIndex;
     uint256 auraTicketIndex;
-    if(isCvxFirst) {
+    if (isCvxFirst) {
       cvxTicketIndex = userRedeemTicketsLength;
       auraTicketIndex = redeemAmountCvx > 0 ? userRedeemTicketsLength + 1 : userRedeemTicketsLength;
     } else {
@@ -77,10 +76,13 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    uint256 redeemAmountCvx = ratios.getBurnAmount(address(cvx), ((amount - expectedFeeAmount) * tokenWeights[cvxIndex].weight) / UNIT);
-    uint256 redeemAmountAura = ratios.getBurnAmount(address(aura), ((amount - expectedFeeAmount) * tokenWeights[auraIndex].weight) / UNIT);
+    uint256 redeemAmountCvx =
+      ratios.getBurnAmount(address(cvx), ((amount - expectedFeeAmount) * tokenWeights[cvxIndex].weight) / UNIT);
+    uint256 redeemAmountAura =
+      ratios.getBurnAmount(address(aura), ((amount - expectedFeeAmount) * tokenWeights[auraIndex].weight) / UNIT);
 
-    (uint256 cvxTicketIndex, uint256 auraTicketIndex) = _getTicketIndexes(tokenWeights, userRedeemTicketsLength, redeemAmountCvx, redeemAmountAura);
+    (uint256 cvxTicketIndex, uint256 auraTicketIndex) =
+      _getTicketIndexes(tokenWeights, userRedeemTicketsLength, redeemAmountCvx, redeemAmountAura);
 
     vm.startPrank(alice);
     if (redeemAmountAura > 0) {
@@ -91,9 +93,7 @@ contract JoinQueue is RedeemerTest {
     }
     if (redeemAmountCvx > 0) {
       vm.expectEmit(true, true, false, true);
-      emit NewRedeemTicket(
-        address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx
-      );
+      emit NewRedeemTicket(address(cvx), alice, cvxTicketIndex, redeemAmountCvx, prevCvxQueueIndex + redeemAmountCvx);
     }
 
     redeemer.joinQueue(amount);
@@ -140,14 +140,14 @@ contract JoinQueue is RedeemerTest {
     address[] memory lockers;
     uint256[] memory amounts;
 
-    if(extraCvxDeposit > 0 && extraAuraDeposit > 0) {
+    if (extraCvxDeposit > 0 && extraAuraDeposit > 0) {
       lockers = new address[](2);
       lockers[0] = address(cvx);
       lockers[1] = address(aura);
       amounts = new uint256[](2);
       amounts[0] = extraCvxDeposit;
       amounts[1] = extraAuraDeposit;
-    } else if(extraCvxDeposit > 0) {
+    } else if (extraCvxDeposit > 0) {
       lockers = new address[](1);
       lockers[0] = address(cvx);
       amounts = new uint256[](1);
@@ -165,7 +165,6 @@ contract JoinQueue is RedeemerTest {
 
     minter.mintMultiple(lockers, amounts, bob);
     vm.stopPrank();
-
   }
 
   struct TestVars {
@@ -181,15 +180,11 @@ contract JoinQueue is RedeemerTest {
     uint256 auraTicketIndex;
   }
 
-  function testTicketsWithDifferentWeights(
-    uint256 amount,
-    uint256 extraCvxDeposit,
-    uint256 extraAuraDeposit
-  ) public {
+  function testTicketsWithDifferentWeights(uint256 amount, uint256 extraCvxDeposit, uint256 extraAuraDeposit) public {
     vm.assume(amount <= 1000e18);
     vm.assume(amount > 1e9);
-    vm.assume(extraCvxDeposit <= 5_000e18);
-    vm.assume(extraAuraDeposit <= 5_000e18);
+    vm.assume(extraCvxDeposit <= 5000e18);
+    vm.assume(extraAuraDeposit <= 5000e18);
     vm.assume(extraCvxDeposit > 1e4 && extraAuraDeposit > 1e4);
 
     TestVars memory vars;
@@ -206,16 +201,25 @@ contract JoinQueue is RedeemerTest {
 
     vars.expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    vars.redeemAmountCvx = ratios.getBurnAmount(address(cvx), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.cvxIndex].weight) / UNIT);
-    vars.redeemAmountAura = ratios.getBurnAmount(address(aura), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.auraIndex].weight) / UNIT);
+    vars.redeemAmountCvx = ratios.getBurnAmount(
+      address(cvx), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.cvxIndex].weight) / UNIT
+    );
+    vars.redeemAmountAura = ratios.getBurnAmount(
+      address(aura), ((amount - vars.expectedFeeAmount) * tokenWeights[vars.auraIndex].weight) / UNIT
+    );
 
-    (vars.cvxTicketIndex, vars.auraTicketIndex) = _getTicketIndexes(tokenWeights, vars.userRedeemTicketsLength, vars.redeemAmountCvx, vars.redeemAmountAura);
+    (vars.cvxTicketIndex, vars.auraTicketIndex) =
+      _getTicketIndexes(tokenWeights, vars.userRedeemTicketsLength, vars.redeemAmountCvx, vars.redeemAmountAura);
 
     vm.startPrank(alice);
     if (vars.redeemAmountAura > 0) {
       vm.expectEmit(true, true, false, true);
       emit NewRedeemTicket(
-        address(aura), alice, vars.auraTicketIndex, vars.redeemAmountAura, vars.prevAuraQueueIndex + vars.redeemAmountAura
+        address(aura),
+        alice,
+        vars.auraTicketIndex,
+        vars.redeemAmountAura,
+        vars.prevAuraQueueIndex + vars.redeemAmountAura
       );
     }
     if (vars.redeemAmountCvx > 0) {
@@ -233,8 +237,9 @@ contract JoinQueue is RedeemerTest {
     (uint256 newAuraQueueIndex,) = redeemer.tokenIndexes(address(aura));
 
     WarRedeemer.RedeemTicket[] memory userRedeemTickets = redeemer.getUserRedeemTickets(alice);
-    uint256 newUserRedeemTicketsLength =
-      vars.redeemAmountCvx > 0 && vars.redeemAmountAura > 0 ? vars.userRedeemTicketsLength + 2 : vars.userRedeemTicketsLength + 1;
+    uint256 newUserRedeemTicketsLength = vars.redeemAmountCvx > 0 && vars.redeemAmountAura > 0
+      ? vars.userRedeemTicketsLength + 2
+      : vars.userRedeemTicketsLength + 1;
 
     assertEq(userRedeemTickets.length, newUserRedeemTicketsLength);
 
@@ -264,7 +269,6 @@ contract JoinQueue is RedeemerTest {
       assertEq(newAuraQueueIndex, vars.prevAuraQueueIndex);
     }
   }
-
 
   function testZeroAmount() public {
     vm.startPrank(alice);

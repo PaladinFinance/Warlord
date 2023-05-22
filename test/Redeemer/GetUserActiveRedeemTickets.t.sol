@@ -52,10 +52,12 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
 
     uint256 j;
     for (uint256 i; i < userActiveTickets.length; i++) {
-      if(userTickets[j].id == redeemedTicket.id) {
-        unchecked { j++; }
+      if (userTickets[j].id == redeemedTicket.id) {
+        unchecked {
+          j++;
+        }
       }
-      
+
       assertEq(userActiveTickets[i].id == redeemedTicket.id, false);
 
       assertEq(userActiveTickets[i].id, userTickets[j].id);
@@ -63,8 +65,10 @@ contract GetUserActiveRedeemTickets is RedeemerTest {
       assertEq(userActiveTickets[i].amount, userTickets[j].amount);
       assertEq(userActiveTickets[i].redeemIndex, userTickets[j].redeemIndex);
       assertEq(userActiveTickets[i].redeemed, false);
-      
-      unchecked { j++; }
+
+      unchecked {
+        j++;
+      }
     }
   }
 }

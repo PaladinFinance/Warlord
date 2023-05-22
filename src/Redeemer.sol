@@ -111,7 +111,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Ratio of fees in BPS taken when redeeming
    */
-  uint256 public redeemFee; 
+  uint256 public redeemFee;
 
   /**
    * @notice Indexes struct for each token
@@ -231,7 +231,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    * @notice Returns the current weights of all listed tokens for redeeming
    * @return TokenWeight[] : weights and address for each token
    */
-  function getTokenWeights() external view returns(TokenWeight[] memory) {
+  function getTokenWeights() external view returns (TokenWeight[] memory) {
     uint256 length = tokens.length;
     TokenWeight[] memory _tokens = new TokenWeight[](length);
     for (uint256 i; i < length; i++) {
@@ -258,11 +258,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    * @notice Joins the redeem queue for each token & burns the given amount of WAR token
    * @param amount Amount of WAR to burn
    */
-  function joinQueue(uint256 amount)
-    external
-    nonReentrant
-    whenNotPaused
-  {
+  function joinQueue(uint256 amount) external nonReentrant whenNotPaused {
     address[] memory _tokens = tokens;
     uint256 tokensLength = _tokens.length;
     if (amount == 0) revert Errors.ZeroValue();
@@ -334,8 +330,8 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
    */
   function _getTokenWeight(address token) internal view returns (uint256) {
     uint256 totalWarSupply = WarToken(war).totalSupply();
-    if(totalWarSupply == 0) return 0;
-    
+    if (totalWarSupply == 0) return 0;
+
     uint256 tokenBalance = IWarLocker(lockers[token]).getCurrentLockedTokens();
     uint256 queuedAmount = queuedForWithdrawal(token);
     tokenBalance = tokenBalance > queuedAmount ? tokenBalance - queuedAmount : 0;
@@ -409,7 +405,7 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     address expectedToken = IWarLocker(warLocker).token();
     if (expectedToken != token) revert Errors.MismatchingLocker(expectedToken, token);
 
-    if(lockers[token] == address(0)) {
+    if (lockers[token] == address(0)) {
       // New token listed
       tokens.push(token);
     }

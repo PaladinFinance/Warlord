@@ -22,7 +22,7 @@ contract Process is UnexposedControllerTest {
   function testZeroBalance() public {
     IERC20 mock = IERC20(address(new MockERC20()));
     vm.expectCall(address(mock), abi.encodeCall(mock.balanceOf, address(controller)), 1);
-    vm.expectCall(address(mock), abi.encodeCall(mock.transfer, (protocolFeeReceiver, 0)), 0); 
+    vm.expectCall(address(mock), abi.encodeCall(mock.transfer, (protocolFeeReceiver, 0)), 0);
     controller.process(address(mock));
   }
 
@@ -48,7 +48,7 @@ contract Process is UnexposedControllerTest {
     uint256 expectedMintedAmount = ratios.getMintAmount(token, amount - fee);
 
     uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
-    
+
     assertEqDecimal(warDelta, expectedMintedAmount, 18, "Fee should have been taken from locked amount");
     assertFee(token, amount);
   }
