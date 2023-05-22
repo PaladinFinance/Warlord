@@ -19,7 +19,6 @@ contract MainnetTest is BaseTest {
 
   WETH9 constant weth = WETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
-
   // Curve
   IERC20 constant crv = IERC20(0xD533a949740bb3306d119CC777fa900bA034cd52);
   IERC20 constant threeCrv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);

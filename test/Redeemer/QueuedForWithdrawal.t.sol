@@ -58,7 +58,6 @@ contract QueueForWithdrawal is RedeemerTest {
   }
 
   function testJoiningQueueAndNotify(uint256 amount) public {
-    // TODO Edge case with 9500000000000000001
     vm.assume(amount <= 100e18);
     vm.assume(amount > 1e9);
 

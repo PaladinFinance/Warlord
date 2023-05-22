@@ -4,7 +4,6 @@ pragma solidity 0.8.16;
 import "./MinterTest.sol";
 
 contract Mint is MinterTest {
-  // TODO test for emits
   function _mint(address source, uint256 amount, address receiver) internal {
     vm.assume(receiver != alice && receiver != zero);
     vm.assume(amount > 0 && amount <= IERC20(source).balanceOf(alice));
@@ -15,7 +14,6 @@ contract Mint is MinterTest {
     minter.mint(source, amount, receiver);
     uint256 expectedMintAmount = ratios.getMintAmount(source, amount);
     assertEq(war.totalSupply(), expectedMintAmount);
-    // TODO assertEq(IERC20(source).balanceOf(alice), 0);
     assertEq(war.balanceOf(alice), 0);
     assertEq(war.balanceOf(receiver), expectedMintAmount);
   }

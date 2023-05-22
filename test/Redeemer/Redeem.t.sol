@@ -77,7 +77,7 @@ contract Redeem is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), warAmount2);
-    redeemer.joinQueue(warAmount2); // TODO naive correction
+    redeemer.joinQueue(warAmount2);
     vm.stopPrank();
 
     WarRedeemer.RedeemTicket[] memory userTickets = redeemer.getUserRedeemTickets(alice);

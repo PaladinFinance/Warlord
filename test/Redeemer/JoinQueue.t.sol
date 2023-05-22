@@ -21,7 +21,6 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    // TODO shouldn't this be ge it fails with 1e21
     assertGe(war.balanceOf(alice), amount);
 
     vm.prank(alice);
