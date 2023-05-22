@@ -6,10 +6,6 @@ import "./RedeemerTest.sol";
 contract JoinQueue is RedeemerTest {
   // Because after joining the queue, the weights might change slightly (1 wei diff)
   uint256 constant ACCEPTED_PRECISION_LOSS = 10;
-  
-  function setUp() public virtual override {
-    RedeemerTest.setUp();
-  }
 
   function _getTokenIndexes(
     WarRedeemer.TokenWeight[] memory tokenWeights

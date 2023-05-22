@@ -7,7 +7,7 @@ contract SetRatios is MinterTest {
   function testDefaultBehavior(address newRatios) public {
     vm.assume(newRatios != zero);
 
-    vm.expectEmit(true, false, false, true);
+    vm.expectEmit();
     emit MintRatioUpdated(address(minter.ratios()), newRatios);
 
     vm.prank(admin);
