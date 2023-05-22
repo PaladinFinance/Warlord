@@ -21,8 +21,12 @@ contract ProcessMultiple is UnexposedControllerTest {
     deal(address(aura), address(controller), amount);
     controller.processMultiple(tokens);
 
-    assertEqDecimal(IERC20(cvx).balanceOf(address(controller)), 0, 18, "All the cvx received should have been converted to war");
-    assertEqDecimal(IERC20(aura).balanceOf(address(controller)), 0, 18, "All the aura received should have been converted to war");
+    assertEqDecimal(
+      IERC20(cvx).balanceOf(address(controller)), 0, 18, "All the cvx received should have been converted to war"
+    );
+    assertEqDecimal(
+      IERC20(aura).balanceOf(address(controller)), 0, 18, "All the aura received should have been converted to war"
+    );
   }
 
   function testWhenNotPaused() public {

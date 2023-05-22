@@ -43,8 +43,7 @@ contract CreateDistribution is DistributorTest {
     );
   }
 
-  function testMultipleDistributions() public {
-  }
+  function testMultipleDistributions() public {}
 
   function testOnlyDistributionManager(uint256 amount) public {
     vm.expectRevert(Errors.CallerNotAllowed.selector);

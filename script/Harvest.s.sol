@@ -16,11 +16,10 @@ contract Harvest is Script, MainnetTest {
 
     string memory json = vm.readFile("./deployment_report.json");
     WarController controller = WarController(vm.parseJsonAddress(json, ".WarController"));
-    
+
     // address deployer = 0x60e868ca88198664Ce10a1F5cf7F007b2811f283;
     // controller.setSwapper(deployer);
     // print(string.concat("bbAUsd ", vm.toString(bbAUsd.balanceOf(controller.swapper()))));
-
 
     // WarToken war = WarToken(vm.parseJsonAddress(json, ".WarToken"));
     // WarStaker stkWar = WarStaker(vm.parseJsonAddress(json, ".WarStaker"));
@@ -38,11 +37,10 @@ contract Harvest is Script, MainnetTest {
     controller.process(address(cvx));
     controller.process(address(aura));
 
-    // address[] memory 
+    // address[] memory
     // controller.setFarmer(address(auraBal), address(auraBalFarmer));
     // controller.setFarmer(address(cvxCrv), address(cvxCrvFarmer));
     // print(vm.toString(cvxCrv.balanceOf(address(controller))));
     vm.stopBroadcast();
   }
 }
-

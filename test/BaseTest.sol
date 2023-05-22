@@ -74,7 +74,7 @@ function generateNumberArrayFromHash(uint256 seed, uint256 len, uint256 upperBou
   }
 }
 
-  function generateNumberArrayFromHash2(uint256 seed, uint256 len, uint256 lowerBound, uint256 upperBound)
+function generateNumberArrayFromHash2(uint256 seed, uint256 len, uint256 lowerBound, uint256 upperBound)
   pure
   returns (uint256[] memory numArray)
 {
