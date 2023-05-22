@@ -82,7 +82,6 @@ contract Deployment is Script, MainnetTest {
 
   function deploy() public {
     war = new WarToken();
-    oldRatios = new WarRatios();
     ratios = new WarRatiosV2();
     minter = new WarMinter(address(war), address(ratios));
     redeemer = new WarRedeemer(address(war), address(ratios), redemptionFeeReceiver, REDEMPTION_FEE);
@@ -99,12 +98,10 @@ contract Deployment is Script, MainnetTest {
 
     // CVX mint config
     minter.setLocker(address(cvx), address(cvxLocker));
-    oldRatios.addToken(address(cvx), CVX_MAX_SUPPLY);
     ratios.addToken(address(cvx), CVX_MINT_RATIO);
 
     // AURA mint config
     minter.setLocker(address(aura), address(auraLocker));
-    oldRatios.addToken(address(aura), AURA_MAX_SUPPLY);
     ratios.addToken(address(aura), AURA_MINT_RATIO);
 
     auraBalFarmer = new WarAuraBalFarmer(address(controller), address(staker));

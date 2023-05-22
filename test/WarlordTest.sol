@@ -17,6 +17,9 @@ contract WarlordTest is MainnetTest, Deployment {
     Deployment.deploy();
 
     // Distributor is not part of deployment due to governance discussion but still tested
+    oldRatios = new WarRatios();
+    oldRatios.addToken(address(cvx), CVX_MAX_SUPPLY);
+    oldRatios.addToken(address(aura), AURA_MAX_SUPPLY);
     distributor = new HolyPaladinDistributor(address(hPal), address(war), distributionManager);
 
     vm.stopPrank();
