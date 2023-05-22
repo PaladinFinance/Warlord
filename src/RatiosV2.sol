@@ -28,6 +28,10 @@ contract WarRatiosV2 is IRatios, Owner {
    */
   mapping(address => uint256) public warPerToken;
 
+  /**
+   * @notice Returns the ratio for a given token
+   * @param token Address of the token
+   */
   function getTokenRatio(address token) external view returns (uint256) {
     return warPerToken[token];
   }

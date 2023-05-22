@@ -227,6 +227,10 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
     return activeRedeemTickets;
   }
 
+  /**
+   * @notice Returns the current weights of all listed tokens for redeeming
+   * @return TokenWeight[] : weights and address for each token
+   */
   function getTokenWeights() external view returns(TokenWeight[] memory) {
     uint256 length = tokens.length;
     TokenWeight[] memory _tokens = new TokenWeight[](length);
@@ -323,6 +327,11 @@ contract WarRedeemer is IWarRedeemModule, ReentrancyGuard, Pausable, Owner {
 
   // Internal Functions
 
+  /**
+   * @dev Calculates the redeem ratio for the given token
+   * @param token Address of the token
+   * @return (uint256) : weight of the token
+   */
   function _getTokenWeight(address token) internal view returns (uint256) {
     uint256 totalWarSupply = WarToken(war).totalSupply();
     if(totalWarSupply == 0) return 0;
