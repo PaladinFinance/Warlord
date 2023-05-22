@@ -26,22 +26,22 @@ contract WarMinter is Owner, ReentrancyGuard {
   using SafeERC20 for IERC20;
 
   /**
-   * @notice Max supply of WAR that can be minted per token : 10_000 tokens (with 18 decimals)
-   */
-  uint256 private constant MAX_SUPPLY_PER_TOKEN = 10_000 * 1e18;
-
-  /**
    * @notice WAR token contract
    */
   WarToken public immutable war;
   /**
    * @notice Address of the contract calculating the mint amounts
    */
-  IRatios public immutable ratios;
+  IRatios public ratios;
   /**
    * @notice Address of the Locker set for each token
    */
   mapping(address => address) public lockers;
+
+  /**
+   * @notice Event emitted when the Ratio contract is updated
+   */
+  event MintRatioUpdated(address oldMintRatio, address newMintRatio);
 
   // Constructor
 
@@ -148,5 +148,18 @@ contract WarMinter is Owner, ReentrancyGuard {
    */
   function mintMultiple(address[] calldata vlTokens, uint256[] calldata amounts) external nonReentrant {
     _mintMultiple(vlTokens, amounts, msg.sender);
+  }
+
+  /**
+   * @notice Sets the Ratio contract address
+   * @param newRatios Address of the new Ratio contract
+   */
+  function setRatios(address newRatios) external onlyOwner {
+    if (newRatios == address(0)) revert Errors.ZeroAddress();
+
+    address oldRatios = address(ratios);
+    ratios = IRatios(newRatios);
+
+    emit MintRatioUpdated(oldRatios, newRatios);
   }
 }

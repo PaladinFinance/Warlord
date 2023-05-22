@@ -80,7 +80,7 @@ contract Mint is MinterTest {
     minter.setLocker(address(otherToken), address(otherLocker));
     otherToken.mint(address(alice), 100e18);
     vm.stopPrank();
-    ratios.addTokenWithSupply(address(otherToken), 1e30);
+    ratios.addToken(address(otherToken), 1e30);
 
     vm.startPrank(alice);
     otherToken.approve(address(minter), 100e18);

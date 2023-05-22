@@ -51,6 +51,14 @@ contract WarCvxLocker is IncentivizedLocker {
   }
 
   /**
+   * @notice Returns the current total amount of locked tokens for this Locker
+   */
+  function getCurrentLockedTokens() external view override returns (uint256) {
+    (uint256 totalBalance,,,) = vlCvx.lockedBalances(address(this));
+    return totalBalance;
+  }
+
+  /**
    * @dev Locks the tokens in the vlToken contract
    * @param amount Amount to lock
    */

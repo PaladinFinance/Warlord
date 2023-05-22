@@ -36,7 +36,7 @@ contract BaseLockerTest is MainnetTest {
   }
 }
 
-contract WarDummyLocker is WarBaseLocker, Test {
+contract WarDummyLocker is WarBaseLocker {
   constructor(address _controller, address _redeemModule, address _warMinter, address _delegate)
     WarBaseLocker(_controller, _redeemModule, _warMinter, _delegate)
   {}
@@ -46,6 +46,10 @@ contract WarDummyLocker is WarBaseLocker, Test {
   function _migrate(address receiver) internal override {}
   function _processUnlock() internal override {}
   function _setDelegate(address delegatee) internal override {}
+
+  function getCurrentLockedTokens() external pure override returns (uint256) {
+    return 1_234_565;
+  }
 
   function token() external pure returns (address) {
     return address(0x1234123412341234);

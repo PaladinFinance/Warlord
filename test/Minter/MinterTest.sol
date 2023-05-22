@@ -21,10 +21,15 @@ contract DummyLocker is IWarLocker {
 
   function lock(uint256 amount) external {}
   function harvest() external {}
+  function processUnlock() external {}
 
   function rewardTokens() external pure returns (address[] memory) {
     address[] memory tokens = new address[](1);
     return tokens;
+  }
+
+  function getCurrentLockedTokens() external pure override returns (uint256) {
+    return 324_089;
   }
 }
 
@@ -38,6 +43,8 @@ contract MinterTest is MainnetTest {
   IWarLocker cvxLocker;
   IRatios ratios;
 
+  event MintRatioUpdated(address oldMintRatio, address newMintRatio);
+
   function setUp() public override {
     MainnetTest.setUp();
     fork();
@@ -49,8 +56,8 @@ contract MinterTest is MainnetTest {
 
     // Mint ratio set up
     ratios = new WarRatios();
-    ratios.addTokenWithSupply(address(cvx), cvxMaxSupply);
-    ratios.addTokenWithSupply(address(aura), auraMaxSupply);
+    ratios.addToken(address(cvx), cvxMaxSupply);
+    ratios.addToken(address(aura), auraMaxSupply);
 
     minter = new WarMinter(address(war), address(ratios));
     minter.transferOwnership(admin);

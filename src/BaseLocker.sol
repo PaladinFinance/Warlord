@@ -76,6 +76,11 @@ abstract contract WarBaseLocker is IWarLocker, Pausable, Owner, ReentrancyGuard,
   }
 
   /**
+   * @notice Returns the current total amount of locked tokens for this Locker
+   */
+  function getCurrentLockedTokens() external view virtual returns (uint256);
+
+  /**
    * @notice Updates the Controller contract
    * @param _controller Address of the Controller contract
    */
