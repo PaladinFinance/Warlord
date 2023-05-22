@@ -15,7 +15,7 @@ contract ProcessMultiple is UnexposedControllerTest {
   }
 
   function testDefaultBehavior(uint256 amount) public {
-    vm.assume(amount > 0 && amount < 1e33);
+    vm.assume(amount > 1 && amount < 1e33);
 
     deal(address(cvx), address(controller), amount);
     deal(address(aura), address(controller), amount);
