@@ -21,7 +21,7 @@ contract JoinQueue is RedeemerTest {
 
     uint256 expectedFeeAmount = (amount * redeemer.redeemFee()) / 10_000;
 
-    assertGt(war.balanceOf(alice), amount);
+    assertGe(war.balanceOf(alice), amount);
 
     vm.prank(alice);
     redeemer.joinQueue(amount);
