@@ -81,7 +81,7 @@ contract QueueForWithdrawal is RedeemerTest {
 
     vm.startPrank(alice);
     war.approve(address(redeemer), redeemAmount);
-    redeemer.joinQueue(redeemAmount); // TODO naive correction
+    redeemer.joinQueue(redeemAmount);
     vm.stopPrank();
 
     uint256 prevQueued = redeemer.queuedForWithdrawal(address(cvx));
