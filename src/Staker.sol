@@ -125,7 +125,7 @@ contract WarStaker is ERC20, ReentrancyGuard, Pausable, Owner {
   /**
    * @notice Last indexes for reward token from Farmer contracts
    */
-  mapping(address => uint256) private farmerLastIndex;
+  mapping(address => uint256) public farmerLastIndex;
 
   /**
    * @notice Address allowed to deposit reward tokens
