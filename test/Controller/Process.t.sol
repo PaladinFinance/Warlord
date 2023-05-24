@@ -33,7 +33,6 @@ contract Process is UnexposedControllerTest {
     assertEqDecimal(balance, fee, 18, "Fee is sent to the correct receiver");
   }
 
-  // TODO test with initial amounts that are non zero
   function testLocker(uint256 amount) public {
     vm.assume(amount > 1e5 && amount < 1e33);
     uint256 fee = computeFee(amount);
@@ -51,6 +50,43 @@ contract Process is UnexposedControllerTest {
 
     assertEqDecimal(warDelta, expectedMintedAmount, 18, "Fee should have been taken from locked amount");
     assertFee(token, amount);
+  }
+
+  function testLockerMultipleTimes(uint256 amount, uint256 previousAmount) public {
+    vm.assume(amount > 1e5 && amount < 1e33);
+    vm.assume(previousAmount > 1e5 && previousAmount < 1e33);
+    
+    address token = randomVlToken(amount);
+    
+    // previous process
+    deal(token, address(controller), previousAmount);
+    controller.process(token);
+
+    vm.warp(block.timestamp + 604_800);
+    
+    // -----------
+    
+    uint256 fee = computeFee(amount);
+    uint256 startFeeBalance = IERC20(token).balanceOf(protocolFeeReceiver);
+
+    deal(token, address(controller), amount);
+
+    uint256 initialQueuedWar = war.balanceOf(address(staker));
+
+    controller.process(token);
+
+    uint256 expectedMintedAmount = ratios.getMintAmount(token, amount - fee);
+
+    uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
+
+    assertEqDecimal(warDelta, expectedMintedAmount, 18, "Fee should have been taken from locked amount");
+    
+    // can't use because does not consider previous process
+    //assertFee(token, amount);
+
+    uint256 feeBalanceDelta = IERC20(token).balanceOf(protocolFeeReceiver) - startFeeBalance;
+    assertGt(feeBalanceDelta, 0, "The fee taken should always be non zero");
+    assertEqDecimal(feeBalanceDelta, fee, 18, "Fee is sent to the correct receiver");
   }
 
   function testFarmer(uint256 amount) public {
