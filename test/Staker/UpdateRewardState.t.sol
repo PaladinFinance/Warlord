@@ -10,7 +10,7 @@ contract UpdateRewardState is StakerTest {
   function testDefaultBehavior(uint128 timeDelta) public {
     vm.assume(timeDelta > 0);
     vm.assume(timeDelta <= 604_805);
-    
+
     /*RewardAndAmount[] memory fuzzedRewards = */
     fuzzRewardsAndStakers(timeDelta, 3); // need stakers so the staked supply is not 0 & the rewardPerToken is updated
 
@@ -105,7 +105,6 @@ contract UpdateRewardState is StakerTest {
     newState.ratePerSecond = state.ratePerSecond;
     newState.currentRewardAmount = state.currentRewardAmount;
 
-    
     uint256 totalAccruedAmount;
     bool skip;
     if (staker.rewardFarmers(reward) != zero) {
@@ -124,12 +123,11 @@ contract UpdateRewardState is StakerTest {
     }
     if (!skip) {
       uint256 totalStakedSupply = staker.totalSupply();
-      if(totalStakedSupply == 0) {
+      if (totalStakedSupply == 0) {
         newState.rewardPerToken = state.rewardPerToken;
-      } else{
+      } else {
         newState.rewardPerToken = state.rewardPerToken + ((totalAccruedAmount * 1e18) / totalStakedSupply);
       }
     }
-    
   }
 }

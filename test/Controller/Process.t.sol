@@ -55,17 +55,17 @@ contract Process is UnexposedControllerTest {
   function testLockerMultipleTimes(uint256 amount, uint256 previousAmount) public {
     vm.assume(amount > 1e5 && amount < 1e33);
     vm.assume(previousAmount > 1e5 && previousAmount < 1e33);
-    
+
     address token = randomVlToken(amount);
-    
+
     // previous process
     deal(token, address(controller), previousAmount);
     controller.process(token);
 
     vm.warp(block.timestamp + 604_800);
-    
+
     // -----------
-    
+
     uint256 fee = computeFee(amount);
     uint256 startFeeBalance = IERC20(token).balanceOf(protocolFeeReceiver);
 
@@ -80,7 +80,7 @@ contract Process is UnexposedControllerTest {
     uint256 warDelta = war.balanceOf(address(staker)) - initialQueuedWar;
 
     assertEqDecimal(warDelta, expectedMintedAmount, 18, "Fee should have been taken from locked amount");
-    
+
     // can't use because does not consider previous process
     //assertFee(token, amount);
 

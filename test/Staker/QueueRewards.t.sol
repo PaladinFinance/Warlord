@@ -51,7 +51,7 @@ contract QueueRewards is StakerTest {
 
     SimpleRewardState memory state = simpleRewardState(reward);
 
-    if(newReward) {
+    if (newReward) {
       address[] memory rewardTokens = staker.getRewardTokens();
       assertEq(rewardTokens[rewardTokens.length - 1], reward, "the reward token should be the last one in the list");
     }
@@ -64,17 +64,15 @@ contract QueueRewards is StakerTest {
     assertEq(state.lastUpdate, currentTs);
     assertEq(state.distributionEndTimestamp, currentTs + DISTRIBUTION_DURATION);
     assertEq(state.rewardPerToken, prevState.rewardPerToken);
-
-
   }
 
   function testQueueWithActiveDistribution(uint256 amount, uint256 seed, uint256 timeDelta) public {
     vm.assume(timeDelta > 0);
     vm.assume(timeDelta <= (604_805 * 2));
-    
+
     fuzzStakers(seed, 3);
     fuzzRewards(seed, true, false);
-    
+
     (address sender, address reward) = randomQueueableReward(amount);
 
     vm.assume(amount > 0 && amount < IERC20(reward).balanceOf(sender));
@@ -91,19 +89,18 @@ contract QueueRewards is StakerTest {
     uint256 expectedQueuedAmount;
     uint256 expectedAccruedAmount;
     bool onlyQueued = false;
-    
-    if(block.timestamp < prevState.distributionEndTimestamp) {
+
+    if (block.timestamp < prevState.distributionEndTimestamp) {
       undistributedAmount = prevState.ratePerSecond * (prevState.distributionEndTimestamp - block.timestamp);
 
       uint256 queuedAmountRatio = (totalQueued * 10_000) / (totalQueued + undistributedAmount);
 
-      if(queuedAmountRatio < UPDATE_REWARD_RATIO) {
+      if (queuedAmountRatio < UPDATE_REWARD_RATIO) {
         expectedQueuedAmount = totalQueued;
         onlyQueued = true;
       }
 
       expectedAccruedAmount = (block.timestamp - prevState.lastUpdate) * prevState.ratePerSecond;
-
     } else {
       prevState.currentRewardAmount;
 
@@ -115,14 +112,11 @@ contract QueueRewards is StakerTest {
 
     SimpleRewardState memory state = simpleRewardState(reward);
 
-    assertEq(
-      state.rewardPerToken,
-      prevState.rewardPerToken + ((expectedAccruedAmount * 1e18) / staker.totalSupply())
-    );
+    assertEq(state.rewardPerToken, prevState.rewardPerToken + ((expectedAccruedAmount * 1e18) / staker.totalSupply()));
 
     assertEq(state.queuedRewardAmount, expectedQueuedAmount);
 
-    if(onlyQueued) {
+    if (onlyQueued) {
       assertEq(state.ratePerSecond, prevState.ratePerSecond);
       assertEq(state.currentRewardAmount, prevState.currentRewardAmount);
       assertEq(state.lastUpdate, block.timestamp);

@@ -128,9 +128,13 @@ contract ClaimRewards is StakerTest {
     }
   }
 
-  function _getRewardIndex(WarStaker.UserClaimableRewards[] memory rewardList, address reward) internal pure returns(uint256) {
+  function _getRewardIndex(WarStaker.UserClaimableRewards[] memory rewardList, address reward)
+    internal
+    pure
+    returns (uint256)
+  {
     for (uint256 i; i < rewardList.length; ++i) {
-      if(rewardList[i].reward == reward) return i;
+      if (rewardList[i].reward == reward) return i;
     }
     return 0;
   }
@@ -140,7 +144,7 @@ contract ClaimRewards is StakerTest {
     uint256 numberOfStakers = time % STAKERS_UPPERBOUND + 1;
 
     vm.assume(time > 0 && time < 1000 days);
-    (address[] memory stakers,RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
+    (address[] memory stakers, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
 
     vm.warp(block.timestamp + time);
 
@@ -160,7 +164,11 @@ contract ClaimRewards is StakerTest {
         vm.prank(stakers[j]);
         uint256 claimedAmount = staker.claimRewards(rewards[i].reward, receiver);
         assertGt(claimedAmount, 0, "even after withdrawal accrued rewards can be withdrawn");
-        assertEq(claimedAmount, rewardsPerUser[j][_getRewardIndex(rewardsPerUser[j], rewards[i].reward)].claimableAmount, "should have claimed the same rewards as after unstaking");
+        assertEq(
+          claimedAmount,
+          rewardsPerUser[j][_getRewardIndex(rewardsPerUser[j], rewards[i].reward)].claimableAmount,
+          "should have claimed the same rewards as after unstaking"
+        );
         assertEq(claimedAmount, IERC20(rewards[i].reward).balanceOf(receiver) - prevBalance);
       }
     }
@@ -171,7 +179,7 @@ contract ClaimRewards is StakerTest {
     uint256 numberOfStakers = time % STAKERS_UPPERBOUND + 1;
 
     vm.assume(time > 0 && time < 1000 days);
-    (address[] memory stakers,RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
+    (address[] memory stakers, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(time, numberOfStakers);
 
     vm.warp(block.timestamp + time);
 
@@ -192,7 +200,11 @@ contract ClaimRewards is StakerTest {
         vm.prank(stakers[j]);
         uint256 claimedAmount = staker.claimRewards(rewards[i].reward, receiver);
         assertGt(claimedAmount, 0, "even after withdrawal accrued rewards can be withdrawn");
-        assertGe(claimedAmount, rewardsPerUser[j][_getRewardIndex(rewardsPerUser[j], rewards[i].reward)].claimableAmount, "should have accrued more rewards after partial unstaking");
+        assertGe(
+          claimedAmount,
+          rewardsPerUser[j][_getRewardIndex(rewardsPerUser[j], rewards[i].reward)].claimableAmount,
+          "should have accrued more rewards after partial unstaking"
+        );
         assertEq(claimedAmount, IERC20(rewards[i].reward).balanceOf(receiver) - prevBalance);
       }
     }
@@ -200,13 +212,12 @@ contract ClaimRewards is StakerTest {
 
   function testMultipleClaims(uint256 time) public {
     vm.assume(time > 0 && time < 10 days);
-    
-    uint256 numberOfStakers = 5;
-    (address[] memory stakers,RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(numberOfStakers, numberOfStakers);
-    address claimer = stakers[0];
-    
-    for(uint256 j; j < 3; j++) {
 
+    uint256 numberOfStakers = 5;
+    (address[] memory stakers,) = fuzzRewardsAndStakers(numberOfStakers, numberOfStakers);
+    address claimer = stakers[0];
+
+    for (uint256 j; j < 3; j++) {
       WarStaker.UserClaimableRewards[] memory claimableRewards = staker.getUserTotalClaimableRewards(claimer);
 
       for (uint256 i; i < claimableRewards.length; ++i) {
@@ -221,13 +232,16 @@ contract ClaimRewards is StakerTest {
 
         assertEqDecimal(claimedAmount, expectedAmount, 18, "the expected amount should correspond to the one claimed");
         assertEqDecimal(
-          reward.balanceOf(receiver) - prevBalance, expectedAmount, 18, "receiver should have received the claimable amount"
+          reward.balanceOf(receiver) - prevBalance,
+          expectedAmount,
+          18,
+          "receiver should have received the claimable amount"
         );
       }
 
-      if(j != 2) {
+      if (j != 2) {
         fuzzRewards(time);
-      vm.warp(block.timestamp + time);
+        vm.warp(block.timestamp + time);
       }
     }
   }
@@ -262,9 +276,7 @@ contract ClaimRewards is StakerTest {
       uint256 claimedAmount = staker.claimRewards(address(reward), receiver);
 
       assertEqDecimal(claimedAmount, 0, 18, "should have nothing to claim");
-      assertEqDecimal(
-        reward.balanceOf(receiver), prevBalance, 18, "receiver should not have received any rewards"
-      );
+      assertEqDecimal(reward.balanceOf(receiver), prevBalance, 18, "receiver should not have received any rewards");
     }
   }
 
@@ -291,7 +303,6 @@ contract ClaimRewards is StakerTest {
       staker.claimRewards(address(cvxCrv), receiver), 0, 18, "Someone starting staking should claim 0 cvxCrv rewards"
     );
     vm.stopPrank();
-
   }
 
   function testZeroReceiver(address reward) public {
