@@ -34,11 +34,10 @@ contract ClaimRewards is StakerTest {
   }
 
   function testClaimRewardsFromFarmersSingleStaker(uint256 stakedWarAmount, uint256 rewardsAmount) public {
-    // TODO edge case with [500000000000000000000000, 4092639850559004120564477695705666666666666666666]]
     vm.assume(stakedWarAmount > 0);
     vm.assume(rewardsAmount > 1e18 && rewardsAmount < 1e55);
 
-    stakedWarAmount = stakedWarAmount % WAR_SUPPLY_UPPER_BOUND;
+    stakedWarAmount = stakedWarAmount % WAR_SUPPLY_UPPER_BOUND + 1;
 
     // Gives to the address the amount and stakes it
     _stake(address(this), stakedWarAmount);
