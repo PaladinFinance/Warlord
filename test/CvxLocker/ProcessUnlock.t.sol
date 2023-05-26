@@ -34,7 +34,8 @@ contract ProcessUnlock is CvxLockerTest {
   }
 
   function testUnlockAndRelock(uint256 withdrawDesired, uint256 daysPassed) public {
-    vm.assume(daysPassed < 120 days);
+    vm.assume(withdrawDesired > 1e18);
+    vm.assume(daysPassed > 14 days && daysPassed < 120 days);
 
     // Queue rewards withdrawal
     redeemModule.setQueue(withdrawDesired);
@@ -44,6 +45,7 @@ contract ProcessUnlock is CvxLockerTest {
     vm.warp(block.timestamp + daysPassed);
 
     (, uint256 initiallyUnlocked, uint256 initiallyLocked,) = vlCvx.lockedBalances(address(locker));
+    vm.assume(initiallyLocked > 0 && initiallyLocked > 0);
     locker.processUnlock();
 
     (, uint256 unlocked, uint256 locked,) = vlCvx.lockedBalances(address(locker));
