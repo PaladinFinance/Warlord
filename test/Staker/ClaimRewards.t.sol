@@ -7,12 +7,10 @@ contract ClaimRewards is StakerTest {
   address receiver = makeAddr("receiver");
 
   function testClaimSingleStaker(uint256 time) public {
-    fuzzRewards(time);
-    vm.assume(time < 1000 days);
+    vm.assume(time > 0 && time < 1000 days);
+    (address[] memory stakers,) = fuzzRewardsAndStakers(time, 1);
 
-    address user = makeAddr("user");
-
-    _stake(user, (time % uint160(receiver)) + 1);
+    address user = stakers[0];
 
     vm.warp(block.timestamp + time);
 
@@ -26,6 +24,7 @@ contract ClaimRewards is StakerTest {
 
       uint256 expectedAmount = rewards[i].claimableAmount;
 
+      assertGt(claimedAmount, 0, "the amount claimed should be greater than zero");
       assertEqDecimal(claimedAmount, expectedAmount, 18, "the expected amount should correspond to the one claimed");
       assertEqDecimal(
         reward.balanceOf(receiver), expectedAmount, 18, "receiver should have received the claimable amount"
