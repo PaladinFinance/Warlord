@@ -5,18 +5,43 @@ import "./StakerTest.sol";
 
 contract GetUserAccruedRewards is StakerTest {
   function testDefaultBehavior(uint256 seed) public {
-    vm.assume(seed < 4 weeks);
-    // uint256 seed = 1;
+    vm.assume(seed > 100 && seed < 1 weeks);
+    // uint256 seed = 10;
     (address[] memory stakers, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(seed, 10);
     vm.warp(block.timestamp + seed);
 
     address[] memory unstakers = fuzzUnstakers(seed, stakers);
 
-    for (uint256 i; i < stakers.length; ++i) {
+    uint256 state = vm.snapshot();
+    for (uint256 i; i < unstakers.length; ++i) {
       for (uint256 j; j < rewards.length; ++j) {
-        uint256 accruedAmount = staker.getUserAccruedRewards(rewards[j].reward, stakers[i]);
+        uint256 previousRewards = staker.getUserAccruedRewards(unstakers[i], rewards[j].reward);
+        vm.warp(block.timestamp + 10 weeks);
+        assertGt(previousRewards, 0, "accrued rewards should be greater than zero");
+        assertEqDecimal(
+          previousRewards,
+          staker.getUserAccruedRewards(rewards[j].reward, unstakers[i]),
+          18,
+          "Rewards shouldn't have increase since unstake"
+        );
+        vm.revertTo(state);
       }
     }
+
+    bool atLeastOneGreaterAccruedReward;
+    for (uint256 i; i < stakers.length; ++i) {
+      for (uint256 j; j < rewards.length; ++j) {
+        if (rewards[j].reward == address(cvxCrv) || rewards[j].reward == address(auraBal)) continue;
+        vm.revertTo(state);
+        uint256 previousRewards = staker.getUserAccruedRewards(rewards[j].reward, stakers[i]);
+        vm.warp(block.timestamp + 1 weeks);
+        uint256 currentRewards = staker.getUserAccruedRewards(rewards[j].reward, stakers[i]);
+        if (currentRewards > previousRewards) atLeastOneGreaterAccruedReward = atLeastOneGreaterAccruedReward || true;
+        assertGeDecimal(currentRewards, previousRewards, 18, "Rewards should have increase or at least be the same");
+      }
+    }
+    // sanity check
+    assertTrue(atLeastOneGreaterAccruedReward, "at least one reward should have increase even considering unstakes");
   }
 
   function fuzzUnstakers(uint256 seed, address[] memory stakers) public returns (address[] memory unstakers) {

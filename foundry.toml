@@ -3,7 +3,7 @@ solc = "0.8.16"
 src = 'src'
 out = 'out'
 libs = ['lib']
-optimizer = false 
+optimizer = true 
 gas_reports = ["WarMinter"]
 fs_permissions = [{ access = "read", path = "./"}]
 

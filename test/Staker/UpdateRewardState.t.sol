@@ -7,10 +7,12 @@ import {IFarmer} from "interfaces/IFarmer.sol";
 contract UpdateRewardState is StakerTest {
   uint256 constant DISTRIBUTION_DURATION = 604_800; // 1 week
 
-  function testDefaultBehavior( /*uint128 timeDelta*/ ) public {
-    uint128 timeDelta = 604_805;
+  function testDefaultBehavior(uint128 timeDelta) public {
+    vm.assume(timeDelta > 0);
+    vm.assume(timeDelta <= 604_805);
+
     /*RewardAndAmount[] memory fuzzedRewards = */
-    fuzzRewards(timeDelta);
+    fuzzRewardsAndStakers(timeDelta, 3); // need stakers so the staked supply is not 0 & the rewardPerToken is updated
 
     uint256 initialTime = block.timestamp;
     uint256 finalTime = block.timestamp + timeDelta;
@@ -23,7 +25,7 @@ contract UpdateRewardState is StakerTest {
       vm.warp(finalTime);
       staker.updateRewardState(reward);
       SimpleRewardState memory finalState = simpleRewardState(reward);
-      SimpleRewardState memory expectedState = futureState( /*reward, */ timeDelta, initialState);
+      SimpleRewardState memory expectedState = futureState(reward, timeDelta, initialState);
 
       assertEq(finalState.lastUpdate, expectedState.lastUpdate, "last update should correspond to the expected one");
       assertEq(
@@ -89,7 +91,7 @@ contract UpdateRewardState is StakerTest {
     uint256 queuedRewardAmount;
   }
 
-  function futureState( /*address reward, */ uint256 timeDelta, SimpleRewardState memory state)
+  function futureState(address reward, uint256 timeDelta, SimpleRewardState memory state)
     public
     returns (SimpleRewardState memory newState)
   {
@@ -103,8 +105,6 @@ contract UpdateRewardState is StakerTest {
     newState.ratePerSecond = state.ratePerSecond;
     newState.currentRewardAmount = state.currentRewardAmount;
 
-    // TODO do rewardPerToken
-    /*
     uint256 totalAccruedAmount;
     bool skip;
     if (staker.rewardFarmers(reward) != zero) {
@@ -122,8 +122,12 @@ contract UpdateRewardState is StakerTest {
       totalAccruedAmount = (lastRewardTimestamp - state.lastUpdate) * state.ratePerSecond;
     }
     if (!skip) {
-      newState.rewardPerToken = state.rewardPerToken + ((totalAccruedAmount * 1e18) / staker.totalSupply());
+      uint256 totalStakedSupply = staker.totalSupply();
+      if (totalStakedSupply == 0) {
+        newState.rewardPerToken = state.rewardPerToken;
+      } else {
+        newState.rewardPerToken = state.rewardPerToken + ((totalAccruedAmount * 1e18) / totalStakedSupply);
+      }
     }
-    */
   }
 }
