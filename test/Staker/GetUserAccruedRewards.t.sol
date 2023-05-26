@@ -6,14 +6,35 @@ import "./StakerTest.sol";
 contract GetUserAccruedRewards is StakerTest {
   function testDefaultBehavior(/* uint256 seed */) public {
     // vm.assume(seed > 100 && seed < 1 weeks);
-    uint256 seed = 1;
+    uint256 seed = 100000000;
     (address[] memory stakers, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(seed, 10);
     vm.warp(block.timestamp + seed);
 
-    console.log(vm.getLabel(rewards[1].reward));
+    for (uint256 j; j < rewards.length; ++j) {
+        console.log(vm.getLabel(rewards[j].reward));
+        console.log("reward amount", rewards[j].amount);
+    }
+
+    for (uint256 i; i < stakers.length; ++i){
+        console.log("rewards of staker n.", i);
+        WarStaker.UserClaimableRewards[] memory userRewards = staker.getUserTotalClaimableRewards(stakers[i]);
+        for (uint256 n; n < userRewards.length; ++n) {
+          console.log("reward received", vm.getLabel(userRewards[n].reward));
+          console.log("claimable amount", userRewards[n].claimableAmount);
+        }
+        console.log("THE PART THAT NEVER WORKS");
+        for (uint256 j; j < rewards.length; ++j) {
+          uint256 accrued = staker.getUserAccruedRewards(stakers[i], rewards[j].reward);
+          console.log("reward ", vm.getLabel(rewards[j].reward));
+          console.log("accrued amount:", accrued);
+        }
+    }
+
+    // console.log(staker.balanceOf(stakers[0]));
+    // console.log(vm.getLabel(rewards[1].reward));
     uint256 previousRewards = staker.getUserAccruedRewards(stakers[0], rewards[1].reward);
-    console.log(rewards[1].amount);
-    console.log("before ", previousRewards);
+    // console.log(rewards[1].amount);
+    // console.log("before ", previousRewards);
 
     // address[] memory unstakers = fuzzUnstakers(seed, stakers);
 
