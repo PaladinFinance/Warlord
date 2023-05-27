@@ -7,6 +7,9 @@ optimizer = true
 gas_reports = ["WarMinter"]
 fs_permissions = [{ access = "read", path = "./"}]
 
+[fuzz]
+max_test_rejects = 655360
+
 [fmt]
 tab_width = 2
 number_underscore = 'thousands'
