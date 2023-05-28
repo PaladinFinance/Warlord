@@ -14,7 +14,7 @@ contract E2ETest is WarlordTest {
 
   function setUp() public override {
     WarlordTest.setUp();
-    
+
     queueableRewards.push(address(war));
     queueableRewards.push(address(pal));
     queueableRewards.push(address(weth));
@@ -72,8 +72,7 @@ contract E2ETest is WarlordTest {
     numberOfStakers = numberOfStakers % 100 + 1;
     // Using fixed seed for addresses to speedup fuzzing
     stakers = generateAddressArrayFromHash(seed, numberOfStakers);
-    uint256[] memory amounts =
-      generateNumberArrayFromHash(seed, numberOfStakers, 10_000e18 * 7e9/ numberOfStakers);
+    uint256[] memory amounts = generateNumberArrayFromHash(seed, numberOfStakers, 10_000e18 * 7e9 / numberOfStakers);
     for (uint256 i; i < numberOfStakers; ++i) {
       _stake(stakers[i], amounts[i]);
     }

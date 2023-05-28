@@ -5,7 +5,6 @@ import "./E2ETest.sol";
 
 contract NormalUsage is E2ETest {
   function testScenario() public {
-
     deal(address(cvx), alice, 1e30);
     deal(address(aura), alice, 1e30);
 
@@ -24,7 +23,7 @@ contract NormalUsage is E2ETest {
     aura.approve(address(zap), type(uint256).max);
     zap.zapMultiple(vlTokens, amounts, alice);
 
-    (address[] memory otherStakers, ) = fuzzRewardsAndStakers(5678, 30);
+    (address[] memory otherStakers,) = fuzzRewardsAndStakers(5678, 30);
     for (uint256 i; i < otherStakers.length; ++i) {
       // console.log("%e", staker.balanceOf(otherStakers[i]));
     }
@@ -39,10 +38,13 @@ contract NormalUsage is E2ETest {
 
     vm.warp(block.timestamp + 1);
 
-    /*WarStaker.UserClaimedRewards[] memory rewards = */staker.claimAllRewards(alice);
+    /*WarStaker.UserClaimedRewards[] memory rewards = */
+    staker.claimAllRewards(alice);
 
     for (uint256 i; i < queueableRewards.length; ++i) {
-      console.log("Alice claimed: %e %s", IERC20(queueableRewards[i]).balanceOf(alice), vm.getLabel(queueableRewards[i]));
+      console.log(
+        "Alice claimed: %e %s", IERC20(queueableRewards[i]).balanceOf(alice), vm.getLabel(queueableRewards[i])
+      );
     }
     console.log("Alice claimed: %e %s", IERC20(auraBal).balanceOf(alice), vm.getLabel(address(auraBal)));
     console.log("Alice claimed: %e %s", IERC20(cvxCrv).balanceOf(alice), vm.getLabel(address(cvxCrv)));
@@ -68,7 +70,7 @@ contract NormalUsage is E2ETest {
       ids[i] = tickets[i].id;
     }
     redeemer.redeem(ids, redeemerStaker);
-    
+
     console.log("The stakerRedeemer has CVX: %e", cvx.balanceOf(redeemerStaker));
     console.log("The stakerRedeemer has AURA: %e", aura.balanceOf(redeemerStaker));
 

@@ -5,7 +5,7 @@ import "./E2ETest.sol";
 
 contract Migration is E2ETest {
   function testScenario() public {
-    (, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(12349087, 100000);
+    (, RewardAndAmount[] memory rewards) = fuzzRewardsAndStakers(12_349_087, 100_000);
 
     for (uint256 i; i < rewards.length; ++i) {
       console.log("fuzzed %s for %e", vm.getLabel(rewards[i].reward), rewards[i].amount);
