@@ -1,0 +1,19 @@
+WarToken war : xx
+
+// Lockers
+WarAuraLocker auraLocker : xx
+WarCvxLocker cvxLocker : xx
+
+// Farmers
+WarAuraBalFarmer auraBalFarmer : xx
+WarCvxCrvFarmer cvxCrvFarmer : xx
+
+// Enter/Exit
+WarZap zap : xx
+WarMinter minter : xx
+WarRedeemer redeemer : xx
+
+// Infrastracture
+WarController controller : xx
+WarRatiosV2 ratios : xx
+WarStaker staker : xx
