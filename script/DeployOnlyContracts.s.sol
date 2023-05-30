@@ -38,7 +38,7 @@ contract Deployment is Script, MainnetTest {
 
   // Fees
   // address redemptionFeeReceiver = makeAddr("redemptionFeeReceiver"); controller
-  address protocolFeeReceiver = makeAddr("protocolFeeReceiver");
+  address protocolFeeReceiver = 0x1Ae6DCBc88d6f81A7BCFcCC7198397D776F3592E;
 
   // Multisig/Protocol's admins
   address swapper = 0x44E133b1f4a1C521c9E360e9f2eCEa6518564deD;

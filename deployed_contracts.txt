@@ -1,19 +1,19 @@
-WarToken war : xx
+WarToken war : 0xa8258deE2a677874a48F5320670A869D74f0cbC1
 
 // Lockers
-WarAuraLocker auraLocker : xx
-WarCvxLocker cvxLocker : xx
+WarAuraLocker auraLocker : 0x7B90e043aaC79AdeA0Dbb0690E3c832757207a3B
+WarCvxLocker cvxLocker : 0x700d6d24A55512c6AEC08820B49da4e4193105B3
 
 // Farmers
-WarAuraBalFarmer auraBalFarmer : xx
-WarCvxCrvFarmer cvxCrvFarmer : xx
+WarAuraBalFarmer auraBalFarmer : 0x6f79f1b1574c47ef8636e6F261268FF35Bb4edbd
+WarCvxCrvFarmer cvxCrvFarmer : 0x857ba41F7957a8d8A4c8A61820caD8B119eDA619
 
 // Enter/Exit
-WarZap zap : xx
-WarMinter minter : xx
-WarRedeemer redeemer : xx
+WarZap zap : 0xf747744518099F44936D6D58041De6cD199C35aF
+WarMinter minter : 0x144a689A8261F1863c89954930ecae46Bd950341
+WarRedeemer redeemer : 0x4787Ef084c1d57ED87D58a716d991F8A9CD3828C
 
 // Infrastracture
-WarController controller : xx
-WarRatiosV2 ratios : xx
-WarStaker staker : xx
+WarController controller : 0xFDeac9F9e4a5A7340Ac57B47C67d383fb4f13DBb
+WarRatiosV2 ratios : 0xE40004395384455326c7a27A85204801C7f85F94
+WarStaker staker : 0xA86c53AF3aadF20bE5d7a8136ACfdbC4B074758A
