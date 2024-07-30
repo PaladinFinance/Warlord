@@ -49,6 +49,9 @@ library Errors {
   error ZeroMintAmount();
   error SupplyAlreadySet();
   error RatioAlreadySet();
+  error RatioNotSet();
+  error RatiosFrozen();
+  error RatiosNotFrozen();
 
   // Harvestable
   error NotRewardToken();
