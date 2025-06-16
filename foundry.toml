@@ -15,5 +15,9 @@ tab_width = 2
 number_underscore = 'thousands'
 
 [rpc_endpoints]
-mainnet = 'https://rpc.ankr.com/eth'
+mainnet = '${ALCHEMY}'
+ethereum = '${ALCHEMY}'
 ethereum_alchemy = '${ALCHEMY}'
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }

@@ -51,6 +51,10 @@ contract ShutdownMigrator is ReentrancyGuard, Owner {
     warRedeemer = _warRedeemer;
   }
 
+  function token() external view returns (address) {
+    return address(this);
+  }
+
   function shutdownProcess() external nonReentrant {
     _processCVX();
     _processAURA();
@@ -68,7 +72,7 @@ contract ShutdownMigrator is ReentrancyGuard, Owner {
     // Get the amount needed in the Redeem Module
     uint256 withdrawalAmount = IWarRedeemModule(warRedeemer).queuedForWithdrawal(address(cvxToken));
 
-    if(withdrawalAmount > balance) withdrawalAmount = cvxBalance;
+    if(withdrawalAmount > cvxBalance) withdrawalAmount = cvxBalance;
     
     cvxToken.safeTransfer(address(warRedeemer), withdrawalAmount);
     IWarRedeemModule(warRedeemer).notifyUnlock(address(cvxToken), withdrawalAmount);
@@ -86,19 +90,19 @@ contract ShutdownMigrator is ReentrancyGuard, Owner {
     // Get the amount needed in the Redeem Module
     uint256 withdrawalAmount = IWarRedeemModule(warRedeemer).queuedForWithdrawal(address(auraToken));
 
-    if(withdrawalAmount > balance) withdrawalAmount = auraBalance;
+    if(withdrawalAmount > auraBalance) withdrawalAmount = auraBalance;
     
     auraToken.safeTransfer(address(warRedeemer), withdrawalAmount);
     IWarRedeemModule(warRedeemer).notifyUnlock(address(auraToken), withdrawalAmount);
   }
 
-  function acceptOwnership() external onlyOwner {
+  function acceptLockersOwnership() external onlyOwner {
     // Accept ownership of the CVX locker & AURA locker
     ILocker(cvxLocker).acceptOwnership();
     ILocker(auraLocker).acceptOwnership();
   }
 
-  function giveOwnership() external onlyOwner {
+  function giveBackLockersOwnership() external onlyOwner {
     // Give back ownership of the Lockers to this contract owner
     ILocker(cvxLocker).transferOwnership(owner());
     ILocker(auraLocker).transferOwnership(owner());
