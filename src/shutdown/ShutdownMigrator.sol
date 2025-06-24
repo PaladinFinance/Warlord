@@ -25,21 +25,19 @@ contract ShutdownMigrator is ReentrancyGuard, Owner {
   address public immutable cvxLocker;
   address public immutable auraLocker;
 
-  address public immutable warRedeemer;
+  address public warRedeemer;
 
   constructor(
     address _cvxToken,
     address _auraToken,
     address _cvxLocker,
-    address _auraLocker,
-    address _warRedeemer
+    address _auraLocker
   ) {
     if (
       _cvxToken == address(0) ||
       _auraToken == address(0) ||
       _cvxLocker == address(0) ||
-      _auraLocker == address(0) ||
-      _warRedeemer == address(0)
+      _auraLocker == address(0)
     ) revert Errors.ZeroAddress();
 
     cvxToken = IERC20(_cvxToken);
@@ -48,11 +46,10 @@ contract ShutdownMigrator is ReentrancyGuard, Owner {
     cvxLocker = _cvxLocker;
     auraLocker = _auraLocker;
 
-    warRedeemer = _warRedeemer;
   }
 
-  function token() external view returns (address) {
-    return address(this);
+  function setRedeemer(address _warRedeemer) external onlyOwner {
+    warRedeemer = _warRedeemer;
   }
 
   function shutdownProcess() external nonReentrant {
